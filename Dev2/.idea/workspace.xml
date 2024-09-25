@@ -4,41 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3f2f1869-e8b1-4742-9f80-b20b3f74bdf5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Dev2.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dev2/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dev2/asgi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dev2/settings.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dev2/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dev2/wsgi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/migrations/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/attachment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/course.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/discipline.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/enums/request_status.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/enums/user_type.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/knowledge_certification.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/notice.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/recognition_of_prior_leranig.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/requisition_form.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/servant.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/steps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/student.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/models/user.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/tests.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consultas/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/manage.py" afterDir="false" />
-    </list>
+    <list default="true" id="3f2f1869-e8b1-4742-9f80-b20b3f74bdf5" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,9 +23,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2mWDhvqDcgcrzHTxkeVHjc69PFV" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -72,6 +38,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
     "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/03-gabriel.costa/Desktop/Dev2",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -124,6 +91,7 @@
       <option name="presentableId" value="Default" />
       <updated>1727183560295</updated>
       <workItem from="1727183587021" duration="2388000" />
+      <workItem from="1727260506328" duration="14000" />
     </task>
     <servers />
   </component>
