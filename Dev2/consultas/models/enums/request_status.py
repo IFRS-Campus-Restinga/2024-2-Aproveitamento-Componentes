@@ -4,3 +4,5 @@ from django.db import models
 
 class RequestStatus(models.TextChoices):
     STUDENT = _('Student'), _('Estudante')
+
+
