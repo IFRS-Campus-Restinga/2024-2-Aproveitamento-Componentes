@@ -1,9 +1,9 @@
 import "@/assets/globals.css";
 import NavBar from "@/components/ui/NavBar";
 import Image from "next/image";
-import "primereact/resources/themes/lara-light-green/theme.css";
-import 'primeicons/primeicons.css';
+
 import 'react-toastify/dist/ReactToastify.css';
+import { Footer } from "@/components/layout/Footer/footer";
 
 export const metadata = {
     title: "Create Next App",
@@ -16,29 +16,12 @@ export default function RootLayout({ children }) {
     return (
         <html>
             <body>
-
-                <div className='bg-gray-100 min-h-screen'>
-                    <NavBar auth={isUserAuth} />
-
-
-                    <div style={{ minHeight: '500px' }}>
-                        {children}
-                    </div>
-                    <footer className='bg-green-900 text-white' style={{ background: 'rgb(0 49 21)' }}>
-                        <div className="max-w-screen-lg mx-auto flex flex-col-reverse md:flex-row items-center justify-between">
-                            <div className="md:max-w-80 p-10 text-xs border-0 border-r-2 border-dashed text-gray-300 bg-black/20 border-black/20">
-                                <Image src="/if.png" width={70} height={95} />
-                            </div>
-                            <div className='py-10 px-10'>
-                                <p>
-                                    <b>Instituto Federal do Rio Grande do Sul – Campus Restinga</b>
-                                </p>
-                                <p>Rua Alberto Hoffmann, 285 | Bairro Restinga | CEP: 91791-508 | Porto Alegre/RS</p>
-                            </div>
-                        </div>
-                    </footer>
+                <NavBar auth={isUserAuth} />
+                <div style={{ minHeight: '500px' }}>
+                    {children}
                 </div>
+                <Footer />
             </body>
-        </html >
+        </html>
     );
 }
