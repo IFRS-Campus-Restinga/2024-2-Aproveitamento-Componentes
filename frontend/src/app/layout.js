@@ -1,7 +1,8 @@
 import "@/assets/globals.css";
 import NavBar from "@/components/ui/NavBar";
 import Image from "next/image";
-
+import "primereact/resources/themes/lara-light-green/theme.css";
+import 'primeicons/primeicons.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { Footer } from "@/components/layout/Footer/footer";
 

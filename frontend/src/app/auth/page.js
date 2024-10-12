@@ -1,6 +1,7 @@
 "use client"
 import Image from "next/image";
 import { Button } from 'primereact/button';
+import styles from './auth.module.css';
 
 
 const AuthPage = () => {
@@ -10,8 +11,8 @@ const AuthPage = () => {
     };
 
     return (
-        <div className='max-w-screen-lg mx-auto bg-white m-3 mt-6 flex flex-col mt-40'>
-            <div className='flex flex-wrap align-items-center justify-around items-center py-10'>
+        <div className={styles.container}>
+            <div className={styles.content}>
                 <div>
                     <Image
                         src="/ifrs_colorido.svg"

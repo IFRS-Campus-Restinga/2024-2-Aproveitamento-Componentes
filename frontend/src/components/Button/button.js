@@ -17,10 +17,9 @@ const BtnContainer = styled.button`
 
 export const Button = ({ children, type}) => {
     return (
-        <>
             <BtnContainer type={type}>
                 {children}
             </BtnContainer>
-        </>
+
     )
 }
