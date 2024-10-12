@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Servidores</title>
+</head>
+<body>
+    <h1>Lista de Servidores</h1>
+    <ul>
+        {% for servant in servants %}
+            <li>{{ servant.name }} - {{ servant.email }} - Ativo: {{ servant.is_active }}</li>
+        {% empty %}
+            <li>Não há servidores cadastrados.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

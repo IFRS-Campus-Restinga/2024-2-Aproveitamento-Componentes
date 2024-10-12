@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Alunos</title>
+</head>
+<body>
+    <h1>Lista de Alunos</h1>
+    <ul>
+        {% for student in students %}
+            <li>{{ student.name }} - {{ student.email }} - Ativo: {{ student.is_active }}</li>
+        {% empty %}
+            <li>Não há alunos cadastrados.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

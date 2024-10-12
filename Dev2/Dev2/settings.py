@@ -59,28 +59,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Dev2.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'dev2',
-#         'USER': 'root',
-#         'PASSWORD': '',
-#         'HOST': 'localhost',
-#         'PORT': '3306'
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'banco.sqlite3',
-
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',  # Nome do seu banco de dados
+        'USER': 'postgres',  # Usuário do PostgreSQL
+        'PASSWORD': 'pass',  # Senha do PostgreSQL
+        'HOST': 'localhost',  # Endereço do servidor, geralmente 'localhost'
+        'PORT': '5432',  # Porta padrão do PostgreSQL
     }
 }
+
 
 
 # Password validation
