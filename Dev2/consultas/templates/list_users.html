@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Usuários</title>
+</head>
+<body>
+    <h1>Lista de Usuários</h1>
+    <ul>
+        {% for user in users %}
+            <li>{{ user.name }} - {{ user.email }} - Ativo: {{ user.is_active }}</li>
+        {% empty %}
+            <li>Não há usuários cadastrados.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

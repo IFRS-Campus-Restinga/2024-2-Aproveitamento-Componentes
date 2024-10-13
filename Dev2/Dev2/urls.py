@@ -8,6 +8,7 @@ urlpatterns = [
 ]
 
 urlpatterns = [
-    path('api/users/students', views.list_students, name='list_students'),
-    path('api/users/servants', views.list_servants, name='list_servants')
+    path('api/users/', views.list_users, name='list_users'),
+    path('api/users/students/', views.list_students, name='list_students'),
+    path('api/users/servants/', views.list_servants, name='list_servants')
 ]
