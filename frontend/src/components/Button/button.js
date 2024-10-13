@@ -5,7 +5,12 @@ const BtnContainer = styled.button`
   justify-content: center;
   align-items: center;
   padding: 20px;
-  background-color: ${(props) => props.type === "cancel" ? "#af0a0a" : "#046708"};
+  background-color: ${(props) =>
+    !props.color
+      ? props.type === "cancel"
+        ? "#af0a0a"
+        : "#046708"
+      : props.color};
   max-height: 50px;
   max-width: 200px;
   cursor: pointer;
@@ -15,11 +20,10 @@ const BtnContainer = styled.button`
   font-size: 15px;
 `;
 
-export const Button = ({ children, type}) => {
-    return (
-            <BtnContainer type={type}>
-                {children}
-            </BtnContainer>
-
-    )
-}
+export const Button = ({ children, type, color, onClick }) => {
+  return (
+    <BtnContainer type={type} color={color} onClick={onClick}>
+      {children}
+    </BtnContainer>
+  );
+};
