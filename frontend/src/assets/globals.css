@@ -1,0 +1,75 @@
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff;
+  margin: 200px;
+  padding: 100px;
+  border: 1px solid #c9c9c9;
+  border-radius: 10px;
+  size-adjust: 80%;
+}
+
+.p-tabview-nav {
+  display: flex;
+  justify-content: space-around;
+}
+
+.p-tabview.p-component {
+  width: 100%;
+}
+
+@tailwind components;
+/* @tailwind base; */
+
+/* cria um apply */
+@layer components {
+  .anchor-link {
+    @apply text-white no-underline hover:text-gray-300 hover:underline;
+  }
+}
+
+.p-avatar:not(.p-avatar-circle) img {
+  border-radius: 6px;
+}
+
+.multiselect-container .p-multiselect {
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.multiselect-container .p-multiselect-label {
+  white-space: normal !important;
+}
+
+.suggestions-container {
+  position: absolute;
+  width: 100%;
+  top: 100%; /* Alinha as sugestões logo abaixo do input */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0;
+}
+
+
