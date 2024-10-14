@@ -16,7 +16,6 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = React.useState(null);
-    const pathname = usePathname();
 
     const router = useRouter();
 
@@ -29,22 +28,21 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
             try {
+
                 const data = await AuthService.detalhesUsuario();
+                console.log(data);
                 setUser(data);
 
             } catch (error) {
                 setUser(null);
                 localStorage.removeItem('token');
-                if (router.pathname !== '/auth') {
-                    window.location.href = ('/auth');
-                }
+
                 console.error(error);
             }
         }
 
-        fetchUsuario();
 
-    }, [pathname]);
+    }, []);
 
     const value = {
         user,
