@@ -1,22 +1,45 @@
-"use client"
-import React, { useRef, useState } from 'react';
+'use client'
 import Image from "next/image";
 import Link from "next/link";
 import ptBR from 'date-fns/locale/pt-BR';
+import { useAuth, handleUserLogout } from "@/context/AuthContext";
+import { Button } from '@mui/material';
+import { Menu } from "primereact/menu";
 
 
 
+const NavBar = ({data = false}) => {
+    //const { user } = useAuth();
 
-const NavBar = ({ auth = false }) => {
+    const items = [
+        {
+            label: 'Perfil',
+            items: [
+                {
+                    label: 'Solicitações',
+                    icon: 'pi pi-user',
+                    command: () => window.location.href = `/estudante`
+                },
+                {
+                    label: 'Configurações',
+                    icon: 'pi pi-cog',
+                    command: () => window.location.href = `/utilsComponents`
 
+                },
+                {
+                    label: 'Sair',
+                    icon: 'pi pi-sign-out',
+                    command: () => handleUserLogout()
+                }
+            ]
+        }
+    ];
     const menuAuth = () => (
         <>
             <div className='px-3'>Bem vindo, <b>{'Usuário'}</b></div>
             <div className='px-2'>
-                <Link href="/auth" className="flex p-2 font-bold border-2 border-solid rounded anchor-link align-center border-black/30">
-                    <span>Logout</span>
-                    <span className='p-icon pi pi-fw pi-sign-in ms-2'></span>
-                </Link>
+                <Menu model={items} className='absolute z-50' popupAlignment="right" />
+                <Button label="Sair" icon='p-icon pi pi-fw pi-sign-in' onClick={handleUserLogout} />
             </div>
         </>
     );
@@ -47,7 +70,7 @@ const NavBar = ({ auth = false }) => {
                 </Link>
 
                 <div className='flex items-center justify-around text-white'>
-                    {auth ? menuAuth() : menuNotAuth()}
+                    {data ? menuAuth() : menuNotAuth()}
                 </div>
             </div>
             <style jsx>{`
