@@ -44,30 +44,33 @@ const NavBar = ({data = false}) => {
         </>
     );
 
-    const menuNotAuth = () => (
-        <>
-            <div className='px-3'>Você ainda não se identificou</div>
-            <div className='px-2'>
-                <Link href="/auth" className="flex p-2 font-bold border-2 border-solid rounded anchor-link align-center border-black/30">
-                    <span>Acessar</span>
-                    <span className='p-icon pi pi-fw pi-sign-in ms-2'></span>
-                </Link>
-            </div>
-        </>
-    );
+  const menuNotAuth = () => (
+    <>
+      <div className="px-3">Você ainda não se identificou</div>
+      <div className="px-2">
+        <Link
+          href="/auth"
+          className="flex p-2 font-bold border-2 border-solid rounded anchor-link align-center border-black/30"
+        >
+          <span>Acessar</span>
+          <span className="p-icon pi pi-fw pi-sign-in ms-2"></span>
+        </Link>
+      </div>
+    </>
+  );
 
-    return (
-        <div style={{ backgroundColor: '#2f9e41' }}>
-            <div className='flex items-center justify-between max-w-screen-lg p-3 mx-auto'>
-                <Link href="/">
-                    <Image
-                        src="/ifrs.png"
-                        alt="IFRS Logo"
-                        className="dark:invert"
-                        height={40}
-                        width={151}
-                    />
-                </Link>
+  return (
+    <div style={{ backgroundColor: "#2f9e41" }}>
+      <div className="flex items-center justify-between max-w-screen-lg p-3 mx-auto">
+        <Link href="/">
+          <Image
+            src="/ifrs.png"
+            alt="IFRS Logo"
+            className="dark:invert"
+            height={40}
+            width={151}
+          />
+        </Link>
 
                 <div className='flex items-center justify-around text-white'>
                     {data ? menuAuth() : menuNotAuth()}
