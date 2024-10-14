@@ -1,0 +1,12 @@
+{% extends "content.html" %}
+{% block content %}
+    <h1>Adicionar usuário</h1>
+    <div class="col-3">
+        <form action="{% url 'estudos:usuario_create' %}" method=post>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="reset" class="btn btn-danger">Reset</button>
+        </form>
+    </div>
+{%  endblock %}

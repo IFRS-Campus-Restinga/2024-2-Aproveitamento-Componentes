@@ -1,0 +1,58 @@
+{% extends "content.html" %}
+
+{% block content %}
+    {% if usuarios %}
+    <h1>Lista de Usuários</h1>
+    <table class="table">
+      <thead class="thead-navbar-success bg-success text-black">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Email</th>
+            <th scope="col">Rótulo</th>
+            <th scope="col">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for usuario in usuarios %}
+        <tr>
+            <th scope="row">{{ usuario.id }}</th>
+            <td>{{ usuario.nome }}</td>
+            <td>{{ usuario.email }}</td>
+            <td>
+                {% if usuario.is_servidor %}
+                    {{ usuario.siape }}
+                {% else %}
+                    {{ usuario.matricula }}
+                {% endif %}
+            </td>
+            <td>
+                <a class="btn btn-success" href="{% url 'estudos:usuario_read' usuario.id %}" role="button">
+                    <span class="text=light text-center">
+                        Detalhes
+                    </span>
+                </a>
+                <a class="btn btn-warning" href="{% url 'estudos:usuario_update' usuario.id %}" role="button">
+                    <span class="text=light text-center">
+                        Editar
+                    </span>
+                </a>
+                <a class="btn btn-danger" href="{% url 'estudos:usuario_delete' usuario.id %}" role="button">
+                    <span class="text=light text-center">
+                        Excluir
+                    </span>
+                </a>
+            </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+        <h2>Não há usuários cadastrados.</h2>
+    {% endif %}
+    <a class="btn btn-primary" href="{% url 'estudos:usuario_create' %}" role="button">
+        <span class="text=light text-center">
+            Cadastrar usuário
+        </span>
+    </a>
+{% endblock %}

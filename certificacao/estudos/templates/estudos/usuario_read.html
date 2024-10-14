@@ -1,0 +1,35 @@
+{% extends "content.html" %}
+{% block content %}
+    <h1>Detalhes do usuário</h1>
+    <table class="table">
+      <thead class="thead-success">
+        <tr>
+            <th scope="col">Campo</th>
+            <th scope="col">Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr>
+                <th scope="col">Nome</th>
+                <td>{{ usuario.nome }}</td>
+            </tr>
+            <tr>
+                <th scope="col">Email</th>
+                <td>{{ usuario.email }}</td>
+            </tr>
+            <tr>
+                <th scope="col">Identificação</th>
+                <td>
+                    {% if usuario.is_servidor %}
+                        {{ usuario.siape }}
+                    {% else %}
+                        {{ usuario.matricula }}
+                    {% endif %}
+                </td>
+            </tr>
+      </tbody>
+    </table>
+    <a class="btn btn-primary" href="{% url 'estudos:usuario_list' %}" role="button">
+        <span class="text=light text-center">Voltar</span>
+    </a>
+{% endblock %}
