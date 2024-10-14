@@ -29,14 +29,19 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
             try {
+
                 const data = await AuthService.detalhesUsuario();
+                console.log(data);
                 setUser(data);
 
             } catch (error) {
                 setUser(null);
                 localStorage.removeItem('token');
                 if (router.pathname !== '/auth') {
+                    const data = await AuthService.detalhesUsuario();
+                    console.log(data);
                     window.location.href = ('/auth');
+
                 }
                 console.error(error);
             }

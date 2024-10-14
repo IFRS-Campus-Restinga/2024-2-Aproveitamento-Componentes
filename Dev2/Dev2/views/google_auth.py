@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from .. import settings
 from base64 import b64encode
 import json 
-from consultas.models import Estudante
+from Dev2.models import Estudante
 
 class GoogleAuthView(APIView):
     googleAuthService = GoogleAuthService()
