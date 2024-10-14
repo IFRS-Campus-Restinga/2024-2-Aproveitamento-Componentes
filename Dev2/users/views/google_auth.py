@@ -1,13 +1,12 @@
 from rest_framework.views import APIView
-from Dev2.services import GoogleAuthService
-from rest_framework.response import Response
+from Dev2.users.services import GoogleAuthService
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.shortcuts import redirect
-from .. import settings
+from Dev2.api import settings
 from base64 import b64encode
 import json 
-from Dev2.models import Estudante
+from Dev2.users.models import Estudante
 
 class GoogleAuthView(APIView):
     googleAuthService = GoogleAuthService()

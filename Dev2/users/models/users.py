@@ -1,14 +1,13 @@
 from django.db import models
 from django.utils import timezone
 
-from .enums import UserTypeEnum
+from enums import UserTypeEnum
 
 
 class User(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
-    entry_date = models.DateTimeField(default=timezone.now)
 
     class Meta:
         abstract = True  # Define que essa classe não será criada como tabela no banco de dados
@@ -30,6 +29,7 @@ class Servant(User):
 
 class Student(User):
     registration = models.CharField(max_length=20)
+    entry_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"{self.name} - {self.registration}"

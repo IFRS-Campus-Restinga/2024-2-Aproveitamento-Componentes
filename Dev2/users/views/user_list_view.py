@@ -1,8 +1,8 @@
 from django.db.models import Q
 from django.shortcuts import render
 
-from .models.users import Servant
-from .models.users import Student
+from Dev2.users.models.users import Servant
+from Dev2.users.models.users import Student
 
 
 def list_users(request):
@@ -24,7 +24,7 @@ def list_users(request):
         servants_filter &= Q(name__icontains=name)
 
     if is_active is not None:
-        is_active_bool = is_active.lower() == 'true'  # Verifica se é 'true'
+        is_active_bool = is_active.lower() == 'true'
         students_filter &= Q(is_active=is_active_bool)
         servants_filter &= Q(is_active=is_active_bool)
 
