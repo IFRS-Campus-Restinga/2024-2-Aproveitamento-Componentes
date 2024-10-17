@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from Dev2.models import Usuario, Estudante
+from consultas.models import Usuario, Estudante
 from rest_polymorphic.serializers import PolymorphicSerializer
-from django.core.exceptions import ValidationError
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
