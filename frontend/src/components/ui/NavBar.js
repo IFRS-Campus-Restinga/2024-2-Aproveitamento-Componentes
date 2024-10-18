@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import ptBR from 'date-fns/locale/pt-BR';
@@ -8,41 +9,53 @@ import { Menu } from "primereact/menu";
 
 
 
-const NavBar = ({data = false}) => {
-    //const { user } = useAuth();
+const NavBar = ({ data = false }) => {
+  //const { user } = useAuth();
+  const [dropdownMenu, setDropdownMenu] = useState(false);
 
-    const items = [
+  const handleDropdown = () => {
+    setDropdownMenu(!dropdownMenu);
+  }
+
+  const items = [
+    {
+      label: 'Perfil',
+      items: [
         {
-            label: 'Perfil',
-            items: [
-                {
-                    label: 'Solicitações',
-                    icon: 'pi pi-user',
-                    command: () => window.location.href = `/estudante`
-                },
-                {
-                    label: 'Configurações',
-                    icon: 'pi pi-cog',
-                    command: () => window.location.href = `/utilsComponents`
+          label: 'Solicitações',
+          icon: 'pi pi-user',
+          command: () => window.location.href = `/estudante`
+        },
+        {
+          label: 'Configurações',
+          icon: 'pi pi-cog',
+          command: () => window.location.href = `/utilsComponents`
 
-                },
-                {
-                    label: 'Sair',
-                    icon: 'pi pi-sign-out',
-                    command: () => handleUserLogout()
-                }
-            ]
+        },
+        {
+          label: 'Lista de users',
+          icon: 'pi pi-cog',
+          command: () => window.location.href = `/usersList`
+
+        },
+        {
+          label: 'Sair',
+          icon: 'pi pi-sign-out',
+          command: () => handleUserLogout()
         }
-    ];
-    const menuAuth = () => (
-        <>
-            <div className='px-3'>Bem vindo, <b>{'Usuário'}</b></div>
-            <div className='px-2'>
-                <Menu model={items} className='absolute z-50' popupAlignment="right" />
-                <Button label="Sair" icon='p-icon pi pi-fw pi-sign-in' onClick={handleUserLogout} />
-            </div>
-        </>
-    );
+      ]
+    }
+  ];
+  const menuAuth = () => (
+    <>
+      <div className='px-3'>Bem vindo, <b>{'Usuário'}</b></div>
+      <div className='px-2'>
+        <button style={{border: "1px solid grey", padding: "10px", borderRadius: "15px"}} onClick={handleDropdown}>Menu de Agora</button>
+        {dropdownMenu ? <Menu model={items} className='absolute z-50' popupAlignment="right" /> : ''}
+        <Button label="Sair" icon='p-icon pi pi-fw pi-sign-in' onClick={handleUserLogout} />
+      </div>
+    </>
+  );
 
   const menuNotAuth = () => (
     <>
@@ -72,32 +85,32 @@ const NavBar = ({data = false}) => {
           />
         </Link>
 
-                <div className='flex items-center justify-around text-white'>
-                    {data ? menuAuth() : menuNotAuth()}
-                </div>
-            </div>
-            <style jsx>{`
-                .suggestions-container {
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    background-color: white;
-                    border: 1px solid #ccc;
-                    border-top: none;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    z-index: 1000;
-                    width: 100%;
-                }
-                .suggestion-item {
-                    padding: 10px;
-                    cursor: pointer;
-                }
-                .suggestion-item:hover {
-                    background-color: #f0f0f0;
-                }
-            `}</style>
+        <div className='flex items-center justify-around text-white'>
+          {data ? menuAuth() : menuNotAuth()}
         </div>
-    );
+      </div>
+      <style jsx>{`
+                  .suggestions-container {
+                      position: absolute;
+                      top: 100%;
+                      left: 0;
+                      background-color: white;
+                      border: 1px solid #ccc;
+                      border-top: none;
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                      z-index: 1000;
+                      width: 100%;
+                  }
+                  .suggestion-item {
+                      padding: 10px;
+                      cursor: pointer;
+                  }
+                  .suggestion-item:hover {
+                      background-color: #f0f0f0;
+                  }
+              `}</style>
+    </div>
+  );
 }
 
 export default NavBar;

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { handleApiResponse } from './apiResponseHandler';
 
 export const baseURL = 'http://localhost:8000';
 
@@ -12,7 +13,7 @@ apiClient.interceptors.request.use((config) => {
         const token = 'localStorage' in self && localStorage.getItem('token') || null;
         if (token) {
             config.headers.Authorization = `Token ${token}`;
-        }
+        } 
     } catch (error) {
         // OK to ignore
     }

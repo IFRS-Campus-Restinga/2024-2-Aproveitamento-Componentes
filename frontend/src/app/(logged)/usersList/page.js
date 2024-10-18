@@ -11,15 +11,46 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Filter from "@/components/FilterField/filterField";
+import FilterCheckbox from "@/components/FilterCheckbox/filterCheckbox";
+import { useUserFilters } from "@/hooks/useUserFilters";
 
 const UsersList = () => {
-  const [search, setSearch] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState(null);
-  const [selectedAdmission, setSelectedAdmission] = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [filteredUsers, setFilteredUsers] = useState(initialUsers);
   const [users, setUsers] = useState(initialUsers);
+  const [filteredUsers, setFilteredUsers] = useState(users);
   const [editingUser, setEditingUser] = useState(null);
+
+  const {
+    search,
+    setSearch,
+    showActive,
+    setShowActive,
+    showInactive,
+    setShowInactive,
+    selectedCourse,
+    setSelectedCourse,
+    selectedAdmission,
+    setSelectedAdmission,
+    selectedRole,
+    setSelectedRole,
+    applyFilters,
+  } = useUserFilters(users, setFilteredUsers);
+
+  const deleteUser = (email) => {
+    const updatedUsers = users.filter((user) => user.Email !== email);
+    setUsers(updatedUsers);
+    setFilteredUsers(updatedUsers);
+  };
+
+  const handleEdit = (user) => setEditingUser(user);
+
+  const saveEdit = (updatedUser) => {
+    const updatedUsers = users.map((user) =>
+      user.Id === updatedUser.Id ? updatedUser : user
+    );
+    setUsers(updatedUsers);
+    setFilteredUsers(updatedUsers);
+    setEditingUser(null);
+  };
 
   const coursesArray = Object.entries(courses).map(([key, value]) => ({
     id: key,
@@ -34,51 +65,6 @@ const UsersList = () => {
     title: value,
   }));
 
-  const applyFilters = () => {
-    let result = users;
-
-    if (search) {
-      result = result.filter((user) =>
-        user.Name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    if (selectedCourse) {
-      result = result.filter((user) => user.Course === selectedCourse.title);
-    }
-
-    if (selectedAdmission) {
-      result = result.filter(
-        (user) => user.Admission === selectedAdmission.title
-      );
-    }
-
-    if (selectedRole) {
-      result = result.filter((user) => user.Role === selectedRole.title);
-    }
-
-    setFilteredUsers(result);
-  };
-
-  const deleteUser = (id) => {
-    const updatedUsers = users.filter((user) => user.Id !== id);
-    setUsers(updatedUsers);
-    setFilteredUsers(updatedUsers);
-  };
-
-  const handleEdit = (user) => {
-    setEditingUser(user);
-  };
-
-  const saveEdit = (updatedUser) => {
-    const updatedUsers = users.map((user) =>
-      user.Id === updatedUser.Id ? updatedUser : user
-    );
-    setUsers(updatedUsers);
-    setFilteredUsers(updatedUsers);
-    setEditingUser(null);
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -89,7 +75,7 @@ const UsersList = () => {
             type="text"
             value={search}
             placeholder="Buscar nome..."
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
           />
           <Filter
             optionList={coursesArray}
@@ -97,14 +83,24 @@ const UsersList = () => {
             onChange={(event, value) => setSelectedCourse(value)}
           />
           <Filter
+            optionList={rolesArray}
+            label="Cargo"
+            onChange={(event, value) => setSelectedRole(value)}
+          />
+          <Filter
             optionList={admissionsArray}
             label="Ingresso"
             onChange={(event, value) => setSelectedAdmission(value)}
           />
-          <Filter
-            optionList={rolesArray}
-            label="Cargo"
-            onChange={(event, value) => setSelectedRole(value)}
+          <FilterCheckbox
+            label={"Ativo"}
+            checked={showActive}
+            onChange={() => setShowActive(!showActive)}
+          />
+          <FilterCheckbox
+            label={"Inativo"}
+            checked={showInactive}
+            onChange={() => setShowInactive(!showInactive)}
           />
           <Btn color="#46b5ff" onClick={applyFilters}>
             Filtrar
@@ -143,7 +139,7 @@ const UsersList = () => {
                     <FontAwesomeIcon
                       icon={faTrash}
                       style={{ cursor: "pointer" }}
-                      onClick={() => deleteUser(index)}
+                      onClick={() => deleteUser(user.Email)}
                     />
                   </td>
                 </tr>
