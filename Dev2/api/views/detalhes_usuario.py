@@ -1,7 +1,8 @@
-from Dev2.serializer.usuario import UsuarioPolymorphicSerializer
-from .custom_api_view import CustomAPIView
 from rest_framework.response import Response
-from consultas.models import Usuario
+
+from api.serializer.usuario import UsuarioPolymorphicSerializer
+from users.models import Usuario
+from .custom_api_view import CustomAPIView
 
 
 class DetalhesUsuario(CustomAPIView):
@@ -15,4 +16,3 @@ class DetalhesUsuario(CustomAPIView):
             return Response(serializer.data)
         except:
             return Response(False)
-                    

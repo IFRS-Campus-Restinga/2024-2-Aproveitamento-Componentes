@@ -1,6 +1,8 @@
 from django.contrib import admin
-from django.urls import path, include
-from Dev2.views import GoogleAuthView, GoogleAuthCallbackView, DetalhesUsuario
+from django.urls import path
+
+from api.views import GoogleAuthView, GoogleAuthCallbackView, DetalhesUsuario
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth-google', GoogleAuthView.as_view(), name='auth_google'),

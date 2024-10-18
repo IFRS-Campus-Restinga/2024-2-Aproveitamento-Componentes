@@ -27,9 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'consultas.apps.ConsultasConfig',
     'rest_framework.authtoken',
-    'Dev2',
+    'users',
     'corsheaders'
 ]
 
@@ -44,7 +43,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-ROOT_URLCONF = 'Dev2.urls'
+ROOT_URLCONF = 'api.urls'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", 
 ]
@@ -66,7 +65,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Dev2.wsgi.application'
+WSGI_APPLICATION = 'api.wsgi.application'
 
 
 # Database
@@ -142,7 +141,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
-    'EXCEPTION_HANDLER': 'Dev2.utils.custom_exception_handler.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'api.utils.custom_exception_handler.custom_exception_handler',
 }
 
 if DEBUG:
