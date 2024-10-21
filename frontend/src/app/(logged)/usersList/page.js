@@ -13,11 +13,14 @@ import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Filter from "@/components/FilterField/filterField";
 import FilterCheckbox from "@/components/FilterCheckbox/filterCheckbox";
 import { useUserFilters } from "@/hooks/useUserFilters";
+import GetUsers from "@/services/UserService";
 
 const UsersList = () => {
   const [users, setUsers] = useState(initialUsers);
   const [filteredUsers, setFilteredUsers] = useState(users);
   const [editingUser, setEditingUser] = useState(null);
+
+  const usersData = GetUsers();
 
   const {
     search,
