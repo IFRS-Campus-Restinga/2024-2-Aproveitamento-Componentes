@@ -1,6 +1,6 @@
-from . import Usuario
+from . import AbstractUser
 
-class Estudante(Usuario):
+class Student(AbstractUser):
 
     class Meta:
         abstract = False

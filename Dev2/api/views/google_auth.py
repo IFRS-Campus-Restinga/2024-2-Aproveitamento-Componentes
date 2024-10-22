@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 
 from api.services import GoogleAuthService
-from users.models import Estudante
+from users.models import Student
 from .. import settings
 
 

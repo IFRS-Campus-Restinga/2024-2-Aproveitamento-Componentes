@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import AuthService from "@/services/AuthService";
 
 export default function GetUsers() {
+  console.log("aqui")
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -9,8 +11,12 @@ export default function GetUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/users/list");
+        const response = await AuthService.userList();
+        console.log(response);
+
         setUsers(response.data);
+        console.log(users);
+
       } catch (err) {
         setError("Error fetching users");
       } finally {

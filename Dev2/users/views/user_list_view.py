@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Q
-from ..models.users import Servant, Student
+from ..models.student import Student
+from ..models.servant import Servant
 from ..serializers.UsersSerializer import ServantSerializer, StudentSerializer
 
 
