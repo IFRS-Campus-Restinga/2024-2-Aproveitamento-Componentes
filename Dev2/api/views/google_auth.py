@@ -27,16 +27,18 @@ class GoogleAuthCallbackView(APIView):
     def get(self, request):
         try:
             user_info = self.googleAuthService.request_callback(request)
-            user = User.objects.filter(username=user_info['id']).first()
+            user = User.objects.filter(username = user_info['id']).first()
             encoded_data = b64encode(json.dumps(user_info).encode()).decode('utf-8')
 
             if user is None:
-                user = User.objects.create_user(username=user_info['id'], email=user_info['email'], password=None)
+                user = User.objects.create_user(username = user_info['id'], email = user_info['email'],first_name = user_info['name'], password = None)
                 user.save()
                 estu = Student.objects.create(
-                    user=user,
-                    nome=user_info['name'],
-                    email=user_info['email']
+                    user = user,
+                    name = user_info['name'],
+                    email = user_info['email'],
+                    course = "ADS",
+                    matricula = "0099900001"
                 )
                 print(estu)
                 

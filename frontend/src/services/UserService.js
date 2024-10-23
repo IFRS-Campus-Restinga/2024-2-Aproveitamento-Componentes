@@ -15,7 +15,6 @@ export default function GetUsers() {
         console.log(response);
 
         setUsers(response.data);
-        console.log(users);
 
       } catch (err) {
         setError("Error fetching users");

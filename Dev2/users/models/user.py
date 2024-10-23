@@ -6,9 +6,9 @@ from ..enum.user_type_enum import UserTypeEnum
 class AbstractUser(PolymorphicModel):
 
     user = models.OneToOneField(User, related_name="perfil", on_delete=models.CASCADE)
-    nome = models.CharField(verbose_name="Nome", max_length=255)
+    name = models.CharField(verbose_name="Nome", max_length=255)
     email = models.EmailField(max_length = 254)
-    dataCadastro = models.DateTimeField(auto_now_add=True)
+    DateIn = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     @property
