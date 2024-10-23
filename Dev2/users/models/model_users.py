@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from .enums import UserTypeEnum
+from ..enum.user_type_enum import UserTypeEnum
 
 
 class User(models.Model):

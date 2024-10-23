@@ -11,6 +11,7 @@ backend
 ```sh
 pip install -r requirements.txt
 py manage.py makemigrations
+py manage.py makemigrations users
 py manage.py migrate
 py manage.py shell < script.py
 ```

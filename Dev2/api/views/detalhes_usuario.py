@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 
-from Dev2.api.serializer.usuario import UsuarioPolymorphicSerializer
-from Dev2.users.models import AbstractUser
+from users.serializers.UsersSerializer import UserPolymorphicSerializer
+from users.models import AbstractUser
 from .custom_api_view import CustomAPIView
 
 
@@ -12,7 +12,7 @@ class DetalhesUsuario(CustomAPIView):
         try:
             usuario = AbstractUser.objects.get(user=request.user)
             print(usuario)
-            serializer = UsuarioPolymorphicSerializer(usuario)
+            serializer = UserPolymorphicSerializer(usuario)
             return Response(serializer.data)
         except:
             return Response(False)

@@ -1,4 +1,4 @@
-from .abstract_user import AbstractUser
+from .user import AbstractUser
 
 class Servant(AbstractUser):
 

@@ -3,11 +3,14 @@ from rest_framework.response import Response
 from django.db.models import Q
 from ..models.student import Student
 from ..models.servant import Servant
-from ..serializers.UsersSerializer import ServantSerializer, StudentSerializer
+from ..serializers.UsersSerializer import StudentSerializer
+from api.views.custom_api_view import CustomAPIView
+from users.models.user import AbstractUser
+from ..serializers.UsersSerializer import UserPolymorphicSerializer
 
 
-class ListUsersAPIView(APIView):
-
+class ListUsersAPIView(CustomAPIView):
+ """
     def get(self, request, *args, **kwargs):
         user_type = request.GET.get('user_type')
         name = request.GET.get('name')
@@ -44,5 +47,11 @@ class ListUsersAPIView(APIView):
 
         # Unindo os dois conjuntos de dados
         users = students_serialized.data + servants_serialized.data
-
-        return Response({'users': users})
+ """
+ def get(self, request, format=None):
+        """
+        Retorna uma lista de todos os usuários.
+        """
+        usuario = AbstractUser.objects.all()
+        serializer = UserPolymorphicSerializer(usuario, many=True)
+        return Response(serializer.data)

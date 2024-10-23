@@ -1,13 +1,16 @@
 from django.contrib.auth.models import User
 from users.models import Student
 superuser = User.objects.create_superuser("admin", "admin@admin.com", "123")
-Student.objects.create(
-    user=User.objects.create_user(username='aa', email='bbbb@hotmail.com', password=None),
+
+student1 = User.objects.create_user(username='murilo', email='murilo@hotmail.com', password=None)
+murilo = Student.objects.create(
+    user= student1,
     nome='murilo',
-    email='bbbb@hotmail.com'
+    email='murilo@hotmail.com'
 )
-Student.objects.create(
-    user=User.objects.create_user(username='nnnn', email='nnnnn@hotmail.com', password=None),
+stundent2 = User.objects.create_user(username='eduador', email='eduador@hotmail.com', password=None)
+eduador = Student.objects.create(
+    user= stundent2,
     nome='eduardo',
-    email='nnnn@hotmail.com'
+    email='eduardo@hotmail.com'
 )

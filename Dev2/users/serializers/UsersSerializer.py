@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from ..models import Servant, Student
-from..models.enums import UserTypeEnum
+from ..models import Student
+from rest_polymorphic.serializers import PolymorphicSerializer
+from ..models import AbstractUser
 
-
+"""
 class UserTypeField(serializers.Field):
     def to_representation(self, value):
         return value  # Retorna o valor do enum
@@ -25,3 +26,37 @@ class ServantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Servant
         fields = ['id', 'name', 'email', 'is_active', 'siape', 'user_type']
+
+ """
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer para o modelo Usuario.
+
+    Atributos:
+        tipo (CharField): Tipo de usuário.
+    """
+    tipo = serializers.CharField(source='tipoString', read_only=True)
+
+    class Meta:
+        model = AbstractUser
+        fields = '__all__'
+
+class StudentSerializer(UserSerializer):
+    """
+    Serializer para o modelo Estudante.
+    """
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+class UserPolymorphicSerializer(PolymorphicSerializer):
+    """
+    Serializer polimórfico para os modelos de usuário.
+    """
+    model_serializer_mapping = {
+        AbstractUser: UserSerializer,
+        Student: StudentSerializer,
+    }
+
+
+

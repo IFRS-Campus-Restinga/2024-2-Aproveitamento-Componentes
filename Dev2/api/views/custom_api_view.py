@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 
-from Dev2.api.utils.custom_exception_handler import custom_exception_handler
+from api.utils.custom_exception_handler import custom_exception_handler
 
 
 class CustomAPIView(APIView):
