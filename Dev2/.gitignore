@@ -153,3 +153,31 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Ignorar migrações do Django (adicionar apenas se não quiser rastrear as migrações)
+dev2/disciplines/migrations/
+dev2/forms/migrations/
+dev2/users/migrations/
+
+# Ignorar banco de dados SQLite (se estiver usando)
+db.sqlite3
+
+# Ignorar ambientes virtuais
+.venv/
+venv/
+
+# Ignorar arquivos de configuração da IDE (PyCharm)
+.idea/
+
+# Ignorar caches de Python
+__pycache__/
+*.pyc
+
+# Ignorar arquivos de log do Django
+*.log
+
+# Ignorar arquivos de configuração específicos que não precisam ser rastreados
+local_settings.py
+
+# Ignorar arquivos temporários de sistema e editor
+*~
