@@ -8,10 +8,6 @@ async function userList() {
     return apiClient.get('/users/list').then((response) => response.data);
 }
 
-async function userList() {
-    return apiClient.get('/users/list/').then((response) => response.data);
-}
-
 export default {
     detalhesUsuario,
     userList
