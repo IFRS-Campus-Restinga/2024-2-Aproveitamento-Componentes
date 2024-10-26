@@ -10,7 +10,8 @@ import { Menu } from "primereact/menu";
 
 
 const NavBar = ({ data = false }) => {
-  //const { user } = useAuth();
+  const { user } = useAuth();
+  const isUserAuth = !!user || false;
   const [dropdownMenu, setDropdownMenu] = useState(false);
 
   const handleDropdown = () => {
@@ -24,7 +25,7 @@ const NavBar = ({ data = false }) => {
         {
           label: 'Solicitações',
           icon: 'pi pi-user',
-          command: () => window.location.href = `/estudante`
+          command: () => window.location.href = `/perfil`
         },
         {
           label: 'Configurações',
@@ -48,7 +49,7 @@ const NavBar = ({ data = false }) => {
   ];
   const menuAuth = () => (
     <>
-      <div className='px-3'>Bem vindo, <b>{'Usuário'}</b></div>
+      <div className='px-3'>Bem vindo, <b>{user?.name || 'Usuário'}</b></div>
       <div className='px-2'>
         <button style={{border: "1px solid grey", padding: "10px", borderRadius: "15px"}} onClick={handleDropdown}>Menu de Agora</button>
         {dropdownMenu ? <Menu model={items} className='absolute z-50' popupAlignment="right" /> : ''}
@@ -86,7 +87,7 @@ const NavBar = ({ data = false }) => {
         </Link>
 
         <div className='flex items-center justify-around text-white'>
-          {data ? menuAuth() : menuNotAuth()}
+          {isUserAuth ? menuAuth() : menuNotAuth()}
         </div>
       </div>
       <style jsx>{`

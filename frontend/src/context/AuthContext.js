@@ -16,13 +16,16 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = React.useState(null);
-
-    const router = useRouter();
+    const [loading, setLoading] = React.useState(false);
+    const pathname = usePathname();
 
     React.useEffect(() => {
         const fetchUsuario = async () => {
             const accessToken = localStorage.getItem('token');
-            console.log(accessToken);
+            if (!accessToken && pathname == '/auth') {
+                return;
+            }
+
             if (!accessToken) {
                 window.location.href = '/auth';
                 return;
@@ -32,23 +35,24 @@ export const AuthProvider = ({ children }) => {
                 const data = await AuthService.detalhesUsuario();
                 console.log(data);
                 setUser(data);
-
             } catch (error) {
                 setUser(null);
                 localStorage.removeItem('token');
-
+                if (pathname !== '/auth') {
+                    window.location.href = '/auth';
+                }
                 console.error(error);
             }
         }
 
-
+        fetchUsuario();
     }, []);
 
     const value = {
         user,
     };
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }
 
 export const handleUserLogout = async () => {
