@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import Student
+from ..models import Student, Servant
 from rest_polymorphic.serializers import PolymorphicSerializer
 from ..models import AbstractUser
 
@@ -49,6 +49,14 @@ class StudentSerializer(UserSerializer):
         model = Student
         fields = '__all__'
 
+class ServantSerializer(UserSerializer):
+    """
+    Serializer para o modelo Servidor.
+    """
+    class Meta:
+        model = Servant
+        fields = '__all__'
+
 class UserPolymorphicSerializer(PolymorphicSerializer):
     """
     Serializer polimórfico para os modelos de usuário.
@@ -56,6 +64,7 @@ class UserPolymorphicSerializer(PolymorphicSerializer):
     model_serializer_mapping = {
         AbstractUser: UserSerializer,
         Student: StudentSerializer,
+        Servant: ServantSerializer
     }
 
 

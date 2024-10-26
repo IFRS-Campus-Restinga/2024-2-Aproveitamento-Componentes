@@ -2,16 +2,19 @@ from enum import Enum
 
 
 USER_TYPES = {
-    'Student': 'Estudante',
-    'Servant': 'Servidor'
+    'Professor': 'Professor',
+    'Ensino': 'Ensino',
+    'Coordenador': 'Coordenador'
 }
 
-class UserTypeEnum(Enum):
-    STUDENT = 'Student'
-    SERVANT = 'Servant'
+class ServantTypeEnum(Enum):
+    TEACHER = 'Professor'
+    ENSINO = 'Ensino'
+    COORDINATOR = 'Coordenador'
 
 
     def getTipoString(self):
+        print(self.value)
         if self.value not in USER_TYPES:
             raise Exception('Tipo de usuário não mapeado!')
         return USER_TYPES[self.value]
