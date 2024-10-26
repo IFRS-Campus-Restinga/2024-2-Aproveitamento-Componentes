@@ -4,8 +4,6 @@ from .models import RecognitionOfPriorLearning, KnowledgeCertification, Step
 from .serializers import (
     RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer, StepSerializer
 )
-
-
 # View para listar e criar Steps
 class StepListCreateView(generics.ListCreateAPIView):
     queryset = Step.objects.all()
