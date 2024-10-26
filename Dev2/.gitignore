@@ -181,3 +181,4 @@ local_settings.py
 
 # Ignorar arquivos temporários de sistema e editor
 *~
+banco.sqlite3
