@@ -1,3 +1,3 @@
-from .usuario import *
+from .servant import *
 from .student import *
-from .users import Student, Servant
+from .user import *
