@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import styles from "./profile.module.css";
+import styles from "./professor.module.css";
 import { Button } from "@/components/Button/button";
 
 const ProfessorPage = () => {
