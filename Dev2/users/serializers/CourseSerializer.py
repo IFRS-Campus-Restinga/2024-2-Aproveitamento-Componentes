@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .DisciplineSerializer import DisciplineSerializer
 from ..models import Course
 
+
 class CourseSerializer(serializers.ModelSerializer):
     disciplines = DisciplineSerializer(many=True, read_only=True)
     professors = serializers.ListField(
