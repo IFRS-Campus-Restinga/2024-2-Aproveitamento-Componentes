@@ -1,10 +1,16 @@
 from django.urls import path
-from .views import DisciplineList, DisciplineCreate, DisciplineRead, DisciplineUpdate, DisciplineDelete
+from .views import (
+    discipline_list,
+    discipline_create,
+    discipline_read,
+    discipline_update,
+    discipline_delete,
+)
 
 urlpatterns = [
-    path('disciplines/', DisciplineList.as_view(), name='discipline_list'),  # Listar disciplinas
-    path('disciplines/create/', DisciplineCreate.as_view(), name='discipline_create'),  # Criar nova disciplina
-    path('disciplines/<uuid:pk>/', DisciplineRead.as_view(), name='discipline_read'),  # Ler disciplina
-    path('disciplines/<uuid:pk>/update/', DisciplineUpdate.as_view(), name='discipline_update'),  # Atualizar disciplina
-    path('disciplines/<uuid:pk>/delete/', DisciplineDelete.as_view(), name='discipline_delete'),  # Excluir disciplina
+    path('', discipline_list, name='discipline_list'),  # Listar disciplinas
+    path('create/', discipline_create, name='discipline_create'),  # Criar nova disciplina
+    path('<uuid:pk>/', discipline_read, name='discipline_read'),  # Ler disciplina
+    path('<uuid:pk>/update/', discipline_update, name='discipline_update'),  # Atualizar disciplina
+    path('<uuid:pk>/delete/', discipline_delete, name='discipline_delete'),  # Excluir disciplina
 ]
