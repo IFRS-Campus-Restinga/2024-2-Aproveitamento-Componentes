@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from ..models import Servant, Student
-from..models.enums import UserTypeEnum
+from ..models.enums import UserTypeEnum
 
 
 class UserTypeField(serializers.Field):
@@ -12,6 +12,7 @@ class UserTypeField(serializers.Field):
             return UserTypeEnum(data)
         except ValueError:
             raise serializers.ValidationError(f"Invalid user type: {data}")
+
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
