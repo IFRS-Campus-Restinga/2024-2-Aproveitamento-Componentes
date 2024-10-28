@@ -11,12 +11,12 @@
 
 /* Style for each form field */
 .formField {
-    display: flex;
+
     align-items: center; /* Vertically align label and input */
     justify-content: center; /* Centers label and input horizontally */
     width: 600px; /* Adjust as needed */
     margin-bottom: 16px; /* Spacing between fields */
-    margin-right: 5%; /* Space between label and input */
+    margin-right: 2% /* Space between label and input */
 
 }
 
