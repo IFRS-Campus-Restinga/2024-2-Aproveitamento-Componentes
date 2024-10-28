@@ -14,6 +14,7 @@ import Filter from "@/components/FilterField/filterField";
 import FilterCheckbox from "@/components/FilterCheckbox/filterCheckbox";
 import { useUserFilters } from "@/hooks/useUserFilters";
 import GetUsers from "@/services/UserService";
+import UserList from "@/services/UserService";
 
 const UsersList = () => {
   const [users, setUsers] = useState(initialUsers);
