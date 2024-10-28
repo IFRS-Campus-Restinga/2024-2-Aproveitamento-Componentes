@@ -1,2 +1,2 @@
 from .google_auth import *
-from .detalhes_usuario import *
+from .user_details import *

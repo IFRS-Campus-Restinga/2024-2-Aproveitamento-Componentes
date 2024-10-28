@@ -1,12 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db.models import Q
 from ..models.student import Student
 from ..models.servant import Servant
-from ..serializers.UsersSerializer import StudentSerializer
 from api.views.custom_api_view import CustomAPIView
 from users.models.user import AbstractUser
-from ..serializers.UsersSerializer import UserPolymorphicSerializer
+from ..serializers.user import UserPolymorphicSerializer
 
 
 class ListUsersAPIView(APIView):

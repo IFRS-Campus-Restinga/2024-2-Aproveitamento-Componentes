@@ -11,7 +11,7 @@ class UserTypeEnum(Enum):
     SERVANT = 'Servant'
 
 
-    def getTipoString(self):
+    def getTypeString(self):
         if self.value not in USER_TYPES:
             raise Exception('Tipo de usuário não mapeado!')
         return USER_TYPES[self.value]

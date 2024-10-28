@@ -19,7 +19,7 @@ const AuthPage = () => {
         const data = params.get('data');
         localStorage.setItem('token', token);
         localStorage.setItem('data', data);
-        window.location.href = ('/perfil');
+        window.location.href = ('/profile');
     }
 
     React.useEffect(() => {

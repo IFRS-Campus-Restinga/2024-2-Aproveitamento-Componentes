@@ -1,10 +1,12 @@
 'use client'
 import { useAuth } from "@/context/AuthContext";
-import styles from "./perfil.module.css";
+import styles from "./profile.module.css";
+import { Button } from 'primereact/button';
 
-const perfilPage = () => {
+
+const profilePage = () => {
   const { user } = useAuth();
-  const isStudent = user?.tipo === 'Estudante';
+  const isStudent = user?.type === 'Estudante';
 
   return (
     <div className={styles.container}>
@@ -13,7 +15,7 @@ const perfilPage = () => {
           <h2>Informações do Usuário</h2>
           <p><strong>Nome:</strong> {user?.name}</p>
           <p><strong>Email:</strong> {user?.email}</p>
-          <p><strong>Tipo:</strong> {user?.tipo}</p>
+          <p><strong>Tipo:</strong> {user?.type}</p>
           {isStudent ? (
             <>
               <p><strong>Matrícula:</strong> {user?.matricula}</p>
@@ -28,10 +30,13 @@ const perfilPage = () => {
         </div>
       </div>
       <div className={styles.right}>
-        <button>Botão</button>
+        <Button className={styles.Button} label="Alterar dados" onClick={() => window.location.href = `/register`} />
+        <Button className={styles.Button} label="Alterar dados" onClick={() => window.location.href = `/register`} />
+        <Button className={styles.Button} label="Alterar dados" onClick={() => window.location.href = `/register`} />
+
       </div>
     </div>
   );
 };
 
-export default perfilPage;
+export default profilePage;

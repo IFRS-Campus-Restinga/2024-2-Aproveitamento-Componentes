@@ -23,9 +23,9 @@ const NavBar = ({ data = false }) => {
       label: 'Perfil',
       items: [
         {
-          label: 'Solicitações',
+          label: 'Perfil',
           icon: 'pi pi-user',
-          command: () => window.location.href = `/perfil`
+          command: () => window.location.href = `/profile`
         },
         {
           label: 'Configurações',

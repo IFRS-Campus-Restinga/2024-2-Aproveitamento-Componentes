@@ -14,3 +14,11 @@
 .userInfo {
     text-align: center;
 }
+
+.Button {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-right: 3%;
+}

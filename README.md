@@ -14,6 +14,7 @@ py manage.py makemigrations
 Se a pasta migrations não foi criada em users, usar > py manage.py makemigrations users
 py manage.py migrate
 py manage.py shell < script.py
+coloque o arquivo env_settings.py em Dev2/api
 ```
 ```sh
 py manage.py runserver
