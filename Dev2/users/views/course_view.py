@@ -101,6 +101,7 @@ class UpdateCourseAPIView(APIView):
         # Caso os dados não sejam válidos, retorna os erros de validação
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class DeleteCourseAPIView(APIView):
 
     def delete(self, request, course_id, *args, **kwargs):
