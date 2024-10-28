@@ -3,16 +3,18 @@ import { useRouter } from "next/navigation";
 import styles from "./profile.module.css";
 import { Button } from "@/components/Button/button";
 
-const ProfessorPage = () => {
+const StudentPage = () => {
   const router = useRouter();
 
   return (
     <div className={styles.contentWrapper}>
       <div className={styles.profileOptions}>
-        <Button onClick={() => router.push("/requests")}>Solicitações</Button>
+        <Button onClick={() => router.push("/requests/requestForm")}>
+          Realizar Solicitação
+        </Button>
       </div>
     </div>
   );
 };
 
-export default ProfessorPage;
+export default StudentPage;
