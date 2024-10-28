@@ -57,3 +57,46 @@ class CreateCourseAPIView(APIView):
 
         # Caso os dados não sejam válidos, retorna os erros de validação
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RetrieveCourseAPIView(APIView):
+
+    def get(self, request, course_id, *args, **kwargs):
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Serializa o curso encontrado
+        serializer = CourseSerializer(course)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UpdateCourseAPIView(APIView):
+
+    def put(self, request, course_id, *args, **kwargs):
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Serializa e valida os dados atualizados
+        serializer = CourseSerializer(course, data=request.data, partial=False)
+
+        if serializer.is_valid():
+            # Atualiza o curso com os novos dados
+            course = serializer.save()
+
+            # Atualiza as disciplinas se elas forem fornecidas no request
+            disciplines_data = request.data.get('disciplines')
+            if disciplines_data:
+                # Busca as disciplinas pelo ID fornecido
+                disciplines = Discipline.objects.filter(id__in=[d['id'] for d in disciplines_data])
+                course.disciplines.set(disciplines)
+
+            # Serializa e retorna os dados do curso atualizado
+            course_serialized = CourseSerializer(course)
+            return Response(course_serialized.data, status=status.HTTP_200_OK)
+
+        # Caso os dados não sejam válidos, retorna os erros de validação
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
