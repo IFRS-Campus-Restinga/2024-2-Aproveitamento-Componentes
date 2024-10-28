@@ -153,3 +153,5 @@ dmypy.json
 cython_debug/
 migrations/
 
+# Google
+Dev2/api/env_settings.py
