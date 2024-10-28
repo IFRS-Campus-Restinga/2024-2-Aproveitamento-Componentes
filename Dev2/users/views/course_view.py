@@ -100,3 +100,17 @@ class UpdateCourseAPIView(APIView):
 
         # Caso os dados não sejam válidos, retorna os erros de validação
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteCourseAPIView(APIView):
+
+    def delete(self, request, course_id, *args, **kwargs):
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Deleta o curso encontrado
+        course.delete()
+
+        # Retorna uma resposta de sucesso
+        return Response({"message": "Course deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
