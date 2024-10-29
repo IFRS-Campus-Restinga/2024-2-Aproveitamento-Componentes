@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./modal.module.css";
-import { Button } from "../Button/button";
+import { Button } from "../../Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { disciplines as initialDisciplines } from "@/mocks/dataMocks";

@@ -3,7 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import styles from "./profile.module.css";
 import { Button } from "@/components/Button/button";
 import { useState } from "react";
-import ModalDisciplineRegistration from "@/components/Modal/modal";
+import ModalDisciplineRegistration from "@/components/Modal/ModalDiscipline/modal";
 
 const UserProfile = () => {
   const location = usePathname();
