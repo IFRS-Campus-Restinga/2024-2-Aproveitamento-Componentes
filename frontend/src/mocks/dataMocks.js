@@ -1,3 +1,29 @@
+const disciplines = [
+  {
+    Name: "Testes",
+  },
+  {
+    Name: "Dev2",
+  },
+  {
+    Name: "Segurança",
+  },
+];
+const requests = [
+  {
+    Course: "Ads",
+    Name: "Eduardo",
+    Type: "Certificação de Conhecimento",
+    Status: "Indeferido",
+  },
+  {
+    Course: "Letras",
+    Name: "Bob",
+    Type: "Aproveitamento de Estudos",
+    Status: "Deferido",
+  },
+];
+
 const courses = {
   Ads: "Análise e Desenvolvimento de Sistemas",
   Letras: "Letras",
@@ -110,4 +136,4 @@ const users = [
   },
 ];
 
-export { users, courses, admissions, roles };
+export { users, courses, admissions, roles, requests, disciplines };

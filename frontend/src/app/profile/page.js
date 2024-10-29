@@ -2,10 +2,13 @@
 import { useAuth } from "@/context/AuthContext";
 import styles from "./profile.module.css";
 import { Button } from 'primereact/button';
+import ModalDisciplineRegistration from "@/components/Modal/modal";
+import { useState } from "react";
 
 
 const profilePage = () => {
   const { user } = useAuth();
+  const [modal, setModal] = useState(false);
   const isStudent = user?.type === 'Estudante';
 
   return (
@@ -36,8 +39,11 @@ const profilePage = () => {
           </>
         )}
         <Button className={styles.Button} label="Alterar dados" onClick={() => window.location.href = `/register`} />
-
+        <Button className={styles.Button} label="Solicitações" onClick={() => window.location.href = `/requests`} />
+        <Button className={styles.Button} label="Formulário de solicitação" onClick={() => window.location.href = `/requests/requestForm`} />
+        <Button onClick={() => setModal(true)}>Cadastrar Disciplina</Button>
       </div>
+      {modal && <ModalDisciplineRegistration onClose={() => setModal(false)} />}
     </div>
   );
 };
