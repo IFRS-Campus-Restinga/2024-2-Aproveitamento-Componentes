@@ -19,14 +19,16 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
 
 class RequisitionFormSerializer(serializers.ModelSerializer):
-    user = StudentSerializer()
+    # user = StudentSerializer()
     discipline = DisciplinesSerializer()
     step = StepSerializer()
     attachments = AttachmentSerializer(many=True, read_only=True)
 
     class Meta:
         fields = [
-            'id', 'step', 'student', 'discipline', 'create_date', 'status',
+            'id', 'step',
+            # 'student',
+            'discipline', 'create_date', 'status',
             'servant_feedback', 'servant_analysis_date',
             'professor_feedback', 'professor_analysis_date',
             'coordinator_feedback', 'coordinator_analysis_date', 'attachments'
@@ -36,13 +38,29 @@ class RecognitionOfPriorLearningSerializer(RequisitionFormSerializer):
     class Meta(RequisitionFormSerializer.Meta):
         model = RecognitionOfPriorLearning
         fields = RequisitionFormSerializer.Meta.fields + [
-            'course_workload', 'test_score', 'course_studied_workload'
+            'course_workload', 'course_studied_workload', 'notice_id', 'discipline_id'
         ]
+
+    # def validate(self, attrs):
+    #     # Adicione validações personalizadas aqui
+    #     if 'course_workload' not in attrs:
+    #         raise serializers.ValidationError("O campo 'course_workload' é obrigatório.")
+    #     if 'notice' not in attrs:
+    #         raise serializers.ValidationError("O campo 'notice' é obrigatório.")
+    #     return attrs
 
 
 class KnowledgeCertificationSerializer(RequisitionFormSerializer):
     class Meta(RequisitionFormSerializer.Meta):
         model = KnowledgeCertification
         fields = RequisitionFormSerializer.Meta.fields + [
-            'previous_knowledge', 'scheduling_date', 'test_score'
+            'previous_knowledge', 'notice_id', 'discipline_id'
         ]
+
+    # def validate(self, attrs):
+    #     # Adicione validações personalizadas aqui
+    #     if 'previous_knowledge' not in attrs:
+    #         raise serializers.ValidationError("O campo 'previous_knowledge' é obrigatório.")
+    #     if 'notice' not in attrs:
+    #         raise serializers.ValidationError("O campo 'notice' é obrigatório.")
+    #     return attrs
