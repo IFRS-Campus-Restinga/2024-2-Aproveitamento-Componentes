@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'users',
     'forms',
     'disciplines',
+    'notices',
     'corsheaders',
     'polymorphic'
 ]
