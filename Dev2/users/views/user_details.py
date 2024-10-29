@@ -1,8 +1,6 @@
 from rest_framework.response import Response
-
 from users.serializers.user import UserPolymorphicSerializer
 from users.models import AbstractUser
-from .custom_api_view import CustomAPIView
 from rest_framework.views import APIView
 
 

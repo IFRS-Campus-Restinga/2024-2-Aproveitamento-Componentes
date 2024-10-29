@@ -72,10 +72,15 @@ const UsersList = () => {
     title: role,
   }));
 
-  const deleteUser = (id) => {
-    const updatedUsers = users.filter((user) => user.id !== id);
+  const alterActivity = async (email) => {
+    let response = await AuthService.AlterActivity(email);
+    if (response.status !== 201) return;
+    const updatedUsers = users.map((user) =>
+      user.email === email ? { ...user, user_active: !user.user_active } : user
+    );
     setUsers(updatedUsers);
     setFilteredUsers(updatedUsers);
+    window.location.reload();
   };
 
   const handleEdit = (user) => setEditingUser(user);
@@ -135,7 +140,8 @@ const UsersList = () => {
                 <th>Curso</th>
                 <th>Matrícula</th>
                 <th>SIAPE</th>
-                <th>Servant Type</th>
+                <th>Servidor</th>
+                <th>Estado</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -149,6 +155,7 @@ const UsersList = () => {
                   <td>{user.matricula ?? "N/A"}</td>
                   <td>{user.siape ?? "N/A"}</td>
                   <td>{user.servant_type ?? "N/A"}</td>
+                  <td>{user.is_active ? "Ativo" : "Inativo"}</td>
                   <td>
                     <FontAwesomeIcon
                       icon={faPenToSquare}
@@ -158,7 +165,7 @@ const UsersList = () => {
                     <FontAwesomeIcon
                       icon={faTrash}
                       style={{ cursor: "pointer" }}
-                      onClick={() => deleteUser(user.id)}
+                      onClick={() => alterActivity(user.email)}
                     />
                   </td>
                 </tr>

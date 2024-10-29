@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from ..serializers.user import CreateUserSerializer
 from ..services.user import UserService
+from ..models import AbstractUser
 
 class CreateUserView(APIView):
 
@@ -12,7 +13,6 @@ class CreateUserView(APIView):
 
     def post(self, request):
         usuario = request.user
-        print(usuario)
         serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid():
             criarUsuario = self.user_service.createUser(usuario, serializer)
@@ -21,3 +21,14 @@ class CreateUserView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class AlterActiveByEmailView(APIView):
+
+   def get(self, request, email):
+        usuario = request.user
+        #if usuario type is coordenador ou ensino
+        userByEmail = AbstractUser.objects.get(email=email)
+        if userByEmail is None:
+            return Response({'not ok'}, status=status.HTTP_400_BAD_REQUEST)
+        userByEmail.is_active = not userByEmail.is_active
+        userByEmail.save()
+        return Response({'ok'},status=status.HTTP_201_CREATED)
