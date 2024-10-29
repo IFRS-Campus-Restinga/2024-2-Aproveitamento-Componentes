@@ -1,0 +1,43 @@
+/* register.module.css */
+
+/* Center the form and its fields */
+.formContainer {
+    margin-top: 4%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers items horizontally */
+    width: 100%; /* Full width */
+}
+
+/* Style for each form field */
+.formField {
+
+    align-items: center; /* Vertically align label and input */
+    justify-content: center; /* Centers label and input horizontally */
+    width: 600px; /* Adjust as needed */
+    margin-bottom: 16px; /* Spacing between fields */
+    margin-right: 2% /* Space between label and input */
+
+}
+
+.submitButton {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-right: 3%;
+}
+
+/* Optional: Style labels */
+.formField label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    width: 120px; /* Set a fixed width for labels */
+}
+
+/* Ensure inputs and dropdowns fill the formField width */
+.formField .p-inputtext,
+.formField .p-dropdown {
+    width: 150%;
+}

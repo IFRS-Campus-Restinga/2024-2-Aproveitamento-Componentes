@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { Button } from 'primereact/button';
 import styles from './auth.module.css';
+import React from 'react';
 
 
 const AuthPage = () => {
@@ -9,6 +10,21 @@ const AuthPage = () => {
     const handleLoginClick = () => {
         window.location.href = 'http://localhost:8000/auth-google';
     };
+
+    const AuthCallback = async () => {
+        const urlParams = window.location.search;
+        const params = new URLSearchParams(urlParams);
+        const token = params.get('token');
+        if (!token) return;
+        const data = params.get('data');
+        localStorage.setItem('token', token);
+        localStorage.setItem('data', data);
+        window.location.href = ('/profile');
+    }
+
+    React.useEffect(() => {
+        AuthCallback();
+    }, []);
 
     return (
         <div className={styles.container}>

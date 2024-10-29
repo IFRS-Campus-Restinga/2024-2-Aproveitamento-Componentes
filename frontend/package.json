@@ -25,6 +25,8 @@
     "primereact": "^10.7.0",
     "react": "^18",
     "react-dom": "^18",
+    "@babel/preset-env": "^7.25.8",
+    "@babel/preset-react": "^7.25.7",
     "react-toastify": "^10.0.5",
     "styled-components": "^6.1.13"
   },
