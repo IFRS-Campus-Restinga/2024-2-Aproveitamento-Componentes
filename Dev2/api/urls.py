@@ -10,5 +10,5 @@ urlpatterns = [
     path('detalhes-usuario', DetalhesUsuario.as_view(), name='detalhes-usuario'),
     path('users/', include('users.urls')),
     path('forms/', include('forms.urls')),
-    path('disciplines/', include('disciplines.urls')),
+    path('api/', include('disciplines.urls')),
 ]
