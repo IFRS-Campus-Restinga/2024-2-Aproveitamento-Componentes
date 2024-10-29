@@ -30,8 +30,11 @@ const profilePage = () => {
         </div>
       </div>
       <div className={styles.right}>
-        <Button className={styles.Button} label="Alterar dados" onClick={() => window.location.href = `/register`} />
-        <Button className={styles.Button} label="Alterar dados" onClick={() => window.location.href = `/register`} />
+        {!isStudent && (
+          <>
+            <Button className={styles.Button} label="Lista de usuários" onClick={() => window.location.href = `/usersList`} />
+          </>
+        )}
         <Button className={styles.Button} label="Alterar dados" onClick={() => window.location.href = `/register`} />
 
       </div>
