@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'api',
     'forms',
     'disciplines',
+    'notices',
     'corsheaders'
 ]
 

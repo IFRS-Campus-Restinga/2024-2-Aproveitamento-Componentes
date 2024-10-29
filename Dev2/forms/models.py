@@ -3,6 +3,8 @@ import uuid
 from django.db import models
 from django.utils import timezone
 
+from notices.models import Notice
+
 
 # Enum para status da requisição
 class RequestStatus(models.TextChoices):
@@ -61,6 +63,7 @@ class RecognitionOfPriorLearning(RequisitionForm):
     student = models.ForeignKey(
         'users.Student', on_delete=models.CASCADE, related_name="recognition_student"
     )
+    notice = models.ForeignKey(Notice, on_delete=models.CASCADE, related_name="recognition_notices")
     course_workload = models.IntegerField()
     test_score = models.DecimalField(max_digits=5, decimal_places=2)
     course_studied_workload = models.IntegerField()
@@ -78,6 +81,7 @@ class KnowledgeCertification(RequisitionForm):
     student = models.ForeignKey(
         'users.Student', on_delete=models.CASCADE, related_name="certification_student"
     )
+    notice = models.ForeignKey(Notice, on_delete=models.CASCADE, related_name="certification_notices")
     previous_knowledge = models.TextField()
     scheduling_date = models.DateTimeField()
     test_score = models.DecimalField(max_digits=5, decimal_places=2)
