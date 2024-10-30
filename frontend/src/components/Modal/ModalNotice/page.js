@@ -2,19 +2,20 @@ import { useState } from "react";
 import { TextField } from "@mui/material";
 import styles from "./modalNotice.module.css";
 import { Button } from "../../Button/button";
+import { noticeCreate, noticeEdit } from "@/services/NoticeService";
 
-const ModalNotice = ({ onClose }) => {
+const ModalNotice = ({ onClose, editData = null }) => {
   const [formData, setFormData] = useState({
-    publicationDateFrom: "",
-    publicationDateTo: "",
-    documentationDeadlineFrom: "",
-    documentationDeadlineTo: "",
-    proposalAnalysisFrom: "",
-    proposalAnalysisTo: "",
-    resultPublicationFrom: "",
-    resultPublicationTo: "",
-    resultApprovalFrom: "",
-    resultApprovalTo: "",
+    publicationDateFrom: editData?.publicationDateFrom || "",
+    publicationDateTo: editData?.publicationDateTo || "",
+    documentationDeadlineFrom: editData?.documentationDeadlineFrom || "",
+    documentationDeadlineTo: editData?.documentationDeadlineTo || "",
+    proposalAnalysisFrom: editData?.proposalAnalysisFrom || "",
+    proposalAnalysisTo: editData?.proposalAnalysisTo || "",
+    resultPublicationFrom: editData?.resultPublicationFrom || "",
+    resultPublicationTo: editData?.resultPublicationTo || "",
+    resultApprovalFrom: editData?.resultApprovalFrom || "",
+    resultApprovalTo: editData?.resultApprovalTo || "",
   });
 
   const handleChange = (e) => {
@@ -25,10 +26,50 @@ const ModalNotice = ({ onClose }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // lógica para enviar os dados do formData
-    console.log("Form Data:", formData);
+
+    const payload = {
+      number: "003-2023", // ajuste o número conforme necessário
+      publication_date: new Date(
+        `${formData.publicationDateFrom}T09:00:00Z`
+      ).toISOString(),
+      documentation_submission_start: new Date(
+        `${formData.documentationDeadlineFrom}T09:00:00Z`
+      ).toISOString(),
+      documentation_submission_end: new Date(
+        `${formData.documentationDeadlineTo}T17:00:00Z`
+      ).toISOString(),
+      proposal_analysis_start: new Date(
+        `${formData.proposalAnalysisFrom}T09:00:00Z`
+      ).toISOString(),
+      proposal_analysis_end: new Date(
+        `${formData.proposalAnalysisTo}T17:00:00Z`
+      ).toISOString(),
+      result_publication_start: new Date(
+        `${formData.resultPublicationFrom}T09:00:00Z`
+      ).toISOString(),
+      result_publication_end: new Date(
+        `${formData.resultPublicationTo}T17:00:00Z`
+      ).toISOString(),
+      result_homologation_start: new Date(
+        `${formData.resultApprovalFrom}T09:00:00Z`
+      ).toISOString(),
+      result_homologation_end: new Date(
+        `${formData.resultApprovalTo}T17:00:00Z`
+      ).toISOString(),
+    };
+
+    try {
+      if (editData) {
+        await noticeEdit(editData.id, payload);
+      } else {
+        await noticeCreate(payload);
+      }
+      onClose();
+    } catch (error) {
+      console.log("Erro ao enviar os dados:", error);
+    }
   };
 
   return (
