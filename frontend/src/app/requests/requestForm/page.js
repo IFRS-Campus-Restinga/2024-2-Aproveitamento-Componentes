@@ -20,7 +20,7 @@ const CertificationRequestForm = () => {
         {id: 3, name: "Curso de Direito"},
     ];
 
-    const disciplinesData = {
+    const disciplinesData = { // TODO REMOVER
         1: [
             {id: 'fc40c88d-65ae-41ca-bd19-89075f9b4ea3', name: "Matemática"},
             {id: 'fc40c88d-65ae-41ca-bd19-89075f9b4ea3', name: "Física"},
@@ -50,7 +50,7 @@ const CertificationRequestForm = () => {
         // Crie um objeto FormData para enviar arquivos e outros dados
         const formData = new FormData();
         formData.append("discipline", disciplineId);
-        formData.append("notice", "1f7755ade0b341299ee00c46a12dc467");
+        formData.append("notice", "1f7755ade0b341299ee00c46a12dc467"); // TODO BUSCAR ID DO EDITAL ATUAL
         formData.append("course_workload", courseWorkload);
         formData.append("course_studied_workload", courseStudiedWorkload);
         formData.append("status", status);
