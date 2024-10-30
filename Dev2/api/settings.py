@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'users',
     'courses',
     'api',
-    'corsheaders'
+    'corsheaders',
     'forms',
     'disciplines',
     'notices',
