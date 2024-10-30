@@ -1,28 +1,22 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./usersList.module.css";
 import { Button as Btn } from "@/components/Button/button";
-import {
-  users as initialUsers,
-  courses,
-  admissions,
-  roles,
-} from "@/mocks/dataMocks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Filter from "@/components/FilterField/filterField";
 import FilterCheckbox from "@/components/FilterCheckbox/filterCheckbox";
 import { useUserFilters } from "@/hooks/useUserFilters";
-import GetUsers from "@/services/UserService";
-import UserList from "@/services/UserService";
+import AuthService from "@/services/AuthService";
 
 const UsersList = () => {
-  const [users, setUsers] = useState(initialUsers);
-  const [filteredUsers, setFilteredUsers] = useState(users);
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const usersData = GetUsers();
-
+  // Move the useUserFilters hook above any conditional returns
   const {
     search,
     setSearch,
@@ -32,42 +26,73 @@ const UsersList = () => {
     setShowInactive,
     selectedCourse,
     setSelectedCourse,
-    selectedAdmission,
-    setSelectedAdmission,
     selectedRole,
     setSelectedRole,
     applyFilters,
   } = useUserFilters(users, setFilteredUsers);
 
-  const deleteUser = (email) => {
-    const updatedUsers = users.filter((user) => user.Email !== email);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await AuthService.UserList();
+        console.log(data);
+        setUsers(data);
+        setFilteredUsers(data);
+      } catch (err) {
+        console.log(err);
+        setError(err.message || "An error occurred while fetching users.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  // Adjust the filter arrays based on the loaded data
+  const coursesArray = [
+    ...new Set(users.map((user) => user.course).filter(Boolean)),
+  ].map((course) => ({
+    id: course,
+    title: course,
+  }));
+
+  const rolesArray = [
+    ...new Set(users.map((user) => user.type).filter(Boolean)),
+  ].map((role) => ({
+    id: role,
+    title: role,
+  }));
+
+  const alterActivity = async (email) => {
+    let response = await AuthService.AlterActivity(email);
+    if (response.status !== 201) return;
+    const updatedUsers = users.map((user) =>
+      user.email === email ? { ...user, user_active: !user.user_active } : user
+    );
     setUsers(updatedUsers);
     setFilteredUsers(updatedUsers);
+    window.location.reload();
   };
 
   const handleEdit = (user) => setEditingUser(user);
 
   const saveEdit = (updatedUser) => {
     const updatedUsers = users.map((user) =>
-      user.Id === updatedUser.Id ? updatedUser : user
+      user.id === updatedUser.id ? updatedUser : user
     );
     setUsers(updatedUsers);
     setFilteredUsers(updatedUsers);
     setEditingUser(null);
   };
-
-  const coursesArray = Object.entries(courses).map(([key, value]) => ({
-    id: key,
-    title: value,
-  }));
-  const admissionsArray = Object.entries(admissions).map(([key, value]) => ({
-    id: key,
-    title: value,
-  }));
-  const rolesArray = Object.entries(roles).map(([key, value]) => ({
-    id: key,
-    title: value,
-  }));
 
   return (
     <div className={styles.container}>
@@ -88,13 +113,8 @@ const UsersList = () => {
           />
           <Filter
             optionList={rolesArray}
-            label="Cargo"
+            label="Tipo"
             onChange={(event, value) => setSelectedRole(value)}
-          />
-          <Filter
-            optionList={admissionsArray}
-            label="Ingresso"
-            onChange={(event, value) => setSelectedAdmission(value)}
           />
           <FilterCheckbox
             label={"Ativo"}
@@ -116,24 +136,26 @@ const UsersList = () => {
               <tr>
                 <th>Nome</th>
                 <th>Email</th>
+                <th>Tipo</th>
                 <th>Curso</th>
                 <th>Matrícula</th>
-                <th>CIAPE</th>
-                <th>Ingresso</th>
-                <th>Cargo</th>
+                <th>SIAPE</th>
+                <th>Servidor</th>
+                <th>Estado</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user, index) => (
-                <tr key={index}>
-                  <td>{user.Name ?? "N/A"}</td>
-                  <td>{user.Email ?? "N/A"}</td>
-                  <td>{user.Course ?? "N/A"}</td>
-                  <td>{user.Enrollment ?? "N/A"}</td>
-                  <td>{user.Ciape ?? "N/A"}</td>
-                  <td>{user.Admission ?? "N/A"}</td>
-                  <td>{user.Role ?? "N/A"}</td>
+              {filteredUsers.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.name ?? "N/A"}</td>
+                  <td>{user.email ?? "N/A"}</td>
+                  <td>{user.type ?? "N/A"}</td>
+                  <td>{user.course ?? "N/A"}</td>
+                  <td>{user.matricula ?? "N/A"}</td>
+                  <td>{user.siape ?? "N/A"}</td>
+                  <td>{user.servant_type ?? "N/A"}</td>
+                  <td>{user.is_active ? "Ativo" : "Inativo"}</td>
                   <td>
                     <FontAwesomeIcon
                       icon={faPenToSquare}
@@ -143,7 +165,7 @@ const UsersList = () => {
                     <FontAwesomeIcon
                       icon={faTrash}
                       style={{ cursor: "pointer" }}
-                      onClick={() => deleteUser(user.Email)}
+                      onClick={() => alterActivity(user.email)}
                     />
                   </td>
                 </tr>
@@ -158,9 +180,9 @@ const UsersList = () => {
           <input
             className={styles.nameFilter}
             type="text"
-            value={editingUser.Name}
+            value={editingUser.name}
             onChange={(e) =>
-              setEditingUser({ ...editingUser, Name: e.target.value })
+              setEditingUser({ ...editingUser, name: e.target.value })
             }
           />
           <div className={styles.modalBtn}>

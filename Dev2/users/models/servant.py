@@ -13,17 +13,17 @@ class Servant(AbstractUser):
     )
     
     @property
-    def tipo(self):
+    def type(self):
         """
         Retorna o tipo de usuário como um valor de UsuarioTipoEnum.
         """
         return ServantTypeEnum(self.servant_type)
 
     @property
-    def tipoString(self):
+    def typeString(self):
         """
         Retorna a string do tipo de usuário.
         """
-        return self.tipo.getTipoString()
+        return self.type.getTypeString()
     class Meta:
         abstract = False

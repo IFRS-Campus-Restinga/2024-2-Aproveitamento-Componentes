@@ -1,12 +1,10 @@
 from rest_framework.response import Response
-
-from users.serializers.UsersSerializer import UserPolymorphicSerializer
+from users.serializers.user import UserPolymorphicSerializer
 from users.models import AbstractUser
-from .custom_api_view import CustomAPIView
 from rest_framework.views import APIView
 
 
-class DetalhesUsuario(APIView):
+class UserDetails(APIView):
 
     def get(self, request, format=None):
 
@@ -15,4 +13,5 @@ class DetalhesUsuario(APIView):
             serializer = UserPolymorphicSerializer(usuario)
             return Response(serializer.data)
         except:
-            return Response(False)
+            print("Usuário não encontrado")
+            return Response({"noUser": True})

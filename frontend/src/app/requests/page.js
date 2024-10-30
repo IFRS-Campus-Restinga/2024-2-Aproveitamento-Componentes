@@ -2,10 +2,8 @@
 import { useState } from "react";
 import styles from "./requests.module.css";
 import { requests as initialRequests } from "@/mocks/dataMocks";
-
 const Requests = () => {
   const [requests, setRequests] = useState(initialRequests);
-
   return (
     <div className={styles.contentWrapper}>
       <div className={styles.scrollableTable}>
@@ -33,5 +31,4 @@ const Requests = () => {
     </div>
   );
 };
-
 export default Requests;

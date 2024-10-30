@@ -16,23 +16,27 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = React.useState(null);
-    const [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
     const pathname = usePathname();
 
     React.useEffect(() => {
         const fetchUsuario = async () => {
             const accessToken = localStorage.getItem('token');
-            if (!accessToken && pathname == '/auth') {
-                return;
-            }
 
             if (!accessToken) {
-                window.location.href = '/auth';
+                setLoading(false);
                 return;
             }
             try {
 
-                const data = await AuthService.detalhesUsuario();
+                const data = await AuthService.UserDetails();
+                if ('noUser' in data) {
+                    setLoading(false);
+                    if (pathname !== '/register') {
+                        window.location.href = ('/register')
+                    }
+                    return;
+                }
                 console.log(data);
                 setUser(data);
             } catch (error) {
@@ -43,6 +47,7 @@ export const AuthProvider = ({ children }) => {
                 }
                 console.error(error);
             }
+            setLoading(false);
         }
 
         fetchUsuario();

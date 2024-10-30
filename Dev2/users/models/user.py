@@ -8,22 +8,22 @@ class AbstractUser(PolymorphicModel):
     user = models.OneToOneField(User, related_name="perfil", on_delete=models.CASCADE)
     name = models.CharField(verbose_name="Nome", max_length=255)
     email = models.EmailField(max_length = 254)
-    DateIn = models.DateTimeField(auto_now_add=True)
+    entry_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     @property
-    def tipo(self):
+    def type(self):
         """
         Retorna o tipo de usuário como um valor de UsuarioTipoEnum.
         """
         return UserTypeEnum(self.__class__.__name__)
 
     @property
-    def tipoString(self):
+    def typeString(self):
         """
         Retorna a string do tipo de usuário.
         """
-        return self.tipo.getTipoString()
+        return self.type.getTypeString()
 
     class Meta:
         abstract = False

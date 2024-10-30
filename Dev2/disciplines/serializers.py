@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import *
-from users.serializers.UsersSerializer import ServantSerializer
+from users.serializers.user import ServantSerializer
 
 class DisciplinesSerializer(serializers.ModelSerializer):
     professors = ServantSerializer(many=True)  # Para mostrar detalhes dos professores

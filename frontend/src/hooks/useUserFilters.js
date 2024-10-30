@@ -5,7 +5,6 @@ export const useUserFilters = (users, setFilteredUsers) => {
   const [showActive, setShowActive] = useState(true);
   const [showInactive, setShowInactive] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [selectedAdmission, setSelectedAdmission] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
 
   const applyFilters = () => {
@@ -13,31 +12,39 @@ export const useUserFilters = (users, setFilteredUsers) => {
 
     if (search) {
       result = result.filter((user) =>
-        user.Name.toLowerCase().includes(search.toLowerCase())
+        user.name.toLowerCase().includes(search.toLowerCase())
       );
     }
 
     if (selectedCourse) {
-      result = result.filter((user) => user.Course === selectedCourse.title);
+      result = result.filter((user) => user.course === selectedCourse.title);
     }
 
+    // Since 'admission' doesn't exist in your data, you might need to remove this filter
+    // or adjust it according to your actual data structure.
+    // If you have an 'entry_date' or similar field, you can modify accordingly.
+
+    // Remove or comment out the admission filter if it's not applicable
+    /*
     if (selectedAdmission) {
       result = result.filter(
-        (user) => user.Admission === selectedAdmission.title
+        (user) => user.admission === selectedAdmission.title
       );
     }
+    */
 
     if (selectedRole) {
-      result = result.filter((user) => user.Role === selectedRole.title);
+      result = result.filter((user) => user.type === selectedRole.title);
     }
 
     if (!(showActive && showInactive)) {
       if (showActive) {
-        result = result.filter((user) => user.isActive);
+        result = result.filter((user) => user.is_active);
       } else if (showInactive) {
-        result = result.filter((user) => !user.isActive);
+        result = result.filter((user) => !user.is_active);
       }
     }
+
 
     setFilteredUsers(result);
   };
@@ -51,8 +58,6 @@ export const useUserFilters = (users, setFilteredUsers) => {
     setShowInactive,
     selectedCourse,
     setSelectedCourse,
-    selectedAdmission,
-    setSelectedAdmission,
     selectedRole,
     setSelectedRole,
     applyFilters,

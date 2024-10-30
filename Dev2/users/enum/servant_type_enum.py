@@ -13,8 +13,7 @@ class ServantTypeEnum(Enum):
     COORDINATOR = 'Coordenador'
 
 
-    def getTipoString(self):
-        print(self.value)
+    def getTypeString(self):
         if self.value not in USER_TYPES:
             raise Exception('Tipo de usuário não mapeado!')
         return USER_TYPES[self.value]

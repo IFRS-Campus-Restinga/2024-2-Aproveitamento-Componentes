@@ -9,7 +9,6 @@ const disciplines = [
     Name: "Segurança",
   },
 ];
-
 const requests = [
   {
     Course: "Ads",

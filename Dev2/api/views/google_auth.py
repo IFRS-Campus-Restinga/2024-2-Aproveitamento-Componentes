@@ -31,17 +31,8 @@ class GoogleAuthCallbackView(APIView):
             encoded_data = b64encode(json.dumps(user_info).encode()).decode('utf-8')
 
             if user is None:
-                user = User.objects.create_user(username = user_info['id'], email = user_info['email'],first_name = user_info['name'], password = None)
+                user = User.objects.create_user(username = user_info['id'], email = user_info['email'], password = None)
                 user.save()
-                estu = Student.objects.create(
-                    user = user,
-                    name = user_info['name'],
-                    email = user_info['email'],
-                    course = "ADS",
-                    matricula = "0099900001"
-                )
-                print(estu)
-                
 
             token, created = Token.objects.get_or_create(user=user)
 

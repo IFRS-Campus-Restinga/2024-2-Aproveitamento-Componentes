@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import *
-from users.serializers.UsersSerializer import StudentSerializer
+from users.serializers.user import StudentSerializer
 from disciplines.serializers import DisciplinesSerializer
 
 class StepSerializer(serializers.ModelSerializer):

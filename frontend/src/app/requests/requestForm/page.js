@@ -1,9 +1,7 @@
 "use client";
-
 import { useState } from "react";
 import styles from "./requestForm.module.css";
 import { Button } from "@/components/Button/button";
-
 const CertificationRequestForm = () => {
   const [requestType, setRequestType] = useState("");
   const [curricularComponent, setCurricularComponent] = useState("");
@@ -12,22 +10,18 @@ const CertificationRequestForm = () => {
   const [previousComponent, setPreviousComponent] = useState("");
   const [grade, setGrade] = useState("");
   const [hours, setHours] = useState("");
-
   const handleFileChange = (e) => {
     setAttachments(Array.from(e.target.files));
   };
-
   const handleSubmit = (e) => {
     console.log("teste enviar");
     e.preventDefault();
     // Lógica para envio do formulário
   };
-
   const handleCancel = () => {
     console.log("teste cancelar");
     // Lógica para cancelamento, como resetar o formulário ou redirecionar
   };
-
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
       <div className={styles.typeContainer}>
@@ -129,5 +123,4 @@ const CertificationRequestForm = () => {
     </form>
   );
 };
-
 export default CertificationRequestForm;
