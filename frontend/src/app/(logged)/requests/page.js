@@ -1,7 +1,7 @@
 "use client";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import styles from "./requests.module.css";
-import {baseURL} from "@/libs/api";
+import { baseURL } from "@/libs/api";
 
 const Requests = () => {
     const [knowledgeCertifications, setKnowledgeCertifications] = useState([]);
@@ -12,7 +12,7 @@ const Requests = () => {
     useEffect(() => {
         const fetchKnowledgeCertifications = async () => {
             try {
-                const response = await fetch(baseURL + '/forms/knowledge-certifications/'); // Endpoint do Django
+                const response = await fetch(`${baseURL}/forms/knowledge-certifications/`);
                 if (!response.ok) {
                     throw new Error('Erro ao buscar Certificados de Conhecimento');
                 }
@@ -25,7 +25,7 @@ const Requests = () => {
 
         const fetchRecognitionOfPriorLearning = async () => {
             try {
-                const response = await fetch(baseURL + '/forms/recognition-forms/'); // Endpoint do Django
+                const response = await fetch(`${baseURL}/forms/recognition-forms/`);
                 if (!response.ok) {
                     throw new Error('Erro ao buscar Aproveitamento de Estudos');
                 }
@@ -50,63 +50,63 @@ const Requests = () => {
     return (
         <div className={styles.contentWrapper}>
             <div className={styles.scrollableTable}>
-                <h2>Knowledge Certifications</h2>
+                <h2>Certificações de conhecimento</h2>
                 <table className={styles.table}>
                     <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Estudante</th>
-                        <th>Disciplina</th>
-                        <th>Status</th>
-                    </tr>
+                        <tr>
+                            <th>Estudante</th>
+                            <th>Disciplina</th>
+                            <th>Status</th>
+                            <th>Data de Criação</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {knowledgeCertifications.length === 0 ? (
-                        <tr>
-                            <td colSpan="4" style={{textAlign: 'center', color: 'gray'}}>
-                                Sem resultados para Certificado de Conhecimento
-                            </td>
-                        </tr>
-                    ) : (
-                        knowledgeCertifications.map((certification) => (
-                            <tr key={certification.id}>
-                                <td>{certification.id}</td>
-                                <td>{certification.student}</td>
-                                <td>{certification.discipline}</td>
-                                <td>{certification.status}</td>
+                        {knowledgeCertifications.length === 0 ? (
+                            <tr>
+                                <td colSpan="4" style={{ textAlign: 'center', color: 'gray' }}>
+                                    Sem resultados para Certificado de Conhecimento
+                                </td>
                             </tr>
-                        ))
-                    )}
+                        ) : (
+                            knowledgeCertifications.map((certification) => (
+                                <tr key={certification.id}>
+                                    <td>-</td> {/* Estudante ausente */}
+                                    <td>{certification.discipline_name || "N/A"}</td>
+                                    <td>{certification.status || "N/A"}</td> {/* Status por extenso */}
+                                    <td>{new Date(certification.create_date).toLocaleDateString("pt-BR")}</td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
 
-                <h2>Recognition of Prior Learning</h2>
+                <h2>Aproveitamento de estudos</h2>
                 <table className={styles.table}>
                     <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Estudante</th>
-                        <th>Disciplina</th>
-                        <th>Status</th>
-                    </tr>
+                        <tr>
+                            <th>Estudante</th>
+                            <th>Disciplina</th>
+                            <th>Status</th>
+                            <th>Data de Criação</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {recognitionOfPriorLearning.length === 0 ? (
-                        <tr>
-                            <td colSpan="4" style={{textAlign: 'center', color: 'gray'}}>
-                                Sem resultados para Aproveitamento de Estudos
-                            </td>
-                        </tr>
-                    ) : (
-                        recognitionOfPriorLearning.map((learning) => (
-                            <tr key={learning.id}>
-                                <td>{learning.id}</td>
-                                <td>{learning.student}</td>
-                                <td>{learning.discipline}</td>
-                                <td>{learning.status}</td>
+                        {recognitionOfPriorLearning.length === 0 ? (
+                            <tr>
+                                <td colSpan="4" style={{ textAlign: 'center', color: 'gray' }}>
+                                    Sem resultados para Aproveitamento de Estudos
+                                </td>
                             </tr>
-                        ))
-                    )}
+                        ) : (
+                            recognitionOfPriorLearning.map((learning) => (
+                                <tr key={learning.id}>
+                                    <td>-</td> {/* Estudante ausente */}
+                                    <td>{learning.discipline_name || "N/A"}</td>
+                                    <td>{learning.status || "N/A"}</td> {/* Status por extenso */}
+                                    <td>{new Date(learning.create_date).toLocaleDateString("pt-BR")}</td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
