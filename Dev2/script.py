@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from notices.models import Notice
 from users.models import Student, Servant
 from users.enum.servant_type_enum import ServantTypeEnum
 superuser = User.objects.create_superuser("admin", "admin@admin.com", "123")
@@ -44,4 +45,17 @@ Servant.objects.create(
     siape="2121212",
     servant_type=ServantTypeEnum.ENSINO.value,
     is_active=False
+)
+
+notice = Notice.objects.create(
+    number="001-2023",
+    publication_date="2023-10-01T09:00:00Z",
+    documentation_submission_start="2023-10-05T09:00:00Z",
+    documentation_submission_end="2023-10-10T17:00:00Z",
+    proposal_analysis_start="2023-10-11T09:00:00Z",
+    proposal_analysis_end="2023-10-20T17:00:00Z",
+    result_publication_start="2023-10-21T09:00:00Z",
+    result_publication_end="2023-10-22T17:00:00Z",
+    result_homologation_start="2023-10-23T09:00:00Z",
+    result_homologation_end="2023-10-25T17:00:00Z"
 )

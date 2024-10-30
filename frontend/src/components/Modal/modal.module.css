@@ -1,0 +1,55 @@
+.modalBackground {
+    min-height: 100vh;
+    width: 100%;
+    background-color: rgb(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modalContainer {
+    height: 450px;
+    width: 700px;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    border-radius: 15px;
+    background-color: white;
+    justify-content: center;
+    gap: 10px;
+  }
+  .disciplineInput {
+    padding: 12px;
+    border-radius: 15px;
+    width: 50%;
+    margin-bottom: 20px;
+  }
+  .table {
+    border: 2px solid #c7c7c7e1;
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+  }
+  .table thead {
+    position: sticky;
+    top: -3px;
+    background-color: #2f9e41;
+  }
+  .table thead th {
+    padding: 16px;
+    border-bottom: 1px solid #c7c7c7e1;
+    text-align: left;
+  }
+  .table td,
+  .table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  .table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  .table tbody tr:hover {
+    background-color: #ddd;
+  }
