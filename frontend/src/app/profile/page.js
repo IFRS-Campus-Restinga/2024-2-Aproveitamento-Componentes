@@ -40,6 +40,7 @@ const profilePage = () => {
         )}
         <Button className={styles.Button} label="Alterar dados" onClick={() => window.location.href = `/register`} />
         <Button className={styles.Button} label="Solicitações" onClick={() => window.location.href = `/requests`} />
+        <Button className={styles.Button} label="Edital" onClick={() => window.location.href = `/notice`} />
         <Button className={styles.Button} label="Formulário de solicitação" onClick={() => window.location.href = `/requests/requestForm`} />
         <Button onClick={() => setModal(true)}>Cadastrar Disciplina</Button>
       </div>

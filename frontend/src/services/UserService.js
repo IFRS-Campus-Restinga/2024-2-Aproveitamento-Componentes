@@ -38,11 +38,3 @@ export default function GetUsers() {
 }
 
 // import { apiClient } from "@/libs/api";
-
-// async function getUsers() {
-//   return apiClient.get("/detalhes-usuario/").then((response) => response.data);
-// }
-
-// export default {
-//   getUsers,
-// };
