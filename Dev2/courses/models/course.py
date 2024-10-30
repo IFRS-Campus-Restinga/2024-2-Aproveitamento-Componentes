@@ -1,12 +1,15 @@
+import uuid
 from django.db import models
+from users.models.servant import Servant
 
-from .discipline import Discipline
+from disciplines.models import Disciplines
 
 
 class Course(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    professors = models.JSONField()  # Armazenará a lista de GUIDs como JSON
-    disciplines = models.ManyToManyField(Discipline, related_name='courses')
+    professors = models.ManyToManyField(Servant, related_name="course_professors")
+    disciplines = models.ManyToManyField(Disciplines, related_name='courses')
 
     def __str__(self):
         return self.name

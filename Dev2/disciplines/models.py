@@ -7,7 +7,7 @@ class Disciplines(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     workload = models.IntegerField()
-    professors = models.ManyToManyField(Servant, related_name="disciplines")
+    professors = models.ManyToManyField(Servant, related_name="discipline_professors")
 
     def __str__(self):
         return self.name
