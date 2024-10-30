@@ -1,4 +1,4 @@
-from . import AbstractUser
+from .user import AbstractUser
 from django.db import models
 
 class Student(AbstractUser):
