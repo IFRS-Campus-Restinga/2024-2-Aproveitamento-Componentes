@@ -1,6 +1,8 @@
 import uuid
+
 from django.db import models
 from django.utils import timezone
+
 from notices.models import Notice
 
 
@@ -17,6 +19,18 @@ class RequestStatus(models.TextChoices):
     GRANTED = "GRANTED", "Deferido"
     REJECTED = "REJECTED", "Indeferido"
     COMPLETED = "COMPLETED", "Concluído"
+
+
+# Model de Attachment
+class Attachment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=50)
+    size = models.CharField(max_length=50)
+    file = models.TextField()
+
+    def __str__(self):
+        return f"Attachment {self.name} ({self.type})"
 
 
 # Model abstrato RequisitionForm
@@ -40,25 +54,13 @@ class RequisitionForm(models.Model):
         return f"RequisitionForm {self.id} - {self.status}"
 
 
-# Model de Attachment
-class Attachment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255)
-    type = models.CharField(max_length=50)
-    size = models.CharField(max_length=50)
-    file = models.TextField()
-
-    def __str__(self):
-        return f"Attachment {self.name} ({self.type})"
-
-
 # Model de RecognitionOfPriorLearning, derivado de RequisitionForm
 class RecognitionOfPriorLearning(RequisitionForm):
     notice = models.ForeignKey(Notice, on_delete=models.CASCADE, related_name="recognition_notices")
     course_workload = models.IntegerField()
     test_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     course_studied_workload = models.IntegerField()
-    attachments = models.ManyToManyField(Attachment, related_name="recognition_requests", blank=True)
+    attachments = models.ManyToManyField(Attachment, related_name="recognition_atts", blank=True)
 
     def __str__(self):
         return f"RecognitionOfPriorLearning {self.id}"
@@ -70,7 +72,7 @@ class KnowledgeCertification(RequisitionForm):
     previous_knowledge = models.TextField()
     scheduling_date = models.DateTimeField(null=True, blank=True)
     test_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    attachments = models.ManyToManyField(Attachment, related_name="certification_requests", blank=True)
+    attachments = models.ManyToManyField(Attachment, related_name="certification_atts", blank=True)
 
     def __str__(self):
         return f"KnowledgeCertification {self.id}"

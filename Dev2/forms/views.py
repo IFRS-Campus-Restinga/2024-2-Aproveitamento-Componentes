@@ -17,8 +17,17 @@ class RecognitionOfPriorLearningListCreateView(generics.ListCreateAPIView):
     queryset = RecognitionOfPriorLearning.objects.all()
     serializer_class = RecognitionOfPriorLearningSerializer
 
+    def create(self, request, *args, **kwargs):
+        print("Método create chamado com dados:", request.data)
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            print("Dados validados com sucesso.")
+        else:
+            print("Dados inválidos:", serializer.errors)
+        return super().create(request, *args, **kwargs)
 
-# View para detalhes de uma RecognitionOfPriorLearning específica
+
+        # View para detalhes de uma RecognitionOfPriorLearning específica
 class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = RecognitionOfPriorLearning.objects.all()
     serializer_class = RecognitionOfPriorLearningSerializer
