@@ -1,47 +1,37 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db.models import Q
-from ..models.users import Servant, Student
-from ..serializers.UsersSerializer import ServantSerializer, StudentSerializer
+from ..models.student import Student
+from ..models.servant import Servant
+from api.views.custom_api_view import CustomAPIView
+from users.models.user import AbstractUser
+from ..serializers.user import UserPolymorphicSerializer
 
 
 class ListUsersAPIView(APIView):
 
-    def get(self, request, *args, **kwargs):
-        user_type = request.GET.get('user_type')
-        name = request.GET.get('name')
-        is_active = request.GET.get('is_active')
+    def get(self, request, format=None):
+        """
+        Retorna uma lista de todos os usuários.
+        """
+        # Get filter parameters
+        user_type_param = request.GET.get("user_type")
+        name = request.GET.get("name")
+        is_active = request.GET.get("is_active")
 
-        students_filter = Q()
-        servants_filter = Q()
+        if user_type_param == "Student":
+            queryset = Student.objects.all()
+        elif user_type_param:
+            queryset = Servant.objects.filter(servant_type=user_type_param)
+        else:
+            # Get all users
+            queryset = AbstractUser.objects.all()
 
-        # Filtrando os usuários de acordo com o tipo
-        if user_type == 'Aluno':
-            servants_filter &= Q(pk__isnull=True)  # Exclui Servant
-        elif user_type:
-            students_filter &= Q(pk__isnull=True)  # Exclui Student
-            servants_filter &= Q(user_type=user_type)
-
-        # Filtro de nome
         if name:
-            students_filter &= Q(name__icontains=name)
-            servants_filter &= Q(name__icontains=name)
+            # Case-insensitive partial match on name
+            queryset = queryset.filter(name__icontains=name)
 
-        # Filtro de status ativo
         if is_active is not None:
-            is_active_bool = is_active.lower() == 'true'
-            students_filter &= Q(is_active=is_active_bool)
-            servants_filter &= Q(is_active=is_active_bool)
+            queryset = queryset.filter(is_active=is_active)
 
-        # Buscando estudantes e servidores de acordo com os filtros
-        students = Student.objects.filter(students_filter)
-        servants = Servant.objects.filter(servants_filter)
-
-        # Serializando os resultados
-        students_serialized = StudentSerializer(students, many=True)
-        servants_serialized = ServantSerializer(servants, many=True)
-
-        # Unindo os dois conjuntos de dados
-        users = students_serialized.data + servants_serialized.data
-
-        return Response({'users': users})
+        serializer = UserPolymorphicSerializer(queryset, many=True)
+        return Response(serializer.data)

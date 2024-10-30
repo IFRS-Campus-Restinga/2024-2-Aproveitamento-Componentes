@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    height: 50vh;
+}
+
+.left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.userInfo {
+    text-align: center;
+}
+
+.Button {
+    width: calc(30% - 10px);
+    min-width: 150px;
+    max-width: 200px;
+    flex: 1 1 auto;
+
+}

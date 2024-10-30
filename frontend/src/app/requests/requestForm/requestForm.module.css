@@ -1,0 +1,40 @@
+.formContainer {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .typeContainer {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .typeSelect {
+    padding: 12px;
+    border-radius: 15px;
+  }
+  .classInfo {
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
+    gap: 25px;
+  }
+  .attachmentsContainer {
+    padding: 25px;
+    border-radius: 15px;
+    background-color: rgba(185, 185, 185, 0.719);
+  }
+  /* .formBtn {
+    background-color: #46b5ff;
+    border-radius: 15px;
+    padding: 15px;
+  } */
+  .formBtnContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
+  }

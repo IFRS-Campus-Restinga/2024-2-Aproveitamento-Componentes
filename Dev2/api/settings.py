@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 from .env_settings import *
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -15,8 +14,8 @@ SECRET_KEY = 'django-insecure-x7wl+2b2uq$u+rz6fjvavi$7p7mv*)k!2t6@%3!4&(rk3wfnuh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["http//localhost:3000", "127.0.0.1", "localhost"]
+CORS_ORIGINS_WHITELIST = ["http//localhost:3000"]
 
 # Application definition
 
@@ -32,9 +31,14 @@ INSTALLED_APPS = [
     'courses',
     'api',
     'corsheaders'
+    'forms',
+    'disciplines',
+    'notices',
+    'polymorphic'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -42,12 +46,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'api.urls'
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000", 
+    "http://localhost:3000",
+]
+# CORS_ALLOW_ALL_ORIGINS = True
+# SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+# CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-csrftoken',
+    'x-requested-with',
 ]
 
 TEMPLATES = [

@@ -1,5 +1,5 @@
-from .usuario import *
 from .student import *
-from .users import Student, Servant
+from .servant import *
 from .course import *
 from .discipline import *
+from .user import *
