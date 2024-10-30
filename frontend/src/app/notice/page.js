@@ -8,27 +8,30 @@ import { noticeList } from "@/services/NoticeService";
 import AuthService from "@/services/AuthService";
 
 const Notice = () => {
-  const [notices, setNotices] = useState();
+  const [notices, setNotices] = useState([]);
   const [modal, setModal] = useState(false);
+  const [editData, setEditData] = useState(null);
 
   useEffect(() => {
     const fetchNotices = async () => {
       try {
         const data = await noticeList();
-        console.log(data);
         setNotices(data);
       } catch (err) {
         console.log(err);
-        setError(err.message || "An error occurred while fetching users.");
       }
     };
-
     fetchNotices();
   }, []);
 
-  const addNotice = () => {
-    // Lógica para adicionar novo edital, se desejar
-    console.log("Adicionar novo edital");
+  const openModalForEdit = (notice) => {
+    setEditData(notice);
+    setModal(true);
+  };
+
+  const closeModal = () => {
+    setEditData(null);
+    setModal(false);
   };
 
   return (
@@ -44,12 +47,12 @@ const Notice = () => {
             </tr>
           </thead>
           <tbody>
-            {notices.map((notices, index) => (
-              <tr key={index}>
-                <td>{notices.publication_date ?? "N/A"}</td>
-                <td>{notices.documentation_submission_start ?? "N/A"}</td>
-                <td>{notices.documentation_submission_end ?? "N/A"}</td>
-                <td>{notices.Link ?? "N/A"}</td>
+            {notices.map((notice) => (
+              <tr key={notice.id} onClick={() => openModalForEdit(notice)}>
+                <td>{notice.publication_date ?? "N/A"}</td>
+                <td>{notice.documentation_submission_start ?? "N/A"}</td>
+                <td>{notice.documentation_submission_end ?? "N/A"}</td>
+                <td>{notice.Link ?? "N/A"}</td>
               </tr>
             ))}
           </tbody>
@@ -58,7 +61,7 @@ const Notice = () => {
       <button onClick={() => setModal(true)} className={styles.addButton}>
         <FontAwesomeIcon icon={faPlus} size="2x" />
       </button>
-      {modal && <ModalNotice onClose={() => setModal(false)} />}
+      {modal && <ModalNotice onClose={closeModal} editData={editData} />}
     </div>
   );
 };
