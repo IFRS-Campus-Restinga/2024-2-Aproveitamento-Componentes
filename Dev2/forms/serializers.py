@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from .models import *
-from users.serializers.user import StudentSerializer
-from disciplines.serializers import DisciplinesSerializer
+
+from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification, RequestStatus
 
 class StepSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,38 +10,53 @@ class StepSerializer(serializers.ModelSerializer):
             'description', 'initial_step_date', 'final_step_date'
         ]
 
-
 class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attachment
-        fields = ['id', 'requisition_form', 'name', 'type', 'size', 'file']
+        fields = ['id', 'name', 'type', 'size', 'file']
 
-
-class RequisitionFormSerializer(serializers.ModelSerializer):
-    user = StudentSerializer()
-    discipline = DisciplinesSerializer()
-    step = StepSerializer()
+class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
     attachments = AttachmentSerializer(many=True, read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    discipline_name = serializers.CharField(source='discipline.name', read_only=True)
 
     class Meta:
-        fields = [
-            'id', 'step', 'student', 'discipline', 'create_date', 'status',
-            'servant_feedback', 'servant_analysis_date',
-            'professor_feedback', 'professor_analysis_date',
-            'coordinator_feedback', 'coordinator_analysis_date', 'attachments'
-        ]
-
-class RecognitionOfPriorLearningSerializer(RequisitionFormSerializer):
-    class Meta(RequisitionFormSerializer.Meta):
         model = RecognitionOfPriorLearning
-        fields = RequisitionFormSerializer.Meta.fields + [
-            'course_workload', 'test_score', 'course_studied_workload'
+        fields = [
+            'id', 'course_workload', 'course_studied_workload', 'test_score', 'notice', 'discipline',
+            'discipline_name', 'create_date', 'status_display', 'servant_feedback', 'servant_analysis_date',
+            'professor_feedback', 'professor_analysis_date', 'coordinator_feedback', 'coordinator_analysis_date',
+            'attachments'
         ]
 
+    def create(self, validated_data):
+        # Extraindo os attachments, se houver
+        attachments_data = validated_data.pop('attachments', [])
+        requisition = RecognitionOfPriorLearning.objects.create(**validated_data)
+        # Se attachments existirem, adicione-os
+        for attachment in attachments_data:
+            Attachment.objects.create(requisition=requisition, **attachment)  # Certifique-se de que a relação está definida
+        return requisition
 
-class KnowledgeCertificationSerializer(RequisitionFormSerializer):
-    class Meta(RequisitionFormSerializer.Meta):
+class KnowledgeCertificationSerializer(serializers.ModelSerializer):
+    attachments = AttachmentSerializer(many=True, read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    discipline_name = serializers.CharField(source='discipline.name', read_only=True)
+
+    class Meta:
         model = KnowledgeCertification
-        fields = RequisitionFormSerializer.Meta.fields + [
-            'previous_knowledge', 'scheduling_date', 'test_score'
+        fields = [
+            'id', 'previous_knowledge', 'scheduling_date', 'test_score', 'notice', 'discipline',
+            'discipline_name', 'create_date', 'status_display', 'servant_feedback', 'servant_analysis_date',
+            'professor_feedback', 'professor_analysis_date', 'coordinator_feedback', 'coordinator_analysis_date',
+            'attachments'
         ]
+
+    def create(self, validated_data):
+        # Extraindo os attachments, se houver
+        attachments_data = validated_data.pop('attachments', [])
+        certification = KnowledgeCertification.objects.create(**validated_data)
+        # Se attachments existirem, adicione-os
+        for attachment in attachments_data:
+            Attachment.objects.create(certification=certification, **attachment)  # Certifique-se de que a relação está definida
+        return certification
