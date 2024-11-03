@@ -76,12 +76,14 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 2rem;
   position: fixed;
+  top: 100px;
   z-index: 2;
-  width: 600px;
-  height: 400px;
-  background-color: rgba(141, 141, 141, 0.5);
+  width: fit-content;
+  height: fit-content;
+  background-color: rgb(233, 233, 233);
+  border-radius: 10px;
+  padding: 24px;
 }
 
 .modal .modalBtn {

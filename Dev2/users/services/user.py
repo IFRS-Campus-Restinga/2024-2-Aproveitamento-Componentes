@@ -47,3 +47,28 @@ class UserService:
 
         emailsStudent = ["@restinga.ifrs.edu.br", "@aluno.restinga.ifrs.edu.br"]
         return any(email.endswith(emails) for emails in emailsStudent)
+
+    def updateUserById(self, id, serializer):
+
+            is_student = serializer.validated_data["isStudent"]
+
+            if is_student:
+                try:
+                    student = Student.objects.get(id=id)
+                    student.name = serializer.validated_data["name"]
+                    student.matricula = serializer.validated_data["matricula"]
+                    student.course = serializer.validated_data["course"]
+                    student.save()
+                    return student
+                except Student.DoesNotExist:
+                    return print("Student not found")
+            else:
+                try:
+                    servant = Servant.objects.get(id=id)
+                    servant.name = serializer.validated_data["name"]
+                    servant.siape = serializer.validated_data["siape"]
+                    servant.servant_type = serializer.validated_data["servant_type"]
+                    servant.save()
+                    return servant
+                except Servant.DoesNotExist:
+                    return print("Servant not found")

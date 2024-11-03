@@ -22,6 +22,9 @@ export const AuthProvider = ({ children }) => {
     React.useEffect(() => {
         const fetchUsuario = async () => {
             const accessToken = localStorage.getItem('token');
+            if (!accessToken && pathname !== '/auth') {
+                window.location.href = '/auth';
+            }
 
             if (!accessToken) {
                 setLoading(false);
@@ -35,9 +38,9 @@ export const AuthProvider = ({ children }) => {
                     if (pathname !== '/register') {
                         window.location.href = ('/register')
                     }
-                    return;
+                    return null;
                 }
-                console.log(data);
+
                 setUser(data);
             } catch (error) {
                 setUser(null);

@@ -16,16 +16,16 @@
     justify-content: center; /* Centers label and input horizontally */
     width: 600px; /* Adjust as needed */
     margin-bottom: 16px; /* Spacing between fields */
-    margin-right: 2% /* Space between label and input */
-
+    margin-right: 0% /* Space between label and input */
 }
 
 .submitButton {
+    align-items: center;
     width: 100%;
     max-width: 300px;
     margin-top: 15px;
     margin-bottom: 15px;
-    margin-right: 3%;
+
 }
 
 /* Optional: Style labels */
@@ -33,7 +33,7 @@
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
-    width: 120px; /* Set a fixed width for labels */
+    width: 200px; /* Set a fixed width for labels */
 }
 
 /* Ensure inputs and dropdowns fill the formField width */

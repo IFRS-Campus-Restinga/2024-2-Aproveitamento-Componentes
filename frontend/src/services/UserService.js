@@ -3,7 +3,6 @@ import axios from "axios";
 import AuthService from "@/services/AuthService";
 
 export default function GetUsers() {
-  console.log("aqui")
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

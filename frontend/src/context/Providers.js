@@ -8,7 +8,7 @@ export default function Providers({ children }) {
     return (
         <PrimeReactProvider>
             <AuthProvider>
-                <NavBar data={true}/>
+                <NavBar/>
                 <div style={{ minHeight: '500px' }}>
                     {children}
                 </div>

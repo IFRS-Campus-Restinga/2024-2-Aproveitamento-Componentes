@@ -8,6 +8,7 @@ import Filter from "@/components/FilterField/filterField";
 import FilterCheckbox from "@/components/FilterCheckbox/filterCheckbox";
 import { useUserFilters } from "@/hooks/useUserFilters";
 import AuthService from "@/services/AuthService";
+import FormProfile from "@/components/Forms/Profile/ProfileForm";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -72,8 +73,8 @@ const UsersList = () => {
     title: role,
   }));
 
-  const alterActivity = async (email) => {
-    let response = await AuthService.AlterActivity(email);
+  const updateActivity = async (email) => {
+    let response = await AuthService.UpdateActivity(email);
     if (response.status !== 201) return;
     const updatedUsers = users.map((user) =>
       user.email === email ? { ...user, user_active: !user.user_active } : user
@@ -165,7 +166,7 @@ const UsersList = () => {
                     <FontAwesomeIcon
                       icon={faTrash}
                       style={{ cursor: "pointer" }}
-                      onClick={() => alterActivity(user.email)}
+                      onClick={() => updateActivity(user.id)}
                     />
                   </td>
                 </tr>
@@ -177,22 +178,14 @@ const UsersList = () => {
       {editingUser && (
         <div className={styles.modal}>
           <h2>Editar Usuário</h2>
-          <input
-            className={styles.nameFilter}
-            type="text"
-            value={editingUser.name}
-            onChange={(e) =>
-              setEditingUser({ ...editingUser, name: e.target.value })
-            }
+          <FormProfile
+            user={editingUser}
+            onSave={(updatedUser) => saveEdit(updatedUser)}
+            onCancel={() => setEditingUser(null)}
           />
-          <div className={styles.modalBtn}>
-            <Btn color="#46b5ff" onClick={() => saveEdit(editingUser)}>
-              Salvar
-            </Btn>
             <Btn type={"cancel"} onClick={() => setEditingUser(null)}>
               Cancelar
             </Btn>
-          </div>
         </div>
       )}
     </div>

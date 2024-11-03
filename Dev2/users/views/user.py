@@ -21,14 +21,26 @@ class CreateUserView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-class AlterActiveByEmailView(APIView):
+class UpdateActiveByIdView(APIView):
 
-   def get(self, request, email):
-        usuario = request.user
+   def get(self, request, id):
         #if usuario type is coordenador ou ensino
-        userByEmail = AbstractUser.objects.get(email=email)
-        if userByEmail is None:
+        user = AbstractUser.objects.get(id=id)
+        if user is None:
             return Response({'not ok'}, status=status.HTTP_400_BAD_REQUEST)
-        userByEmail.is_active = not userByEmail.is_active
-        userByEmail.save()
+        user.is_active = not user.is_active
+        user.save()
         return Response({'ok'},status=status.HTTP_201_CREATED)
+class UpdateUserByIdView(APIView):
+
+    parser_classes = (MultiPartParser, FormParser)
+    user_service = UserService()
+
+    def put(self, request, id):
+        usuario = request.user
+        serializer = CreateUserSerializer(data=request.data)
+        if serializer.is_valid():
+            updated = self.user_service.updateUserById(id, serializer)
+            if updated is not None:
+                return Response({"id": updated.id}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

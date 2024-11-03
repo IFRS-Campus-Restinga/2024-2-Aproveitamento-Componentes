@@ -53,7 +53,6 @@ const NavBar = ({ data = false }) => {
       <div className='px-2'>
         <button style={{border: "1px solid grey", padding: "10px", borderRadius: "15px"}} onClick={handleDropdown}>Menu de Agora</button>
         {dropdownMenu ? <Menu model={items} className='absolute z-50' popupAlignment="right" /> : ''}
-        <Button label="Sair" icon='p-icon pi pi-fw pi-sign-in' onClick={handleUserLogout} />
       </div>
     </>
   );
@@ -75,8 +74,8 @@ const NavBar = ({ data = false }) => {
 
   return (
     <div style={{ backgroundColor: "#2f9e41" }}>
-      <div className="flex items-center justify-between max-w-screen-lg p-3 mx-auto">
-        <Link href="/">
+      <div className="flex items-center justify-between max-w-screen-xlg pl-20 pt-8 pb-8 pr-20 mx-auto">
+        <Link href={isUserAuth ? '/profile' : '/auth'} className='pl-12'>
           <Image
             src="/ifrs.png"
             alt="IFRS Logo"
