@@ -1,3 +1,8 @@
+.container {
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
 .contentWrapper {
     min-height: 100vh;
     width: 100%;

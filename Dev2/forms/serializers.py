@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification, RequestStatus
+from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification
 
 class StepSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,6 +19,7 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
     attachments = AttachmentSerializer(many=True, read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     discipline_name = serializers.CharField(source='discipline.name', read_only=True)
+    student = serializers.ModelSerializer(source='student', read_only=True)
 
     class Meta:
         model = RecognitionOfPriorLearning
@@ -26,7 +27,7 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
             'id', 'course_workload', 'course_studied_workload', 'test_score', 'notice', 'discipline',
             'discipline_name', 'create_date', 'status_display', 'servant_feedback', 'servant_analysis_date',
             'professor_feedback', 'professor_analysis_date', 'coordinator_feedback', 'coordinator_analysis_date',
-            'attachments'
+            'attachments', 'student'
         ]
 
     def create(self, validated_data):

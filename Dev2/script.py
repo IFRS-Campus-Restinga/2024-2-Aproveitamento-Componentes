@@ -28,7 +28,7 @@ Student.objects.create(
 
 teacher = User.objects.create_user(username='ricardo@hotmail.com', first_name='ricardo', email='ricardo@hotmail.com',
                                    password=None)
-Servant.objects.create(
+servant = Servant.objects.create(
     user=teacher,
     name='ricardo',
     email='ricardo@hotmail.com',
@@ -75,4 +75,4 @@ discipline = Disciplines.objects.create(
     workload=123
 )
 
-discipline.professors.add(teacher)
+discipline.professors.add(servant)

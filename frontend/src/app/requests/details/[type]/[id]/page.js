@@ -3,6 +3,7 @@
 import {useEffect, useState} from "react";
 import {usePathname} from "next/navigation";
 import { default as Stepper }  from "@/components/Stepper/stepper";
+import styles from "./details.module.css";
 import {baseURL} from "@/libs/api";
 
 const Details = () => {
@@ -42,7 +43,7 @@ const Details = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div>
+        <div className={styles.container}>
             <h2>Detalhes da Solicitação</h2>
             {details ? (
                 <div>

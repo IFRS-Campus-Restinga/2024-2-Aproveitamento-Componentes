@@ -36,7 +36,7 @@ class Attachment(models.Model):
 # Model abstrato RequisitionForm
 class RequisitionForm(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # student = models.ForeignKey('users.Student', on_delete=models.CASCADE, null=True, blank=True)
+    student = models.ForeignKey('users.Student', on_delete=models.CASCADE, null=True, blank=True)
     discipline = models.ForeignKey('disciplines.Disciplines', on_delete=models.CASCADE)
     create_date = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.CREATED_REQUEST)
