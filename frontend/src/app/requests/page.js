@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import {useCallback, useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 import styles from "./requests.module.css";
-import { baseURL } from "@/libs/api";
+import {baseURL} from "@/libs/api";
 
 const Requests = () => {
     const [knowledgeCertifications, setKnowledgeCertifications] = useState([]);
@@ -57,73 +57,75 @@ const Requests = () => {
     return (
         <div className={styles.contentWrapper}>
             <div className={styles.scrollableTable}>
-                <h2>Certificações de conhecimento</h2>
+                <h2 className={styles.title}>Certificações de conhecimento</h2>
                 <table className={styles.table}>
                     <thead>
-                        <tr>
-                            <th>Estudante</th>
-                            <th>Disciplina</th>
-                            <th>Status</th>
-                            <th>Data de Criação</th>
-                        </tr>
+                    <tr>
+                        <th>Estudante</th>
+                        <th>Disciplina</th>
+                        <th>Status</th>
+                        <th>Data de Criação</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {knowledgeCertifications.length === 0 ? (
-                            <tr>
-                                <td colSpan="4" style={{ textAlign: 'center', color: 'gray' }}>
-                                    Sem resultados para Certificado de Conhecimento
+                    {knowledgeCertifications.length === 0 ? (
+                        <tr>
+                            <td colSpan="4" style={{textAlign: 'center', color: 'gray'}}>
+                                Sem resultados para Certificado de Conhecimento
+                            </td>
+                        </tr>
+                    ) : (
+                        knowledgeCertifications.map((certification) => (
+                            <tr key={certification.id}>
+                                <td>-</td>
+                                <td>{certification.discipline_name || "N/A"}</td>
+                                <td>{certification.status || "N/A"}</td>
+                                <td style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    {new Date(certification.create_date).toLocaleDateString("pt-BR")}
+                                    <button onClick={() => handleDetailsClick({...certification, type: 'knowledge'})}
+                                            style={{marginLeft: 'auto'}}>
+                                        Detalhes
+                                    </button>
                                 </td>
                             </tr>
-                        ) : (
-                            knowledgeCertifications.map((certification) => (
-                                <tr key={certification.id}>
-                                    <td>-</td>
-                                    <td>{certification.discipline_name || "N/A"}</td>
-                                    <td>{certification.status || "N/A"}</td>
-                                    <td style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        {new Date(certification.create_date).toLocaleDateString("pt-BR")}
-                                        <button onClick={() => handleDetailsClick({ ...certification, type: 'knowledge' })} style={{ marginLeft: 'auto' }}>
-                                            Detalhes
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
+                        ))
+                    )}
                     </tbody>
                 </table>
 
-                <h2>Aproveitamento de estudos</h2>
+                <h2 className={styles.title}>Aproveitamento de estudos</h2>
                 <table className={styles.table}>
                     <thead>
-                        <tr>
-                            <th>Estudante</th>
-                            <th>Disciplina</th>
-                            <th>Status</th>
-                            <th>Data de Criação</th>
-                        </tr>
+                    <tr>
+                        <th>Estudante</th>
+                        <th>Disciplina</th>
+                        <th>Status</th>
+                        <th>Data de Criação</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {recognitionOfPriorLearning.length === 0 ? (
-                            <tr>
-                                <td colSpan="4" style={{ textAlign: 'center', color: 'gray' }}>
-                                    Sem resultados para Aproveitamento de Estudos
+                    {recognitionOfPriorLearning.length === 0 ? (
+                        <tr>
+                            <td colSpan="4" style={{textAlign: 'center', color: 'gray'}}>
+                                Sem resultados para Aproveitamento de Estudos
+                            </td>
+                        </tr>
+                    ) : (
+                        recognitionOfPriorLearning.map((learning) => (
+                            <tr key={learning.id}>
+                                <td>-</td>
+                                <td>{learning.discipline_name || "N/A"}</td>
+                                <td>{learning.status || "N/A"}</td>
+                                <td style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    {new Date(learning.create_date).toLocaleDateString("pt-BR")}
+                                    <button onClick={() => handleDetailsClick({...learning, type: 'recognition'})}
+                                            style={{marginLeft: 'auto'}}>
+                                        Detalhes
+                                    </button>
                                 </td>
                             </tr>
-                        ) : (
-                            recognitionOfPriorLearning.map((learning) => (
-                                <tr key={learning.id}>
-                                    <td>-</td>
-                                    <td>{learning.discipline_name || "N/A"}</td>
-                                    <td>{learning.status || "N/A"}</td>
-                                    <td style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        {new Date(learning.create_date).toLocaleDateString("pt-BR")}
-                                        <button onClick={() => handleDetailsClick({ ...learning, type: 'recognition' })} style={{ marginLeft: 'auto' }}>
-                                            Detalhes
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
+                        ))
+                    )}
                     </tbody>
                 </table>
             </div>

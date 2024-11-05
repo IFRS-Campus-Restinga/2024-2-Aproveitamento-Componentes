@@ -5,24 +5,25 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 
 const steps = [
-  'Cadastro Requisição',
-  'Análise CRE',
-  'Análise Coordenador',
-  'Análise Professor',
-  'Homologação do Coordenador',
-  'Processo Finalizado',
+    'Solicitação Criada',
+    'Em análise do Ensino',
+    'Em análise do Coordenador',
+    'Em análise do Professor',
+    'Deferido',
+    'Concluído',
 ];
 
-export default function HorizontalLinearAlternativeLabelStepper() {
-  return (
-    <Box sx={{ width: '100%' }}>
-      <Stepper activeStep={1} alternativeLabel>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-    </Box>
-  );
+export default function HorizontalLinearAlternativeLabelStepper({currentStep}) {
+    const activeStep = steps.indexOf(currentStep);
+    return (
+        <Box sx={{width: '100%'}}>
+            <Stepper activeStep={activeStep} alternativeLabel>
+                {steps.map((label) => (
+                    <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                    </Step>
+                ))}
+            </Stepper>
+        </Box>
+    );
 }
