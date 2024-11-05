@@ -1,7 +1,8 @@
 'use client'
 import AuthService from "@/services/AuthService";
 import React from "react";
-import { useRouter, usePathname } from "next/navigation";
+import {usePathname} from "next/navigation";
+
 const AuthContext = React.createContext({
     user: null,
 });
@@ -14,7 +15,7 @@ export const useAuth = () => {
     return context;
 }
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
     const [user, setUser] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const pathname = usePathname();
