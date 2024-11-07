@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
                     if (pathname !== '/register') {
                         window.location.href = ('/register')
                     }
-                    return null;
+                    return setUser(null);
                 }
 
                 setUser(data);

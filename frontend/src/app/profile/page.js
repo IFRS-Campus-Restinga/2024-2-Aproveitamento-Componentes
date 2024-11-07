@@ -10,7 +10,7 @@ const profilePage = () => {
   const { user } = useAuth();
   const [modal, setModal] = useState(false);
   const isStudent = user?.type === 'Estudante';
-
+  console.log(user);
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -35,14 +35,22 @@ const profilePage = () => {
       <div className={styles.right}>
         {!isStudent && (
           <>
-            <Button className={styles.Button} label="Lista de usuários" onClick={() => window.location.href = `/usersList`} />
+            {(user?.type === 'Coordenador' || user?.type === 'Ensino') && (
+              <>
+                <Button className={styles.Button} label="Lista de usuários" onClick={() => window.location.href = `/usersList`} />
+                <Button className={styles.Button} label="Edital" onClick={() => window.location.href = `/notice`} />
+                <Button onClick={() => setModal(true)}>Cadastrar Disciplina</Button>
+              </>
+            )}
+          </>
+        )}
+        {user?.type !== 'Professor' && (
+          <>
+            <Button className={styles.Button} label="Solicitações" onClick={() => window.location.href = `/requests`} />
           </>
         )}
         <Button className={styles.Button} label="Alterar dados" onClick={() => window.location.href = `/register`} />
-        <Button className={styles.Button} label="Solicitações" onClick={() => window.location.href = `/requests`} />
-        <Button className={styles.Button} label="Edital" onClick={() => window.location.href = `/notice`} />
         <Button className={styles.Button} label="Formulário de solicitação" onClick={() => window.location.href = `/requests/requestForm`} />
-        <Button onClick={() => setModal(true)}>Cadastrar Disciplina</Button>
       </div>
       {modal && <ModalDisciplineRegistration onClose={() => setModal(false)} />}
     </div>
