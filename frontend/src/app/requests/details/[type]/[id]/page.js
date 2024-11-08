@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { default as Stepper } from "@/components/Stepper/stepper";
+import {useEffect, useRef, useState} from "react";
+import {usePathname, useRouter} from "next/navigation";
+import {useAuth} from "@/context/AuthContext";
+import {default as Stepper} from "@/components/Stepper/stepper";
 import styles from "./details.module.css";
-import { baseURL } from "@/libs/api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { Button } from 'primereact/button';
+import {baseURL} from "@/libs/api";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faEdit, faSave} from "@fortawesome/free-solid-svg-icons";
+import {Button} from 'primereact/button';
 
 const Details = () => {
     const [details, setDetails] = useState(null);
@@ -53,22 +53,21 @@ const Details = () => {
         setDisableReactivity(!isEditing);
     };
 
-const handleInput = (e) => {
-    let newText = e.currentTarget.textContent || "";
-    if (newText.length > 255) {
-        newText = newText.slice(0, 255);
-        e.currentTarget.textContent = newText;
-    }
-    setEditedKnowledge(newText);
-    setHasChanges(newText !== details.previous_knowledge);
-    const selection = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(editableRef.current);
-    range.collapse(false);
-    selection.removeAllRanges();
-    selection.addRange(range);
-};
-
+    const handleInput = (e) => {
+        let newText = e.currentTarget.textContent || "";
+        if (newText.length > 255) {
+            newText = newText.slice(0, 255);
+            e.currentTarget.textContent = newText;
+        }
+        setEditedKnowledge(newText);
+        setHasChanges(newText !== details.previous_knowledge);
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(editableRef.current);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    };
 
     const handleSave = async () => {
         try {
@@ -77,7 +76,7 @@ const handleInput = (e) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ previous_knowledge: editedKnowledge }),
+                body: JSON.stringify({previous_knowledge: editedKnowledge}),
             });
             if (!response.ok) throw new Error("Erro ao salvar alterações");
             setHasChanges(false);
@@ -93,7 +92,7 @@ const handleInput = (e) => {
     };
 
     const handleBack = () => {
-        router.push(`${baseURL}/requests`);
+        router.push("/requests");
     };
 
     if (loading) return <div>Loading...</div>;
@@ -124,17 +123,18 @@ const handleInput = (e) => {
                                 {editedKnowledge}
                             </span>
                             {details.status_display === "Solicitação Criada" && (
-                                <FontAwesomeIcon icon={faEdit} onClick={handleEditToggle}/>
+                                <FontAwesomeIcon icon={faEdit} onClick={handleEditToggle}
+                                                 className={`${styles.iconSpacing} ${styles.editIcon}`}/>
+                            )}
+                            {details.status_display === "Solicitação Criada" && hasChanges && (
+                                <FontAwesomeIcon icon={faSave} onClick={handleSave}
+                                                 className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
                             )}
                         </div>
                     )}
-                    {details.status_display === "Solicitação Criada" && hasChanges && (
-                        <Button variant="contained" color="primary" onClick={handleSave}>
-                            Salvar Alterações
-                        </Button>
-                    )}
-                    <Button variant="outlined" color="secondary" onClick={handleBack} className={styles.backButton}>
-                        Voltar para Listagem
+                    <Button variant="outlined" color="secondary" onClick={handleBack}
+                            className={`${styles.backButton} ${styles.iconSpacing}`}>
+                        Voltar
                     </Button>
                 </div>
             ) : (
