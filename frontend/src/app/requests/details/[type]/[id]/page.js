@@ -16,6 +16,8 @@ const Details = () => {
     const [error, setError] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editedKnowledge, setEditedKnowledge] = useState("");
+    const [editedCourseWorkload, setEditedCourseWorkload] = useState("");
+    const [editedCourseStudiedWorkload, setEditedCourseStudiedWorkload] = useState("");
     const [hasChanges, setHasChanges] = useState(false);
     const [disableReactivity, setDisableReactivity] = useState(false);
     const pathname = usePathname();
@@ -25,6 +27,7 @@ const Details = () => {
     const segments = pathname.split("/");
     const id = segments.at(-1);
     const type = segments.at(-2);
+    const role = user.user.type;
 
     useEffect(() => {
         if (!disableReactivity && id && type) {
@@ -35,6 +38,8 @@ const Details = () => {
                     const data = await response.json();
                     setDetails(data);
                     setEditedKnowledge(data.previous_knowledge || "");
+                    setEditedCourseWorkload(data.course_workload || "");
+                    setEditedCourseStudiedWorkload(data.course_studied_workload || "");
                 } catch (error) {
                     setError(error.message);
                 } finally {
@@ -53,20 +58,26 @@ const Details = () => {
         setDisableReactivity(!isEditing);
     };
 
-    const handleInput = (e) => {
+    const handleInput = (e, field) => {
         let newText = e.currentTarget.textContent || "";
+        if (field === 'course_workload' || field === 'course_studied_workload') {
+            newText = newText.replace(/[^0-9]/g, ''); // Mantém apenas números
+        }
         if (newText.length > 255) {
             newText = newText.slice(0, 255);
             e.currentTarget.textContent = newText;
         }
-        setEditedKnowledge(newText);
-        setHasChanges(newText !== details.previous_knowledge);
-        const selection = window.getSelection();
-        const range = document.createRange();
-        range.selectNodeContents(editableRef.current);
-        range.collapse(false);
-        selection.removeAllRanges();
-        selection.addRange(range);
+
+        if (field === 'course_workload') {
+            setEditedCourseWorkload(newText);
+            setHasChanges(newText !== details.course_workload);
+        } else if (field === 'course_studied_workload') {
+            setEditedCourseStudiedWorkload(newText);
+            setHasChanges(newText !== details.course_studied_workload);
+        } else {
+            setEditedKnowledge(newText);
+            setHasChanges(newText !== details.previous_knowledge);
+        }
     };
 
     const handleSave = async () => {
@@ -76,7 +87,11 @@ const Details = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({previous_knowledge: editedKnowledge}),
+                body: JSON.stringify({
+                    previous_knowledge: editedKnowledge,
+                    course_workload: editedCourseWorkload,
+                    course_studied_workload: editedCourseStudiedWorkload,
+                }),
             });
             if (!response.ok) throw new Error("Erro ao salvar alterações");
             setHasChanges(false);
@@ -85,6 +100,8 @@ const Details = () => {
             setDetails((prevDetails) => ({
                 ...prevDetails,
                 previous_knowledge: editedKnowledge,
+                course_workload: editedCourseWorkload,
+                course_studied_workload: editedCourseStudiedWorkload,
             }));
         } catch (error) {
             setError("Erro ao salvar alterações");
@@ -104,42 +121,93 @@ const Details = () => {
             {details ? (
                 <div>
                     <Stepper currentStep={details.status_display}/>
-                    <h1 className={styles.center_title}>Análise do Ensino</h1>
-                    <p className={styles.info}><strong>Aluno: </strong>{details.student_name}</p>
-                    <p className={styles.info}><strong>E-mail: </strong>{details.student_email}</p>
-                    <p className={styles.info}><strong>Matrícula: </strong>{details.student_matricula}</p>
-                    <p className={styles.info}><strong>Curso: </strong>{details.student_course}</p>
-                    <p className={styles.info}><strong>Componente curricular: </strong>{details.discipline_name}</p>
-                    {type === "knowledge-certifications" && (
-                        <div className={styles.info}>
-                            <strong>Experiência anterior: </strong>
-                            <span
-                                ref={editableRef}
-                                contentEditable={isEditing}
-                                suppressContentEditableWarning={true}
-                                className={`${styles.editableSpan} ${isEditing ? styles.editing : ''}`}
-                                onInput={handleInput}
-                            >
-                                {editedKnowledge}
-                            </span>
-                            {details.status_display === "Solicitação Criada" && (
-                                <FontAwesomeIcon icon={faEdit} onClick={handleEditToggle}
-                                                 className={`${styles.iconSpacing} ${styles.editIcon}`}/>
-                            )}
-                            {details.status_display === "Solicitação Criada" && hasChanges && (
-                                <FontAwesomeIcon icon={faSave} onClick={handleSave}
-                                                 className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
-                            )}
-                        </div>
-                    )}
-                    <Button variant="outlined" color="secondary" onClick={handleBack}
-                            className={`${styles.backButton} ${styles.iconSpacing}`}>
-                        Voltar
-                    </Button>
+                    <div className={styles.analysis}>
+                        <h1 className={styles.center_title}>Análise do Ensino</h1>
+                        <p className={styles.info}><strong>Aluno: </strong>{details.student_name}</p>
+                        <p className={styles.info}><strong>E-mail: </strong>{details.student_email}</p>
+                        <p className={styles.info}><strong>Matrícula: </strong>{details.student_matricula}</p>
+                        <p className={styles.info}><strong>Curso: </strong>{details.student_course}</p>
+                        <p className={styles.info}><strong>Componente curricular: </strong>{details.discipline_name}</p>
+
+                        {type === "knowledge-certifications" && (
+                            <div className={styles.infoField}>
+                                <strong>Experiência anterior: </strong>
+                                <span
+                                    ref={editableRef}
+                                    contentEditable={isEditing}
+                                    suppressContentEditableWarning={true}
+                                    className={`${styles.editableSpan} ${isEditing ? styles.editing : ''}`}
+                                    onInput={(e) => handleInput(e, 'previous_knowledge')}
+                                >
+                                    {editedKnowledge}
+                                </span>
+                                {role === "Estudante" && details.status_display === "Solicitação Criada" && (
+                                    <>
+                                        <FontAwesomeIcon icon={faEdit} onClick={handleEditToggle}
+                                                         className={`${styles.iconSpacing} ${styles.editIcon}`}/>
+                                        {isEditing && hasChanges && (
+                                            <FontAwesomeIcon icon={faSave} onClick={handleSave}
+                                                             className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        )}
+
+                        {type === "recognition-forms" && (
+                            <>
+                                <div className={styles.infoField}>
+                                    <strong>Carga horária: </strong>
+                                    <span
+                                        ref={editableRef}
+                                        contentEditable={isEditing}
+                                        suppressContentEditableWarning={true}
+                                        className={`${styles.editableSpan} ${isEditing ? styles.editing : ''}`}
+                                        onInput={(e) => handleInput(e, 'course_workload')}
+                                    >
+                                        {editedCourseWorkload}
+                                    </span>
+                                    {role === "Estudante" && details.status_display === "Solicitação Criada" && (
+                                        <>
+                                            <FontAwesomeIcon icon={faEdit} onClick={handleEditToggle}
+                                                             className={`${styles.iconSpacing} ${styles.editIcon}`}/>
+                                            {isEditing && hasChanges && (
+                                                <FontAwesomeIcon icon={faSave} onClick={handleSave}
+                                                                 className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                                <div className={styles.infoField}>
+                                    <strong>Carga horária efetiva: </strong>
+                                    <span
+                                        ref={editableRef}
+                                        contentEditable={isEditing}
+                                        suppressContentEditableWarning={true}
+                                        className={`${styles.editableSpan} ${isEditing ? styles.editing : ''}`}
+                                        onInput={(e) => handleInput(e, 'course_studied_workload')}
+                                    >
+                                        {editedCourseStudiedWorkload}
+                                    </span>
+                                    {role === "Estudante" && details.status_display === "Solicitação Criada" && (
+                                        <>
+                                            <FontAwesomeIcon icon={faEdit} onClick={handleEditToggle}
+                                                             className={`${styles.iconSpacing} ${styles.editIcon}`}/>
+                                            {isEditing && hasChanges && (
+                                                <FontAwesomeIcon icon={faSave} onClick={handleSave}
+                                                                 className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             ) : (
-                <p>Nenhum detalhe encontrado.</p>
+                <div>Nenhum detalhe disponível</div>
             )}
+            <Button label="Voltar" onClick={handleBack} className={styles.backButton}/>
         </div>
     );
 };
