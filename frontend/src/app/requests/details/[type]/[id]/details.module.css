@@ -1,3 +1,18 @@
+.editableSpan {
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.editableSpan.editing {
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+
+.editIcon {
+    cursor: pointer;
+    margin-left: 8px;
+}
+
 .center_title {
   text-align: center;
   padding: 16px;
