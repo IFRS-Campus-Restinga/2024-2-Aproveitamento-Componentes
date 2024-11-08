@@ -1,6 +1,21 @@
+.center_title {
+  text-align: center;
+  padding: 16px;
+}
+
+.info {
+  text-align: left;
+  font-size: 14pt;
+}
+
+.stepper {
+  padding: 16px;
+}
+
 .container {
   margin-left: 10%;
   margin-right: 10%;
+  min-height: 100vh;
 }
 
 .contentWrapper {
