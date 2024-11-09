@@ -11,6 +11,9 @@ class Servant(AbstractUser):
         default=ServantTypeEnum.TEACHER.value,
         # Definindo enum como choices
     )
+
+    def __str__(self):
+        return self.name + " - " + self.servant_type
     
     @property
     def type(self):

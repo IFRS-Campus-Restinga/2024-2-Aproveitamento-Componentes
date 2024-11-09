@@ -6,6 +6,7 @@ from ..serializers.user import CreateUserSerializer
 from ..services.user import UserService
 from ..models import AbstractUser
 
+
 class CreateUserView(APIView):
 
     parser_classes = (MultiPartParser, FormParser)
