@@ -1,13 +1,20 @@
 .infoField {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-top: 16px;
 }
 
 .editableSpan {
+    font-size: 14pt;
     flex-grow: 1;
     margin-right: 4px;
     padding: 4px;
+}
+
+.editableSpan.editing {
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.6);
 }
 
 .iconSpacing {
@@ -26,14 +33,36 @@
     margin-left: 4px;
 }
 
-.editableSpan.editing {
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
+.main_title {
+    text-align: center;
+    padding: 16px 4px;
+    position: relative;
+    font-size: 28px;
 }
 
 .center_title {
     text-align: center;
-    padding: 16px;
+    padding: 16px 4px;
+    position: relative;
+    font-size: 24px;
+}
+
+.center_title::before,
+.center_title::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background-color: #ccc;
+}
+
+.center_title::before {
+    left: 0;
+}
+
+.center_title::after {
+    right: 0;
 }
 
 .info {
@@ -41,6 +70,7 @@
     align-items: center;
     text-align: left;
     font-size: 14pt;
+    margin-bottom: 2px;
 }
 
 .stepper {
@@ -50,6 +80,9 @@
 .analysis {
     margin-left: 15%;
     margin-right: 15%;
+    display: flex;
+    flex-direction: column;
+    /*gap: 5px;*/
 }
 
 .container {
@@ -103,4 +136,80 @@
 
 .table tbody tr:hover {
     background-color: #ddd;
+}
+
+.infoSection {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.infoColumn {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.actionColumn {
+    vertical-align: center;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.statusContainer {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.statusButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.yellow {
+    background-color: #ffcc00; /* Amarelo */
+}
+
+.red {
+    background-color: #dc3545; /* Vermelho */
+}
+
+.green {
+    background-color: #28a745; /* Verde */
+}
+
+.statusIcon {
+    font-size: 20px;
+}
+
+.actionButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.p-button-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.p-button-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.backButton {
+    margin-top: 20px;
 }

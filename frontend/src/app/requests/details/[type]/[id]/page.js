@@ -7,7 +7,7 @@ import {default as Stepper} from "@/components/Stepper/stepper";
 import styles from "./details.module.css";
 import {baseURL} from "@/libs/api";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faSave} from "@fortawesome/free-solid-svg-icons";
+import {faClock, faEdit, faSave} from "@fortawesome/free-solid-svg-icons";
 import {Button} from 'primereact/button';
 
 const Details = () => {
@@ -112,6 +112,17 @@ const Details = () => {
         router.push("/requests");
     };
 
+    const getStatusProps = (status) => {
+        switch (status) {
+            case "Solicitação Criada":
+                return {color: "yellow", icon: faClock, label: "Pendente"};
+            case "Rejeitado Pelo Ensino":
+                return {color: "red", icon: faTimes, label: "Rejeitado"};
+            default:
+                return {color: "green", icon: faCheck, label: "Aprovado"};
+        }
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
@@ -131,7 +142,7 @@ const Details = () => {
 
                         {type === "knowledge-certifications" && (
                             <div className={styles.infoField}>
-                                <strong>Experiência anterior: </strong>
+                                <strong className={styles.info}>Experiência anterior: </strong>
                                 <span
                                     ref={editableRef}
                                     contentEditable={isEditing}
@@ -157,7 +168,7 @@ const Details = () => {
                         {type === "recognition-forms" && (
                             <>
                                 <div className={styles.infoField}>
-                                    <strong>Carga horária: </strong>
+                                    <strong className={styles.info}>Carga horária: </strong>
                                     <span
                                         ref={editableRef}
                                         contentEditable={isEditing}
@@ -179,7 +190,7 @@ const Details = () => {
                                     )}
                                 </div>
                                 <div className={styles.infoField}>
-                                    <strong>Carga horária efetiva: </strong>
+                                    <strong className={styles.info}>Carga horária efetiva: </strong>
                                     <span
                                         ref={editableRef}
                                         contentEditable={isEditing}
@@ -202,6 +213,32 @@ const Details = () => {
                                 </div>
                             </>
                         )}
+                        <div className={styles.actionColumn}>
+                            <div
+                                className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display).color]}`}>
+                                <strong>Status: </strong>
+                                <div className={styles.statusButton}>
+                                    <FontAwesomeIcon icon={getStatusProps(details.status_display).icon}/>
+                                    {getStatusProps(details.status_display).label}
+                                </div>
+                            </div>
+
+                            {/*role === "Ensino" && */details.status_display === "Solicitação Criada" && (
+                                <div className={styles.actionButtons}>
+                                    <Button label="Aprovar" icon="pi pi-check" className="p-button-success"/>
+                                    <Button label="Rejeitar" icon="pi pi-times" className="p-button-danger"/>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className={styles.analysis}>
+                        <h1 className={styles.center_title}>Análise do Coordenador</h1>
+                    </div>
+                    <div className={styles.analysis}>
+                        <h1 className={styles.center_title}>Marcar Prova</h1>
+                    </div>
+                    <div className={styles.analysis}>
+                        <h1 className={styles.center_title}>Análise do Professor</h1>
                     </div>
                 </div>
             ) : (
