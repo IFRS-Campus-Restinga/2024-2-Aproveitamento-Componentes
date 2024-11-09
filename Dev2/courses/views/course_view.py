@@ -2,8 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
-from ..models import Course, Discipline
+from ..models import Course
 from ..serializers.CourseSerializer import CourseSerializer
+from disciplines.models import Disciplines
 
 
 class ListCoursesAPIView(APIView):
@@ -46,7 +47,7 @@ class CreateCourseAPIView(APIView):
             disciplines_data = request.data.get('disciplines')
             if disciplines_data:
                 # Buscando as disciplinas pelo ID
-                disciplines = Discipline.objects.filter(id__in=[d['id'] for d in disciplines_data])
+                disciplines = Disciplines.objects.filter(id__in=[d['id'] for d in disciplines_data])
                 course.disciplines.set(disciplines)
 
             # Serializa novamente para retornar os dados do curso criado
@@ -91,7 +92,7 @@ class UpdateCourseAPIView(APIView):
             disciplines_data = request.data.get('disciplines')
             if disciplines_data:
                 # Busca as disciplinas pelo ID fornecido
-                disciplines = Discipline.objects.filter(id__in=[d['id'] for d in disciplines_data])
+                disciplines = Disciplines.objects.filter(id__in=[d['id'] for d in disciplines_data])
                 course.disciplines.set(disciplines)
 
             # Serializa e retorna os dados do curso atualizado
