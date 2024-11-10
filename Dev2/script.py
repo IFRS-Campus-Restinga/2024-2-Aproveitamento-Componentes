@@ -60,13 +60,21 @@ Servant.objects.create(
 cre = User.objects.create_user(username='servidor@hotmail.com', first_name='servidor', email='servidor@hotmail.com', password=None)
 Servant.objects.create(
     user= cre,
-    name='servidor',
+    name='ensino',
     email='servidor@hotmail.com',
     siape="2121212",
     servant_type=ServantTypeEnum.ENSINO.value,
     is_verified=True
 )
-
+cre2 = User.objects.create_user(username='103891655523380520625', first_name='servidor', email='aluno.ifrs.restinga@gmail.com', password=None)
+Servant.objects.create(
+    user= cre2,
+    name='servidor teste',
+    email='aluno.ifrs.restinga@gmail.com',
+    siape="3231213",
+    servant_type=ServantTypeEnum.ENSINO.value,
+    is_verified=True
+)
 notice = Notice.objects.create(
     number="001-2023",
     publication_date="2023-10-01T09:00:00Z",
