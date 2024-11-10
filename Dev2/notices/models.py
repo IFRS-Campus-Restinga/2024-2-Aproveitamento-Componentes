@@ -3,10 +3,9 @@ from django.utils import timezone
 import uuid
 import json
 
-
 class Notice(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    number = models.CharField(max_length=50, unique=True)
+    number = models.CharField(max_length=50)
     publication_date = models.DateTimeField(default=timezone.now)
     documentation_submission_start = models.DateTimeField()
     documentation_submission_end = models.DateTimeField()
@@ -16,7 +15,8 @@ class Notice(models.Model):
     result_publication_end = models.DateTimeField()
     result_homologation_start = models.DateTimeField()
     result_homologation_end = models.DateTimeField()
-
+    link = models.URLField(max_length=200, blank=True, null=True)
+    rectifications = models.JSONField(default=list, blank=True)
     extra_fields = models.TextField(blank=True, null=True)
 
     def __str__(self):
