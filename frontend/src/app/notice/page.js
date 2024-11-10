@@ -6,6 +6,7 @@ import styles from "./notice.module.css";
 import ModalNotice from "@/components/Modal/ModalNotice/page";
 import { noticeList } from "@/services/NoticeService";
 import AuthService from "@/services/AuthService";
+import { useDateFormatter } from "@/hooks/useDateFormatter";
 
 const Notice = () => {
   const [notices, setNotices] = useState([]);
@@ -49,9 +50,15 @@ const Notice = () => {
           <tbody>
             {notices.map((notice) => (
               <tr key={notice.id} onClick={() => openModalForEdit(notice)}>
-                <td>{notice.publication_date ?? "N/A"}</td>
-                <td>{notice.documentation_submission_start ?? "N/A"}</td>
-                <td>{notice.documentation_submission_end ?? "N/A"}</td>
+                <td>{useDateFormatter(notice.publication_date) ?? "N/A"}</td>
+                <td>
+                  {useDateFormatter(notice.documentation_submission_start) ??
+                    "N/A"}
+                </td>
+                <td>
+                  {useDateFormatter(notice.documentation_submission_end) ??
+                    "N/A"}
+                </td>
                 <td>{notice.Link ?? "N/A"}</td>
               </tr>
             ))}

@@ -3,7 +3,6 @@ import axios from "axios";
 import AuthService from "@/services/AuthService";
 
 export default function GetUsers() {
-  console.log("aqui")
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,7 +14,6 @@ export default function GetUsers() {
         console.log(response);
 
         setUsers(response.data);
-
       } catch (err) {
         setError("Error fetching users");
       } finally {
@@ -36,5 +34,3 @@ export default function GetUsers() {
 
   return users;
 }
-
-// import { apiClient } from "@/libs/api";

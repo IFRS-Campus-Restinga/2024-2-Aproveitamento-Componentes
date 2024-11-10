@@ -6,7 +6,8 @@ import { noticeCreate, noticeEdit } from "@/services/NoticeService";
 
 const ModalNotice = ({ onClose, editData = null }) => {
   const [formData, setFormData] = useState({
-    publicationDateFrom: editData?.publicationDateFrom || "",
+    number: editData?.number || "",
+    publicationDate: editData?.publicationDate || "",
     publicationDateTo: editData?.publicationDateTo || "",
     documentationDeadlineFrom: editData?.documentationDeadlineFrom || "",
     documentationDeadlineTo: editData?.documentationDeadlineTo || "",
@@ -16,6 +17,8 @@ const ModalNotice = ({ onClose, editData = null }) => {
     resultPublicationTo: editData?.resultPublicationTo || "",
     resultApprovalFrom: editData?.resultApprovalFrom || "",
     resultApprovalTo: editData?.resultApprovalTo || "",
+    link: editData?.link || "",
+    rectifications: editData?.rectifications || [""],
   });
 
   const handleChange = (e) => {
@@ -26,13 +29,28 @@ const ModalNotice = ({ onClose, editData = null }) => {
     }));
   };
 
+  const handleRectificationChange = (index, value) => {
+    setFormData((prev) => {
+      const updatedRectifications = [...prev.rectifications];
+      updatedRectifications[index] = value;
+      return { ...prev, rectifications: updatedRectifications };
+    });
+  };
+
+  const addRectification = () => {
+    setFormData((prev) => ({
+      ...prev,
+      rectifications: [...prev.rectifications, ""],
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
-      number: "003-2023", // ajuste o número conforme necessário
+      number: formData.number,
       publication_date: new Date(
-        `${formData.publicationDateFrom}T09:00:00Z`
+        `${formData.publicationDate}T09:00:00Z`
       ).toISOString(),
       documentation_submission_start: new Date(
         `${formData.documentationDeadlineFrom}T09:00:00Z`
@@ -76,23 +94,25 @@ const ModalNotice = ({ onClose, editData = null }) => {
     <div className={styles.modalBackground}>
       <form onSubmit={handleSubmit} className={styles.modalContainer}>
         <label style={{ fontWeight: "700", fontSize: "20px" }}>
+          Número do Edital
+        </label>
+        <TextField
+          type="text"
+          name="number"
+          value={formData.number}
+          onChange={handleChange}
+          placeholder="Ex: 002-2024"
+          className={styles.textInput}
+          fullWidth
+        />
+        <label style={{ fontWeight: "700", fontSize: "20px" }}>
           Data de Publicação do Edital
         </label>
         <div className={styles.dateRange}>
-          <label>De</label>
           <TextField
             type="date"
-            name="publicationDateFrom"
-            value={formData.publicationDateFrom}
-            onChange={handleChange}
-            className={styles.dateInput}
-            fullWidth
-          />
-          <label>Até</label>
-          <TextField
-            type="date"
-            name="publicationDateTo"
-            value={formData.publicationDateTo}
+            name="publicationDate"
+            value={formData.publicationDate}
             onChange={handleChange}
             className={styles.dateInput}
             fullWidth
@@ -190,6 +210,35 @@ const ModalNotice = ({ onClose, editData = null }) => {
             fullWidth
           />
         </div>
+        <label style={{ fontWeight: "700", fontSize: "20px" }}>
+          Link do Edital
+        </label>
+        <TextField
+          type="text"
+          name="link"
+          value={formData.link}
+          onChange={handleChange}
+          placeholder="Insira o link do edital"
+          className={styles.textInput}
+          fullWidth
+        />
+        <label style={{ fontWeight: "700", fontSize: "20px" }}>
+          Retificações
+        </label>
+        {formData.rectifications.map((rectification, index) => (
+          <TextField
+            key={index}
+            type="text"
+            value={rectification}
+            onChange={(e) => handleRectificationChange(index, e.target.value)}
+            placeholder="Insira o link da retificação"
+            className={styles.textInput}
+            fullWidth
+          />
+        ))}
+        <Button type="button" onClick={addRectification}>
+          Adicionar Retificação
+        </Button>
         <div style={{ display: "flex", gap: "50px" }}>
           <Button type="submit">Cadastrar</Button>
           <Button type="button" color="#af0a0a" onClick={onClose}>
