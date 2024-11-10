@@ -18,7 +18,25 @@ Student.objects.create(
     name='eduardo',
     email='eduardo@hotmail.com',
     matricula="3212313",
-    course="ADS"
+    course="ADS",
+    is_active=False
+)
+stundent3 = User.objects.create_user(username='aaa', first_name='bruno', email='bruno@hotmail.com', password=None)
+Student.objects.create(
+    user= stundent3,
+    name='bruno',
+    email='bruno@gmail.com',
+    matricula="323123",
+    course="ADS",
+)
+
+stundent4 = User.objects.create_user(username='bbb', first_name='fernando', email='fernando@hotmail.com', password=None)
+Student.objects.create(
+    user= stundent4,
+    name='fernando',
+    email='fernando@gmail.com',
+    matricula="323123",
+    course="ADS",
 )
 
 teacher = User.objects.create_user(username='ricardo@hotmail.com', first_name='ricardo', email='ricardo@hotmail.com', password=None)
@@ -26,7 +44,8 @@ Servant.objects.create(
     user= teacher,
     name='ricardo',
     email='ricardo@hotmail.com',
-    siape="123123"
+    siape="123123",
+    servant_type=ServantTypeEnum.TEACHER.value,
 )
 coordenador = User.objects.create_user(username='roben@hotmail.com', first_name='roben', email='roben@hotmail.com', password=None)
 Servant.objects.create(
@@ -34,7 +53,8 @@ Servant.objects.create(
     name='roben',
     email='roben@hotmail.com',
     siape="3213234455",
-    servant_type=ServantTypeEnum.COORDINATOR.value
+    servant_type=ServantTypeEnum.COORDINATOR.value,
+    is_verified=True
 )
 
 cre = User.objects.create_user(username='servidor@hotmail.com', first_name='servidor', email='servidor@hotmail.com', password=None)
@@ -44,7 +64,7 @@ Servant.objects.create(
     email='servidor@hotmail.com',
     siape="2121212",
     servant_type=ServantTypeEnum.ENSINO.value,
-    is_active=False
+    is_verified=True
 )
 
 notice = Notice.objects.create(

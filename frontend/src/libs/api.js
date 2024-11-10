@@ -15,12 +15,11 @@ apiClient.interceptors.request.use((config) => {
             config.headers.Authorization = `Token ${token}`;
         } 
     } catch (error) {
-        // OK to ignore
+
     }
 
-    // Verifica se os dados enviados são uma instância de FormData
+
     if (config.data instanceof FormData) {
-        // Remove o cabeçalho Content-Type para permitir que o navegador o defina
         delete config.headers['Content-Type'];
     }
 

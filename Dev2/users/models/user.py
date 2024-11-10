@@ -10,6 +10,7 @@ class AbstractUser(PolymorphicModel):
     email = models.EmailField(max_length = 254)
     entry_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=False)
 
     @property
     def type(self):

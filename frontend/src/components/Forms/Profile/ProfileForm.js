@@ -5,8 +5,9 @@ import { Dropdown } from 'primereact/dropdown';
 import { useState, useEffect } from 'react';
 import styles from './ProfileForm.module.css';
 import AuthService from '@/services/AuthService';
+import { handleApiResponse } from '@/libs/apiResponseHandler';
 
-const FormProfile = ({ user = false }) => {
+const FormProfile = ({ user = false, onCancel, admEditing = false }) => {
     const [userData, setUserData] = useState({
         id: '',
         name: '',
@@ -34,33 +35,24 @@ const FormProfile = ({ user = false }) => {
         }
     }, []);
 
-
     const submitForm = async () => {
+        let response;
         console.log('Dados enviados:', userData);
 
         const formData = new FormData();
         formData.append('name', userData.name);
         formData.append('email', userData.email);
-        formData.append('isStudent', userData.isStudent);
+        formData.append('is_student', userData.isStudent);
         if (userData.matricula) formData.append('matricula', userData.matricula);
         if (userData.course) formData.append('course', userData.course);
         if (userData.siape) formData.append('siape', userData.siape);
         if (userData.servant_type) formData.append('servant_type', userData.servant_type);
-
         if (userData.id !== '') {
-            await AuthService.UpdateUser(userData.id, formData).then(response => {
-                console.log('Usuário atualizado com sucesso:', response);
-            }).catch(error => {
-                console.error('Erro ao updeitar usuário:', error)
-            });
+            response = await AuthService.UpdateUser(userData.id, formData)
         } else {
-            console.log('Usuário criado com sucesso');
-            await AuthService.CreateUser(formData).then(response => {
-                console.log('Usuário criado com sucesso:', response);
-            }).catch(error => {
-                console.error('Erro ao criar usuário:', error)
-            });
+            response = await AuthService.CreateUser(formData)
         };
+        handleApiResponse(response);
     }
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -82,6 +74,15 @@ const FormProfile = ({ user = false }) => {
         { label: 'Coordenador', value: 'Coordenador' },
         { label: 'Ensino', value: 'Ensino' },
     ];
+
+    const shouldShowAllOptions =
+    admEditing || (userData.servant_type !== 'Professor' &&
+        userData.servant_type !== '' &&
+        userData.servant_type !== null);
+
+const filteredServantTypeOptions = shouldShowAllOptions
+    ? servantTypeOptions
+    : servantTypeOptions.filter((option) => option.value === 'Professor');
 
     return (
         <form onSubmit={submitForm} className={styles.formContainer}>
@@ -161,7 +162,7 @@ const FormProfile = ({ user = false }) => {
                             id="servant_type"
                             name="servant_type"
                             value={userData.servant_type || ''}
-                            options={servantTypeOptions}
+                            options={filteredServantTypeOptions}
                             onChange={(e) =>
                                 setUserData((userData) => ({
                                     ...userData,
@@ -173,8 +174,10 @@ const FormProfile = ({ user = false }) => {
                     </div>
                 </>
             )}
+            <div className="flex space-x-36">
             <Button className={styles.submitButton} label="Salvar" type="submit" />
-            
+            <Button className={styles.submitButton} label="Voltar" type= "button" onClick={onCancel}/>
+            </div>
         </form>
     );
 }

@@ -42,12 +42,12 @@ class CreateUserSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     matricula = serializers.CharField(required=False, allow_blank=True)
     course = serializers.CharField(required=False, allow_blank=True)
-    isStudent = serializers.BooleanField(default=False)
+    is_student = serializers.BooleanField(default=False)
     siape = serializers.CharField(required=False, allow_blank=True)
     servant_type = serializers.CharField(required=False, allow_blank=True)
 
     def validate(self, data):
 
-        is_student = data.get("isStudent", False)
+        is_student = data.get("is_student", False)
         
         return data

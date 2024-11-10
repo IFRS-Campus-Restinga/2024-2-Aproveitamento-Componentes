@@ -2,7 +2,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..serializers.user import CreateUserSerializer
+from ..serializers.user import CreateUserSerializer, UserPolymorphicSerializer
 from ..services.user import UserService
 from ..models import AbstractUser
 
@@ -40,7 +40,8 @@ class UpdateUserByIdView(APIView):
         usuario = request.user
         serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid():
-            updated = self.user_service.updateUserById(id, serializer)
+            updated = self.user_service.updateUserById(id, serializer, usuario)
             if updated is not None:
-                return Response({"id": updated.id}, status=status.HTTP_201_CREATED)
+                updated = UserPolymorphicSerializer(updated)
+                return Response({"id": updated.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

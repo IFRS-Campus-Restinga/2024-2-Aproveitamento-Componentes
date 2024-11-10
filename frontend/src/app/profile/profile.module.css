@@ -3,29 +3,36 @@
     height: 50vh;
 }
 
-.left {
+.left,
+.right {
     flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 50%;
 }
 
-.right {
+.left {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
 .userInfo {
     text-align: center;
+    width: 100%;
+}
+
+.right {
+    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
+    padding: 20px;
 }
 
 .Button {
-    width: calc(30% - 10px);
-    min-width: 150px;
-    max-width: 200px;
-    flex: 1 1 auto;
-
+    width: 200px;
+    height: 60px;
+    text-align: center;
+    line-height: 30px;
+    box-sizing: border-box;
 }

@@ -6,6 +6,8 @@ export const useUserFilters = (users, setFilteredUsers) => {
   const [showInactive, setShowInactive] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedVerifieds, setSelectedVerifieds] = useState(null);
 
   const applyFilters = () => {
     let result = users;
@@ -36,6 +38,12 @@ export const useUserFilters = (users, setFilteredUsers) => {
     if (selectedRole) {
       result = result.filter((user) => user.type === selectedRole.title);
     }
+    if (selectedStatus) {
+      result = result.filter((user) => user.is_active == selectedStatus.id);
+    }
+    if (selectedVerifieds) {
+      result = result.filter((user) => user.is_verified == selectedVerifieds.id);
+    }
 
     if (!(showActive && showInactive)) {
       if (showActive) {
@@ -56,6 +64,10 @@ export const useUserFilters = (users, setFilteredUsers) => {
     setShowActive,
     showInactive,
     setShowInactive,
+    selectedStatus,
+    setSelectedStatus,
+    selectedVerifieds,
+    setSelectedVerifieds,
     selectedCourse,
     setSelectedCourse,
     selectedRole,

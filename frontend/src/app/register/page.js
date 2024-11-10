@@ -22,7 +22,7 @@ const RegisterPage = () => {
 
     }
     return (
-        <FormProfile user={user} />
+        <FormProfile user={user} onCancel={() => window.location.href = `/profile` } />
     );
 }
 

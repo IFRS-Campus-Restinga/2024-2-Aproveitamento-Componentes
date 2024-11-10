@@ -9,7 +9,7 @@ import FilterCheckbox from "@/components/FilterCheckbox/filterCheckbox";
 import { useUserFilters } from "@/hooks/useUserFilters";
 import AuthService from "@/services/AuthService";
 import FormProfile from "@/components/Forms/Profile/ProfileForm";
-
+import { handleApiResponse } from "@/libs/apiResponseHandler";
 const UsersList = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -21,10 +21,10 @@ const UsersList = () => {
   const {
     search,
     setSearch,
-    showActive,
-    setShowActive,
-    showInactive,
-    setShowInactive,
+    selectedStatus,
+    setSelectedStatus,
+    selectedVerifieds,
+    setSelectedVerifieds,
     selectedCourse,
     setSelectedCourse,
     selectedRole,
@@ -37,6 +37,7 @@ const UsersList = () => {
       try {
         const data = await AuthService.UserList();
         console.log(data);
+        handleApiResponse(data);
         setUsers(data);
         setFilteredUsers(data);
       } catch (err) {
@@ -117,15 +118,21 @@ const UsersList = () => {
             label="Tipo"
             onChange={(event, value) => setSelectedRole(value)}
           />
-          <FilterCheckbox
-            label={"Ativo"}
-            checked={showActive}
-            onChange={() => setShowActive(!showActive)}
+          <Filter
+            optionList={[
+              { id: true, title: 'Ativo' },
+              { id: false, title: 'Inativo' },
+            ]}
+            label="Estado"
+            onChange={(event, value) => setSelectedStatus(value)}
           />
-          <FilterCheckbox
-            label={"Inativo"}
-            checked={showInactive}
-            onChange={() => setShowInactive(!showInactive)}
+          <Filter
+            optionList={[
+              { id: true, title: 'Sim' },
+              { id: false, title: 'Não' },
+            ]}
+            label="Verificado"
+            onChange={(event, value) => setSelectedVerifieds(value)}
           />
           <Btn color="#46b5ff" onClick={applyFilters}>
             Filtrar
@@ -143,6 +150,7 @@ const UsersList = () => {
                 <th>SIAPE</th>
                 <th>Servidor</th>
                 <th>Estado</th>
+                <th>Verificado</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -157,6 +165,9 @@ const UsersList = () => {
                   <td>{user.siape ?? "N/A"}</td>
                   <td>{user.servant_type ?? "N/A"}</td>
                   <td>{user.is_active ? "Ativo" : "Inativo"}</td>
+                  <td>{user.is_verified ? <span className="p-icon pi pi-fw pi-check-circle ms-9 text-2xl" style={{ color: "#2f9e41" }}></span>
+                    : <span className="p-icon pi pi-fw pi-exclamation-triangle ms-9 text-2xl" style={{ color: "#f1c40f" }}></span>}
+                  </td>
                   <td>
                     <FontAwesomeIcon
                       icon={faPenToSquare}
@@ -182,10 +193,8 @@ const UsersList = () => {
             user={editingUser}
             onSave={(updatedUser) => saveEdit(updatedUser)}
             onCancel={() => setEditingUser(null)}
+            admEditing={true}
           />
-            <Btn type={"cancel"} onClick={() => setEditingUser(null)}>
-              Cancelar
-            </Btn>
         </div>
       )}
     </div>

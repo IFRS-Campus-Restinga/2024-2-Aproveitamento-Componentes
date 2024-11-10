@@ -7,8 +7,7 @@ class Servant(AbstractUser):
     siape = models.CharField(max_length=255, blank=True)
     servant_type = models.CharField(
         max_length=50,
-        choices=[(tag.name, tag.value) for tag in ServantTypeEnum],
-        default=ServantTypeEnum.TEACHER.value,
+        choices=[(tag.name, tag.value) for tag in ServantTypeEnum]
         # Definindo enum como choices
     )
     
