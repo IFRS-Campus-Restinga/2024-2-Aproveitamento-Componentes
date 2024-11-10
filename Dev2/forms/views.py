@@ -1,6 +1,7 @@
 from rest_framework import generics
+from rest_framework.response import Response
 
-from .models import RecognitionOfPriorLearning, KnowledgeCertification, Step
+from .models import RecognitionOfPriorLearning, KnowledgeCertification, Step, RequestStatus
 from .serializers import (
     RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer, StepSerializer
 )
@@ -33,6 +34,20 @@ class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateDestroyAPIView
     serializer_class = RecognitionOfPriorLearningSerializer
     lookup_field = 'id'
 
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        status = request.data.get('status')
+
+        if status:
+            if status not in dict(RequestStatus.choices):
+                return Response({"detail": "Status inválido"}, status=status.HTTP_400_BAD_REQUEST)
+            instance.status = status
+            instance.save()
+
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+
+        return Response({"detail": "Status não fornecido"}, status=status.HTTP_400_BAD_REQUEST)
 
 # View para listar e criar KnowledgeCertification
 class KnowledgeCertificationListCreateView(generics.ListCreateAPIView):
@@ -45,3 +60,18 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = KnowledgeCertification.objects.all()
     serializer_class = KnowledgeCertificationSerializer
     lookup_field = 'id'
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        status = request.data.get('status')
+
+        if status:
+            if status not in dict(RequestStatus.choices):
+                return Response({"detail": "Status inválido"}, status=status.HTTP_400_BAD_REQUEST)
+            instance.status = status
+            instance.save()
+
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+
+        return Response({"detail": "Status não fornecido"}, status=status.HTTP_400_BAD_REQUEST)

@@ -10,10 +10,12 @@ class RequestStatus(models.TextChoices):
     IN_ANALYSIS_BY_PROFESSOR = "PROF", "Em análise do Professor"
     IN_ANALYSIS_BY_COORDINATOR = "COORD", "Em análise do Coordenador"
     REJECTED_BY_CRE = "RJ_CRE", "Rejeitado pelo Ensino"
+    REJECTED_BY_PROFESSOR = "RJ_PROF", "Rejeitado pelo Professor"
     REJECTED_BY_COORDINATOR = "RJ_COORD", "Rejeitado pelo Coordenador"
     APPROVING = "APPROVING", "Em retorno"
     SCHEDULED_TEST = "SCHEDULED_TEST", "Prova Agendada"
     GRANTED = "GRANTED", "Deferido"
+    CANCELED = "CANCELED", "Cancelado"
     REJECTED = "REJECTED", "Indeferido"
     COMPLETED = "COMPLETED", "Concluído"
 
