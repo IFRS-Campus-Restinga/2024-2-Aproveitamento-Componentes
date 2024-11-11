@@ -4,11 +4,15 @@ import { Button } from "../Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { disciplines as initialDisciplines } from "@/mocks/dataMocks";
+import DisciplineService from "@/services/DisciplineService";
+
 const ModalDisciplineRegistration = ({ onClose }) => {
   const [previousComponent, setPreviousComponent] = useState("");
-  const deleteDiscipline = (name) => {
-    //logica para excluir
+  const [disciplines, setDisciplines] = useState(initialDisciplines);
+  const deleteDiscipline = async (id) => {
+    
   };
+
   return (
     <div className={styles.modalBackground}>
       <div className={styles.modalContainer}>
@@ -34,12 +38,12 @@ const ModalDisciplineRegistration = ({ onClose }) => {
             <tbody>
               {initialDisciplines.map((disciplines, index) => (
                 <tr key={index}>
-                  <td>{disciplines.Name ?? "N/A"}</td>
+                  <td>{disciplines.name ?? "N/A"}</td>
                   <td>
                     <FontAwesomeIcon
                       icon={faTrash}
                       style={{ cursor: "pointer" }}
-                      onClick={() => deleteDiscipline(disciplines.Name)}
+                      onClick={() => deleteDiscipline(discipline.id)}
                     />
                   </td>
                 </tr>

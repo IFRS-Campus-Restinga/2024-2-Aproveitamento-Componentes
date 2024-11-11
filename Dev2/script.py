@@ -1,10 +1,8 @@
 from django.contrib.auth.models import User
-
-from disciplines.models import Disciplines
 from notices.models import Notice
-from users.enum.servant_type_enum import ServantTypeEnum
 from users.models import Student, Servant
-
+from disciplines.models import Disciplines
+from users.enum.servant_type_enum import ServantTypeEnum
 superuser = User.objects.create_superuser("admin", "admin@admin.com", "123")
 
 student1 = User.objects.create_user(username='murilo@hotmail.com', first_name='murilo', email='murilo@hotmail.com',
@@ -100,7 +98,24 @@ notice = Notice.objects.create(
 discipline = Disciplines.objects.create(
     id="fc40c88d-65ae-41ca-bd19-89075f9b4ea3",
     name="test",
-    workload=123
+    workload=123,
+    syllabus= "Desenvolvimento do sistema de aproveitamento",
+    professors= "Eliana Ricardo"
 )
 
 discipline.professors.add(servant)
+
+
+Disciplines.objects.create(
+    name= "Dev3",
+    workload= "66h",
+    syllabus= "Desenvolvimento do sistema de aproveitamento",
+    professors= "Eliana Ricardo",
+)
+
+Disciplines.objects.create(
+    name= "Dev4",
+    workload= "66h",
+    syllabus= "Desenvolvimento do sistema de aproveitamento",
+    professors= "Eliana Ricardo",
+)

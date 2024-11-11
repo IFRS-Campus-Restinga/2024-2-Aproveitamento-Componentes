@@ -20,6 +20,22 @@
   background-color: white;
   justify-content: center;
   gap: 10px;
+  overflow-y: auto; /* Se o conteúdo for maior que a altura, vai permitir rolar */
+}
+
+/* Form Fields Container */
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Label */
+.inputLabel {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 5px;
 }
 
 .disciplineInput {
@@ -61,3 +77,4 @@
 .table tbody tr:hover {
   background-color: #ddd;
 }
+
