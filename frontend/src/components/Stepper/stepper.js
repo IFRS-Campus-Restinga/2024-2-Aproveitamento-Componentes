@@ -11,7 +11,6 @@ import CircleIcon from '@mui/icons-material/Circle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 const steps = [
-    'Solicitação Criada',
     'Em análise do Ensino',
     'Em análise do Coordenador',
     'Em análise do Professor',
@@ -20,7 +19,6 @@ const steps = [
 ];
 
 const failedSteps = [
-    'Cancelado',
     'Rejeitado pelo Ensino',
     'Rejeitado pelo Coordenador',
     'Rejeitado pelo Professor',
@@ -36,9 +34,9 @@ const CustomConnector = styled(StepConnector)(({theme}) => ({
 
 const CustomStepIcon = ({index, activeStep, stepName}) => {
     const failedStep = failedSteps.indexOf(stepName);
-    if (index <= activeStep || index < failedStep) {
+    if (index < activeStep || index < failedStep) {
         return <CheckCircleIcon sx={{color: 'green', fontSize: '1.5rem'}}/>;
-    } else if (index === activeStep + 1) {
+    } else if (index === activeStep) {
         return <AccessTimeIcon sx={{color: 'orange', fontSize: '1.5rem'}}/>;
     } else if (stepName === failedSteps[index]) {
         return <CancelIcon sx={{color: 'red', fontSize: '1.5rem'}}/>;

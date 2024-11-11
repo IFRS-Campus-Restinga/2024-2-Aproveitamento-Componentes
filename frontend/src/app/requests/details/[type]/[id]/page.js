@@ -29,8 +29,6 @@ const Details = () => {
     const id = segments.at(-1);
     const type = segments.at(-2);
     const role = user.user.type;
-    let [cursorPosition, setCursorPosition] = useState(0);
-    const inputRef = useRef(null);
 
     useEffect(() => {
         if (!disableReactivity && id && type) {
@@ -104,57 +102,57 @@ const Details = () => {
     };
 
     const handleInput = (e, field) => {
-        let newText = e.currentTarget.textContent || "";
-        const selection = window.getSelection();
-        let range;
-        if (selection && selection.rangeCount > 0) {
-            range = selection.getRangeAt(0);
-        }
-        cursorPosition = range ? range.startOffset : 0;
-        setCursorPosition(cursorPosition);
+        let newValue = e.target.textContent;
+
         if (field === 'course_workload' || field === 'course_studied_workload') {
-            newText = newText.replace(/[^0-9]/g, '');
+            newValue = newValue.replace(/[^0-9]/g, '');
         }
-        if (newText.length > 255) {
-            newText = newText.slice(0, 255);
-            e.currentTarget.textContent = newText;
+
+        if (newValue.length > 255) {
+            newValue = newValue.slice(0, 255);
+            e.currentTarget.textContent = newValue;
         }
+
         if (field === 'course_workload') {
-            setEditedCourseWorkload(newText);
-            setHasChanges(newText !== details.course_workload);
+            setEditedCourseWorkload(newValue);
+            setHasChanges(newValue !== details.course_workload);
         } else if (field === 'course_studied_workload') {
-            setEditedCourseStudiedWorkload(newText);
-            setHasChanges(newText !== details.course_studied_workload);
+            setEditedCourseStudiedWorkload(newValue);
+            setHasChanges(newValue !== details.course_studied_workload);
         } else {
-            setEditedKnowledge(newText);
-            setHasChanges(newText !== details.previous_knowledge);
+            setEditedKnowledge(newValue);
+            setHasChanges(newValue !== details.previous_knowledge);
         }
-        requestAnimationFrame(() => {
-            if (inputRef.current && inputRef.current.firstChild) {
-                const range = document.createRange();
-                const selection = window.getSelection();
-                range.setStart(inputRef.current.firstChild, Math.min(cursorPosition, inputRef.current.firstChild.textContent.length));
-                range.setEnd(inputRef.current.firstChild, Math.min(cursorPosition, inputRef.current.firstChild.textContent.length));
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-        });
-    }
+
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            selection.collapseToEnd();
+        }
+    };
 
 
     const handleSave = async () => {
         try {
+            let body;
+            if (type === "knowledge-certifications") {
+                body = JSON.stringify({
+                    previous_knowledge: editedKnowledge,
+                });
+            } else {
+                body = JSON.stringify({
+                    course_workload: editedCourseWorkload,
+                    course_studied_workload: editedCourseStudiedWorkload,
+                });
+            }
+
             const response = await fetch(`${baseURL}/forms/${type}/${id}/`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    previous_knowledge: editedKnowledge,
-                    course_workload: editedCourseWorkload,
-                    course_studied_workload: editedCourseStudiedWorkload,
-                }),
+                body: body,
             });
+
             if (!response.ok) throw new Error("Erro ao salvar alterações");
             setHasChanges(false);
             setIsEditing(false);
@@ -170,13 +168,14 @@ const Details = () => {
         }
     };
 
+
     const handleBack = () => {
         router.push("/requests");
     };
 
     const getStatusProps = (status, stepIndex) => {
         const index = getEnumIndexByValue(status);
-        if (index === stepIndex - 1) {
+        if (index === stepIndex + 1) {
             return {color: "red", icon: faTimes, label: "Rejeitado"};
         } else if (stepIndex < index) {
             return {color: "green", icon: faCheck, label: "Aprovado"};
@@ -219,7 +218,7 @@ const Details = () => {
                                         >
                                     {editedKnowledge}
                                 </span>
-                                        {role === "Estudante" && details.status_display === "Solicitação Criada" && (
+                                        {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
                                             <>
                                                 <FontAwesomeIcon icon={faEdit} onClick={handleEditToggle}
                                                                  className={`${styles.iconSpacing} ${styles.editIcon}`}/>
@@ -245,7 +244,7 @@ const Details = () => {
                                             >
                                         {editedCourseWorkload}
                                     </span>
-                                            {role === "Estudante" && details.status_display === "Solicitação Criada" && (
+                                            {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
                                                 <>
                                                     <FontAwesomeIcon icon={faEdit} onClick={handleEditToggle}
                                                                      className={`${styles.iconSpacing} ${styles.editIcon}`}/>
@@ -267,7 +266,7 @@ const Details = () => {
                                             >
                                         {editedCourseStudiedWorkload}
                                     </span>
-                                            {role === "Estudante" && details.status_display === "Solicitação Criada" && (
+                                            {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
                                                 <>
                                                     <FontAwesomeIcon icon={faEdit} onClick={handleEditToggle}
                                                                      className={`${styles.iconSpacing} ${styles.editIcon}`}/>
@@ -283,17 +282,18 @@ const Details = () => {
                             </div>
                             <div className={styles.actionColumn}>
                                 <div
-                                    className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 3).color]}`}>
+                                    className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 0).color]}`}>
                                     <strong>Status: </strong>
                                     <div className={styles.statusButton}>
-                                        <FontAwesomeIcon icon={getStatusProps(details.status_display, 3).icon}/>
-                                        {getStatusProps(details.status_display, 3).label}
+                                        <FontAwesomeIcon icon={getStatusProps(details.status_display, 0).icon}/>
+                                        {getStatusProps(details.status_display, 0).label}
                                     </div>
                                 </div>
 
-                                {/*role === "Ensino" && */details.status_display === "Solicitação Criada" && (
+                                {/*role === "Ensino" && */details.status_display === "Em análise do Ensino" && (
                                     <div className={styles.actionButtons}>
-                                        <Button label="Aprovar" icon="pi pi-check" onClick={() => approveRequest("CRE")}
+                                        <Button label="Aprovar" icon="pi pi-check"
+                                                onClick={() => approveRequest("COORD")}
                                                 className="p-button-success"/>
                                         <Button label="Rejeitar" icon="pi pi-times"
                                                 onClick={() => rejectRequest("RJ_CRE")}
@@ -303,43 +303,47 @@ const Details = () => {
                             </div>
                         </div>
                     </div>
-                    <div className={styles.analysis}>
-                        <h1 className={styles.center_title}>Análise do Coordenador</h1>
-                        <div className={styles.columns}>
-                            <div className={styles.infoColumn}>
-                                <p className={styles.info}><strong>Parecer do
-                                    coordenador: </strong>{details.coordinator_feedback ? details.coordinator_feedback : "Pendente"}
-                                </p>
-                            </div>
-                            <div className={styles.actionColumn}>
-                                <div
-                                    className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 5).color]}`}>
-                                    <strong>Status: </strong>
-                                    <div className={styles.statusButton}>
-                                        <FontAwesomeIcon icon={getStatusProps(details.status_display, 5).icon}/>
-                                        {getStatusProps(details.status_display, 5).label}
-                                    </div>
+                    {getEnumIndexByValue(details.status_display) >= 2 && (<div className={styles.analysis}>
+                            <h1 className={styles.center_title}>Análise do Coordenador</h1>
+                            <div className={styles.columns}>
+                                <div className={styles.infoColumn}>
+                                    <p className={styles.info}><strong>Parecer do
+                                        coordenador: </strong>{details.coordinator_feedback ? details.coordinator_feedback : "Pendente"}
+                                    </p>
                                 </div>
-
-                                {/*role === "Coordenador" && */details.status_display === "Em análise do Ensino" && (
-                                    <div className={styles.actionButtons}>
-                                        <Button label="Aprovar" icon="pi pi-check"
-                                                onClick={() => approveRequest("COORD")}
-                                                className="p-button-success"/>
-                                        <Button label="Rejeitar" icon="pi pi-times"
-                                                onClick={() => rejectRequest("RJ_COORD")}
-                                                className="p-button-danger"/>
+                                <div className={styles.actionColumn}>
+                                    <div
+                                        className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 2).color]}`}>
+                                        <strong>Status: </strong>
+                                        <div className={styles.statusButton}>
+                                            <FontAwesomeIcon icon={getStatusProps(details.status_display, 2).icon}/>
+                                            {getStatusProps(details.status_display, 2).label}
+                                        </div>
                                     </div>
-                                )}
+
+                                    {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador" && (
+                                        <div className={styles.actionButtons}>
+                                            <Button label="Aprovar" icon="pi pi-check"
+                                                    onClick={() => approveRequest("PROF")}
+                                                    className="p-button-success"/>
+                                            <Button label="Rejeitar" icon="pi pi-times"
+                                                    onClick={() => rejectRequest("RJ_COORD")}
+                                                    className="p-button-danger"/>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className={styles.analysis}>
-                        <h1 className={styles.center_title}>Marcar Prova</h1>
-                    </div>
-                    <div className={styles.analysis}>
-                        <h1 className={styles.center_title}>Análise do Professor</h1>
-                    </div>
+                    )}
+                    {role != "Estudante" && (
+                        <div className={styles.analysis}>
+                            <h1 className={styles.center_title}>Marcar Prova</h1>
+                        </div>
+                    )}
+                    {() => getEnumIndexByValue(details.status_display) >= 4 && (<div className={styles.analysis}>
+                            <h1 className={styles.center_title}>Análise do Professor</h1>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div>Nenhum detalhe disponível</div>

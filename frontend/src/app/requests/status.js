@@ -1,14 +1,13 @@
 export const StatusEnum = Object.freeze([
-    "Cancelado",
-    "Solicitação Criada",
-    "Rejeitado pelo Ensino",
     "Em análise do Ensino",
-    "Rejeitado pelo Coordenador",
+    "Rejeitado pelo Ensino",
     "Em análise do Coordenador",
-    "Rejeitado pelo Professor",
+    "Rejeitado pelo Coordenador",
     "Em análise do Professor",
-    "Indeferido",
+    "Rejeitado pelo Professor",
     "Deferido",
+    "Indeferido",
+    "Cancelado",
 ]);
 
 export function getEnumIndexByValue(value) {

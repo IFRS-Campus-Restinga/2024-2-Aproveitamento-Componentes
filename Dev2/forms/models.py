@@ -5,20 +5,15 @@ from notices.models import Notice
 
 # Enum para status da requisição
 class RequestStatus(models.TextChoices):
-    CREATED_REQUEST = "CR", "Solicitação Criada"
     IN_ANALYSIS_BY_CRE = "CRE", "Em análise do Ensino"
-    IN_ANALYSIS_BY_PROFESSOR = "PROF", "Em análise do Professor"
-    IN_ANALYSIS_BY_COORDINATOR = "COORD", "Em análise do Coordenador"
     REJECTED_BY_CRE = "RJ_CRE", "Rejeitado pelo Ensino"
-    REJECTED_BY_PROFESSOR = "RJ_PROF", "Rejeitado pelo Professor"
+    IN_ANALYSIS_BY_COORDINATOR = "COORD", "Em análise do Coordenador"
     REJECTED_BY_COORDINATOR = "RJ_COORD", "Rejeitado pelo Coordenador"
-    APPROVING = "APPROVING", "Em retorno"
-    SCHEDULED_TEST = "SCHEDULED_TEST", "Prova Agendada"
+    IN_ANALYSIS_BY_PROFESSOR = "PROF", "Em análise do Professor"
+    REJECTED_BY_PROFESSOR = "RJ_PROF", "Rejeitado pelo Professor"
     GRANTED = "GRANTED", "Deferido"
-    CANCELED = "CANCELED", "Cancelado"
     REJECTED = "REJECTED", "Indeferido"
-    COMPLETED = "COMPLETED", "Concluído"
-
+    CANCELED = "CANCELED", "Cancelado"
 
 # Model de Attachment
 class Attachment(models.Model):
@@ -38,7 +33,7 @@ class RequisitionForm(models.Model):
     student = models.ForeignKey('users.Student', on_delete=models.CASCADE)
     discipline = models.ForeignKey('disciplines.Disciplines', on_delete=models.CASCADE)
     create_date = models.DateTimeField(default=timezone.now)
-    status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.CREATED_REQUEST)
+    status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.IN_ANALYSIS_BY_CRE)
     servant_feedback = models.TextField(blank=True, null=True)
     servant_analysis_date = models.DateTimeField(null=True, blank=True)
     professor_feedback = models.TextField(blank=True, null=True)
