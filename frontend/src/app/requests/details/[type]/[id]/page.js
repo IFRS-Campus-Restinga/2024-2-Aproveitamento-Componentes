@@ -293,9 +293,10 @@ const Details = () => {
 
                                 {/*role === "Ensino" && */details.status_display === "Solicitação Criada" && (
                                     <div className={styles.actionButtons}>
-                                        <Button label="Aprovar" icon="pi pi-check" onClick={approveRequest("CRE")}
+                                        <Button label="Aprovar" icon="pi pi-check" onClick={() => approveRequest("CRE")}
                                                 className="p-button-success"/>
-                                        <Button label="Rejeitar" icon="pi pi-times" onClick={rejectRequest("RJ_CRE")}
+                                        <Button label="Rejeitar" icon="pi pi-times"
+                                                onClick={() => rejectRequest("RJ_CRE")}
                                                 className="p-button-danger"/>
                                     </div>
                                 )}
@@ -322,9 +323,11 @@ const Details = () => {
 
                                 {/*role === "Coordenador" && */details.status_display === "Em análise do Ensino" && (
                                     <div className={styles.actionButtons}>
-                                        <Button label="Aprovar" icon="pi pi-check" onClick={approveRequest("COORD")}
+                                        <Button label="Aprovar" icon="pi pi-check"
+                                                onClick={() => approveRequest("COORD")}
                                                 className="p-button-success"/>
-                                        <Button label="Rejeitar" icon="pi pi-times" onClick={rejectRequest("RJ_COORD")}
+                                        <Button label="Rejeitar" icon="pi pi-times"
+                                                onClick={() => rejectRequest("RJ_COORD")}
                                                 className="p-button-danger"/>
                                     </div>
                                 )}
