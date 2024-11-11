@@ -124,9 +124,13 @@ const Details = () => {
             setHasChanges(newValue !== details.previous_knowledge);
         }
 
-        const selection = window.getSelection();
-        if (selection && selection.rangeCount > 0) {
-            selection.collapseToEnd();
+        if (isEditing) {
+            const range = document.createRange();
+            const selection = window.getSelection();
+            range.selectNodeContents(e.target);
+            range.collapse(false); // Mover o cursor para o fim
+            selection.removeAllRanges();
+            selection.addRange(range);
         }
     };
 
