@@ -76,17 +76,19 @@ class CreateCourseAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RetrieveCourseAPIView(APIView):
-
+class RetrieveCourseByIdAPIView(APIView):
     def get(self, request, course_id, *args, **kwargs):
         try:
+            # Busca o curso pelo id
             course = Course.objects.get(id=course_id)
-        except Course.DoesNotExist:
-            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Serializa o curso encontrado
-        serializer = CourseSerializer(course)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            # Serializa o curso encontrado
+            serializer = CourseSerializer(course)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Course.DoesNotExist:
+            # Retorna uma mensagem de erro caso o curso não seja encontrado
+            return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
 class UpdateCourseAPIView(APIView):
