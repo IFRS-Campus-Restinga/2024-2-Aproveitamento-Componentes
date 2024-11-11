@@ -77,9 +77,9 @@ const Requests = () => {
                     ) : (
                         knowledgeCertifications.map((certification) => (
                             <tr key={certification.id}>
-                                <td>-</td>
-                                <td>{certification.discipline_name || "N/A"}</td>
-                                <td>{certification.status || "N/A"}</td>
+                                <td>{certification.student_name || "-"}</td>
+                                <td>{certification.discipline_name || "-"}</td>
+                                <td>{certification.status_display || "-"}</td>
                                 <td style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                                     {new Date(certification.create_date).toLocaleDateString("pt-BR")}
                                     <button onClick={() => handleDetailsClick({...certification, type: 'knowledge'})}
@@ -113,9 +113,9 @@ const Requests = () => {
                     ) : (
                         recognitionOfPriorLearning.map((learning) => (
                             <tr key={learning.id}>
-                                <td>-</td>
+                                <td>{learning.student_name || "-"}</td>
                                 <td>{learning.discipline_name || "N/A"}</td>
-                                <td>{learning.status || "N/A"}</td>
+                                <td>{learning.status_display || "N/A"}</td>
                                 <td style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                                     {new Date(learning.create_date).toLocaleDateString("pt-BR")}
                                     <button onClick={() => handleDetailsClick({...learning, type: 'recognition'})}
