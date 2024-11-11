@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import styles from "./course.module.css";
-import ModalCourse from "@/components/Modal/ModalCourse/page";
+import ModalCourse from "@/components/Modal/ModalCourse/modal";
 import { courseList } from "@/services/CourseService";
 
 const Course = () => {

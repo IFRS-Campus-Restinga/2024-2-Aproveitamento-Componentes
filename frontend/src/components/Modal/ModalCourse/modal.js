@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styles from "./modal.module.css";
+import styles from "./modalCourse.module.css";
 import { Button } from "../../Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
