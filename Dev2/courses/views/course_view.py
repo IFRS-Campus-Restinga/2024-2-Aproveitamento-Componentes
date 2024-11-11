@@ -5,23 +5,19 @@ from django.db.models import Q
 from ..models import Course
 from ..serializers.CourseSerializer import CourseSerializer
 from disciplines.models import Disciplines
+from users.models import Servant
 
 
 class ListCoursesAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         course_name = request.GET.get('course_name')
-        discipline_name = request.GET.get('discipline_name')
 
         courses_filter = Q()
 
         # Filtro pelo nome do curso
         if course_name:
             courses_filter &= Q(name__icontains=course_name)
-
-        # Filtro pelo nome da disciplina associada ao curso
-        if discipline_name:
-            courses_filter &= Q(disciplines__name__icontains=discipline_name)
 
         # Buscando cursos de acordo com os filtros aplicados
         courses = Course.objects.filter(courses_filter)
@@ -33,30 +29,28 @@ class ListCoursesAPIView(APIView):
 
 
 class CreateCourseAPIView(APIView):
-
     def post(self, request, *args, **kwargs):
-        # Serializa os dados recebidos para validar e criar o novo curso
         serializer = CourseSerializer(data=request.data)
 
-        # Verifica se os dados são válidos
+        # Valida os dados
         if serializer.is_valid():
-            # Cria o curso sem disciplinas para adicioná-las posteriormente
-            course = serializer.save()
+            course_data = serializer.validated_data
 
-            # Adiciona as disciplinas ao curso, caso sejam fornecidas
-            disciplines_data = request.data.get('disciplines')
-            if disciplines_data:
-                # Buscando as disciplinas pelo ID
-                disciplines = Disciplines.objects.filter(id__in=[d['id'] for d in disciplines_data])
-                course.disciplines.set(disciplines)
+            # Cria o objeto Course e salva as relações ManyToMany de forma simplificada
+            course = Course.objects.create(name=course_data['name'])
 
-            # Serializa novamente para retornar os dados do curso criado
-            course_serialized = CourseSerializer(course)
+            # Relacionamentos ManyToMany
+            if 'professors' in course_data:
+                course.professors.set(course_data['professors'])
 
-            # Retorna a resposta com status 201 (Created)
-            return Response(course_serialized.data, status=status.HTTP_201_CREATED)
+            if 'disciplines' in course_data:
+                course.disciplines.set(course_data['disciplines'])
 
-        # Caso os dados não sejam válidos, retorna os erros de validação
+            # Serializa novamente para devolver a resposta
+            response_serializer = CourseSerializer(course)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+        # Retorna erro de validação
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -104,15 +98,13 @@ class UpdateCourseAPIView(APIView):
 
 
 class DeleteCourseAPIView(APIView):
-
     def delete(self, request, course_id, *args, **kwargs):
         try:
+            # Busca o curso pelo ID
             course = Course.objects.get(id=course_id)
+            # Deleta o curso
+            course.delete()
+            return Response({"message": "Course deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Course.DoesNotExist:
+            # Retorna erro caso o curso não seja encontrado
             return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        # Deleta o curso encontrado
-        course.delete()
-
-        # Retorna uma resposta de sucesso
-        return Response({"message": "Course deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
