@@ -113,24 +113,10 @@ const Details = () => {
             e.currentTarget.textContent = newValue;
         }
 
-        if (field === 'course_workload') {
-            setEditedCourseWorkload(newValue);
-            setHasChanges(newValue !== details.course_workload);
-        } else if (field === 'course_studied_workload') {
-            setEditedCourseStudiedWorkload(newValue);
-            setHasChanges(newValue !== details.course_studied_workload);
-        } else {
-            setEditedKnowledge(newValue);
-            setHasChanges(newValue !== details.previous_knowledge);
-        }
-
-        if (isEditing) {
-            const range = document.createRange();
-            const selection = window.getSelection();
-            range.selectNodeContents(e.target);
-            range.collapse(false); // Mover o cursor para o fim
-            selection.removeAllRanges();
-            selection.addRange(range);
+        if ((field === 'previous_knowledge' && newValue !== details.previous_knowledge) ||
+            (field === 'course_workload' && newValue !== details.course_workload) ||
+            (field === 'course_studied_workload' && newValue !== details.course_studied_workload)) {
+            setHasChanges(true);
         }
     };
 
@@ -140,7 +126,7 @@ const Details = () => {
             let body;
             if (type === "knowledge-certifications") {
                 body = JSON.stringify({
-                    previous_knowledge: editedKnowledge,
+                    previous_knowledge: editableRef.current.textContent, // Pegue o valor do DOM.
                 });
             } else {
                 body = JSON.stringify({
@@ -158,12 +144,15 @@ const Details = () => {
             });
 
             if (!response.ok) throw new Error("Erro ao salvar alterações");
+
             setHasChanges(false);
             setIsEditing(false);
             setDisableReactivity(false);
+
+            // Atualize o estado React apenas após o salvamento.
             setDetails((prevDetails) => ({
                 ...prevDetails,
-                previous_knowledge: editedKnowledge,
+                previous_knowledge: editableRef.current.textContent,
                 course_workload: editedCourseWorkload,
                 course_studied_workload: editedCourseStudiedWorkload,
             }));

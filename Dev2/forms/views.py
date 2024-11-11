@@ -37,18 +37,21 @@ class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateDestroyAPIView
 
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
-        status = request.data.get('status')
+        data = request.data
 
-        if status:
-            if status not in dict(RequestStatus.choices):
-                return Response({"detail": "Status inválido"}, status=status.HTTP_400_BAD_REQUEST)
-            instance.status = status
-            instance.save()
+        allowed_fields = ['status', 'previous_knowledge']
 
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
+        for field in allowed_fields:
+            if field in data:
+                if field == 'status' and data[field] not in dict(RequestStatus.choices):
+                    return Response({"detail": "Status inválido"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({"detail": "Status não fornecido"}, status=status.HTTP_400_BAD_REQUEST)
+                setattr(instance, field, data[field])
+
+        instance.save()
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 # View para listar e criar KnowledgeCertification
@@ -67,7 +70,7 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         data = request.data
 
-        allowed_fields = ['status', 'previous_knowledge', 'course_workload', 'course_studied_workload']
+        allowed_fields = ['status', 'course_workload', 'course_studied_workload']
 
         for field in allowed_fields:
             if field in data:
