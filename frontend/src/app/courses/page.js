@@ -5,9 +5,11 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import styles from "./course.module.css";
 import ModalCourse from "@/components/Modal/ModalCourse/modal";
 import { courseList } from "@/services/CourseService";
+import { getDisciplineById } from "@/services/DisciplineService";
 
 const Course = () => {
   const [courses, setCourses] = useState([]);
+  const [disciplinesNames, setDisciplinesNames] = useState({});
   const [modal, setModal] = useState(false);
   const [editData, setEditData] = useState(null);
 
@@ -15,7 +17,7 @@ const Course = () => {
     const fetchCourses = async () => {
       try {
         const data = await courseList();
-        setCourses(data);
+        setCourses(data.courses);
       } catch (err) {
         console.log(err);
       }
@@ -39,7 +41,7 @@ const Course = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Nome</th>
+              <th>Cursos</th>
               {/*<th>Professores</th>*/}
               <th>Disciplinas</th>
             </tr>
@@ -48,15 +50,13 @@ const Course = () => {
             {courses.map((course) => (
               <tr key={course.id} onClick={() => openModalForEdit(course)}>
                 <td>{course.name ?? "N/A"}</td>
-                {/*<td>
-                  {course.professors && course.professors.length > 0
-                    ? course.professors.map((prof) => prof.name).join(", ")
-                    : "N/A"}
-                </td>*/}
                 <td>
-                  {course.disciplines && course.disciplines.length > 0
-                    ? course.disciplines.map((disc) => disc.name).join(", ")
-                    : "N/A"}
+                  <button
+                      className={styles.linkButton}
+                      onClick={() => router.push("/disciplinas")}
+                  >
+                    Ver Disciplinas
+                  </button>
                 </td>
               </tr>
             ))}

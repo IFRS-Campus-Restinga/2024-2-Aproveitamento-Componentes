@@ -1,7 +1,7 @@
 import { apiClient } from "@/libs/api";
 
 const courseList = async () => {
-  return await apiClient.get("courses/list").then((response) => response.data.courses);
+  return await apiClient.get("courses/list").then((response) => response.data);
 };
 
 const getCourseById = async (courseId) => {

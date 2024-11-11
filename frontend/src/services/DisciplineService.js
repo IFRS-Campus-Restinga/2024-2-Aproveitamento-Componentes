@@ -8,7 +8,7 @@ const disciplineList = async () => {
 const getDisciplineById = async (disciplineId) => {
   return await apiClient
     .get(`disciplines/read/${disciplineId}/`)
-    .then((response) => response.data)
+    .then((response) => response.data.disciplines)
     .catch((error) => {
       console.error("Error fetching discipline by ID:", error);
       throw error;
