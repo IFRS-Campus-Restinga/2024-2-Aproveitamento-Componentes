@@ -1,79 +1,41 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 from .models import Disciplines
-import json
+from .serializers import DisciplineSerializer
 
-@csrf_exempt
-def discipline_list(request):
+@api_view(['GET', 'POST'])
+def discipline_list_create(request):
     if request.method == 'GET':
-        disciplines = list(Disciplines.objects.values(
-            'id', 'name', 'workload', 'syllabus',
-            'prerequisites__id', 'professors__id'
-        ))
-        return JsonResponse(disciplines, safe=False, status=200)
+        disciplines = Disciplines.objects.all()
+        serializer = DisciplineSerializer(disciplines, many=True)
+        return Response(serializer.data)
 
-@csrf_exempt
-def discipline_create(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
+    elif request.method == 'POST':
+        serializer = DisciplineSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Criar a disciplina com os campos simples
-        discipline = Disciplines.objects.create(
-            name=data.get('name'),
-            workload=data.get('workload'),
-            syllabus=data.get('syllabus', "")
-        )
+@api_view(['GET', 'PUT', 'DELETE'])
+def discipline_detail(request, pk):
+    try:
+        discipline = Disciplines.objects.get(pk=pk)
+    except Disciplines.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-        # Adicionar relacionamentos Many-to-Many (se fornecidos)
-        if 'prerequisites' in data:
-            discipline.prerequisites.set(data['prerequisites'])
-
-        if 'professors' in data:
-            discipline.professors.set(data['professors'])
-
-        return JsonResponse(
-            {"id": str(discipline.id), "message": "Disciplina criada com sucesso!"},
-            status=201
-        )
-
-@csrf_exempt
-def discipline_read(request, pk):
     if request.method == 'GET':
-        discipline = get_object_or_404(Disciplines, pk=pk)
-        return JsonResponse({
-            "id": str(discipline.id),
-            "name": discipline.name,
-            "workload": discipline.workload,
-            "syllabus": discipline.syllabus,
-            "prerequisites": list(discipline.prerequisites.values_list('id', flat=True)),
-            "professors": list(discipline.professors.values_list('id', flat=True))
-        }, status=200)
+        serializer = DisciplineSerializer(discipline)
+        return Response(serializer.data)
 
-@csrf_exempt
-def discipline_update(request, pk):
-    if request.method == 'PUT':
-        discipline = get_object_or_404(Disciplines, pk=pk)
-        data = json.loads(request.body)
+    elif request.method == 'PUT':
+        serializer = DisciplineSerializer(discipline, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Atualizar campos simples
-        discipline.name = data.get('name', discipline.name)
-        discipline.workload = data.get('workload', discipline.workload)
-        discipline.syllabus = data.get('syllabus', discipline.syllabus)
-        discipline.save()
-
-        # Atualizar relacionamentos Many-to-Many
-        if 'prerequisites' in data:
-            discipline.prerequisites.set(data['prerequisites'])
-
-        if 'professors' in data:
-            discipline.professors.set(data['professors'])
-
-        return JsonResponse({"message": "Disciplina atualizada com sucesso!"}, status=200)
-
-@csrf_exempt
-def discipline_delete(request, pk):
-    if request.method == 'DELETE':
-        discipline = get_object_or_404(Disciplines, pk=pk)
+    elif request.method == 'DELETE':
         discipline.delete()
-        return JsonResponse({"message": "Disciplina excluída com sucesso!"}, status=204)
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,10 +1,9 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
-from users.models.usuario import Usuario  # Mantendo a referência ao modelo Usuario
 import uuid
 
 class Disciplines(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # Chave primária única usando UUID
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(
         max_length=100,
         validators=[MinLengthValidator(1)],
@@ -31,9 +30,9 @@ class Disciplines(models.Model):
         verbose_name="Prerequisites",
         help_text="Select the disciplines that are prerequisites:"
     )
-    professors = models.ManyToManyField(
-        Usuario,
-        related_name="disciplines",
+    professors = models.TextField(
+        max_length=50,
+        blank=True,
         verbose_name="Professors",
         help_text="Select the professors for this discipline:"
     )
@@ -45,4 +44,4 @@ class Disciplines(models.Model):
     class Meta:
         verbose_name = "Discipline"
         verbose_name_plural = "Disciplines"
-        ordering = ['name']  # Ordenar alfabeticamente por nome
+        ordering = ['name']
