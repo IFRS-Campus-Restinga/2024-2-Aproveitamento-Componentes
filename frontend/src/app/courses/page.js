@@ -40,7 +40,7 @@ const Course = () => {
           <thead>
             <tr>
               <th>Nome</th>
-              <th>Professores</th>
+              {/*<th>Professores</th>*/}
               <th>Disciplinas</th>
             </tr>
           </thead>
@@ -48,11 +48,11 @@ const Course = () => {
             {courses.map((course) => (
               <tr key={course.id} onClick={() => openModalForEdit(course)}>
                 <td>{course.name ?? "N/A"}</td>
-                <td>
+                {/*<td>
                   {course.professors && course.professors.length > 0
                     ? course.professors.map((prof) => prof.name).join(", ")
                     : "N/A"}
-                </td>
+                </td>*/}
                 <td>
                   {course.disciplines && course.disciplines.length > 0
                     ? course.disciplines.map((disc) => disc.name).join(", ")

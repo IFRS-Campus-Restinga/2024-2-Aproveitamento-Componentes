@@ -4,7 +4,7 @@ import { Button } from "../../Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { courseCreate, courseEdit } from "@/services/CourseService";
-import { servants as initialServants, disciplines as initialDisciplines } from "@/mocks/dataMocks";
+import { users as initialServants, disciplines as initialDisciplines } from "@/mocks/dataMocks";
 
 const ModalCourse = ({ onClose, editData = null }) => {
   const [courseName, setCourseName] = useState(editData ? editData.name : "");
