@@ -92,34 +92,50 @@ class RetrieveCourseByIdAPIView(APIView):
 
 
 class UpdateCourseAPIView(APIView):
-
     def put(self, request, course_id, *args, **kwargs):
         try:
+            # Busca o curso pelo id
             course = Course.objects.get(id=course_id)
+
+            # Serializa os dados recebidos
+            serializer = CourseSerializer(course, data=request.data, partial=True)
+
+            # Verifica a validade dos dados
+            if serializer.is_valid():
+                # Salva o curso sem atualizar ManyToMany ainda
+                serializer.save()
+
+                # Atualiza relações ManyToMany se passadas na requisição
+                professors_data = request.data.get('professors')
+                disciplines_data = request.data.get('disciplines')
+
+                if professors_data:
+                    if isinstance(professors_data, list):
+                        # Verifica se é uma lista de IDs (não objetos com campo 'id')
+                        if isinstance(professors_data[0], dict):
+                            professor_ids = [prof['id'] for prof in professors_data]
+                        else:
+                            professor_ids = professors_data  # Caso seja uma lista de IDs
+                        course.professors.set(Servant.objects.filter(id__in=professor_ids))
+
+                if disciplines_data:
+                    if isinstance(disciplines_data, list):
+                        # Verifica se é uma lista de IDs (não objetos com campo 'id')
+                        if isinstance(disciplines_data[0], dict):
+                            discipline_ids = [disc['id'] for disc in disciplines_data]
+                        else:
+                            discipline_ids = disciplines_data  # Caso seja uma lista de IDs
+                        course.disciplines.set(Disciplines.objects.filter(id__in=discipline_ids))
+
+                # Retorna o curso atualizado
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            # Retorna erro de validação
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         except Course.DoesNotExist:
-            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        # Serializa e valida os dados atualizados
-        serializer = CourseSerializer(course, data=request.data, partial=False)
-
-        if serializer.is_valid():
-            # Atualiza o curso com os novos dados
-            course = serializer.save()
-
-            # Atualiza as disciplinas se elas forem fornecidas no request
-            disciplines_data = request.data.get('disciplines')
-            if disciplines_data:
-                # Busca as disciplinas pelo ID fornecido
-                disciplines = Disciplines.objects.filter(id__in=[d['id'] for d in disciplines_data])
-                course.disciplines.set(disciplines)
-
-            # Serializa e retorna os dados do curso atualizado
-            course_serialized = CourseSerializer(course)
-            return Response(course_serialized.data, status=status.HTTP_200_OK)
-
-        # Caso os dados não sejam válidos, retorna os erros de validação
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            # Retorna erro se o curso não for encontrado
+            return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class DeleteCourseAPIView(APIView):
     def delete(self, request, course_id, *args, **kwargs):
