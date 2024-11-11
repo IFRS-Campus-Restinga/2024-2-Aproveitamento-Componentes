@@ -1,0 +1,221 @@
+.infoField {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.editableSpan {
+    font-size: 14pt;
+    flex-grow: 1;
+    margin-right: 4px;
+    padding: 4px;
+}
+
+.editableSpan.editing {
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.6);
+}
+
+.iconSpacing {
+    margin-left: 4px;
+    padding: 2px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editIcon,
+.saveIcon {
+    color: green;
+    cursor: pointer;
+    margin-left: 4px;
+}
+
+.main_title {
+    text-align: center;
+    padding: 16px 4px;
+    position: relative;
+    font-size: 28px;
+}
+
+.center_title {
+    text-align: center;
+    padding: 16px 4px;
+    position: relative;
+    font-size: 24px;
+}
+
+.center_title::before,
+.center_title::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background-color: #ccc;
+}
+
+.center_title::before {
+    left: 0;
+}
+
+.center_title::after {
+    right: 0;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    font-size: 14pt;
+    margin-bottom: 2px;
+}
+
+.stepper {
+    padding: 16px;
+}
+
+.analysis {
+    margin-left: 15%;
+    margin-right: 15%;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    margin-left: 10%;
+    margin-right: 10%;
+    min-height: 100vh;
+}
+
+.contentWrapper {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scrollableTable {
+    height: 500px;
+    overflow-y: auto;
+    padding: 0;
+    width: 90%;
+}
+
+.table {
+    border: 2px solid #c7c7c7e1;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table thead {
+    position: sticky;
+    top: -3px;
+    background-color: #2f9e41;
+}
+
+.table thead th {
+    padding: 16px;
+    border-bottom: 1px solid #c7c7c7e1;
+    text-align: left;
+}
+
+.table td,
+.table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.table tbody tr:hover {
+    background-color: #ddd;
+}
+
+.infoSection {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.columns {
+    display: flex;
+}
+
+.infoColumn {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.actionColumn {
+    text-align: right;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.statusContainer {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.statusButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.yellow {
+    background-color: #ffcc00;
+}
+
+.red {
+    background-color: #dc3545;
+}
+
+.green {
+    background-color: #28a745;
+}
+
+.statusIcon {
+    font-size: 20px;
+}
+
+.actionButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.p-button-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.p-button-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.backButton {
+    margin-top: 20px;
+}

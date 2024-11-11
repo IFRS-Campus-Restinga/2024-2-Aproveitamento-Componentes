@@ -1,6 +1,7 @@
 "use client";
 
 import {useState} from "react";
+import {useAuth} from "@/context/AuthContext";
 import styles from "./requestForm.module.css";
 import {Button} from "@/components/Button/button";
 import {baseURL} from "@/libs/api";
@@ -12,7 +13,9 @@ const CertificationRequestForm = () => {
     const [courseStudiedWorkload, setCourseStudiedWorkload] = useState("");
     const [selectedCourse, setSelectedCourse] = useState("");
     const [disciplineId, setDisciplineId] = useState("");
-    const [status, setStatus] = useState("CR"); // Mantenha o estado para status
+    const [status] = useState("CR");
+    const {user} = useAuth();
+    console.log("###" + JSON.stringify(user));
 
     const courses = [
         {id: 1, name: "Curso de Engenharia"},
@@ -54,6 +57,7 @@ const CertificationRequestForm = () => {
         formData.append("course_workload", courseWorkload);
         formData.append("course_studied_workload", courseStudiedWorkload);
         formData.append("status", status);
+        formData.append("student_id", user.id);
 
         console.log("Status sendo enviado:", status); // Adicione esta linha
 

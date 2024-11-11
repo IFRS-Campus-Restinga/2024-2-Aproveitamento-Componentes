@@ -1,6 +1,9 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from users.models import Student
 
-from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification, RequestStatus
+from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification
+
 
 class StepSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,15 +13,23 @@ class StepSerializer(serializers.ModelSerializer):
             'description', 'initial_step_date', 'final_step_date'
         ]
 
+
 class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attachment
         fields = ['id', 'name', 'type', 'size', 'file']
 
+
 class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
     attachments = AttachmentSerializer(many=True, read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     discipline_name = serializers.CharField(source='discipline.name', read_only=True)
+    student_id = serializers.IntegerField(write_only=True)
+    student = serializers.PrimaryKeyRelatedField(read_only=True)
+    student_name = serializers.SerializerMethodField()
+    student_email = serializers.SerializerMethodField()
+    student_matricula = serializers.CharField(source='student.matricula', read_only=True)
+    student_course = serializers.CharField(source='student.course', read_only=True)
 
     class Meta:
         model = RecognitionOfPriorLearning
@@ -26,22 +37,33 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
             'id', 'course_workload', 'course_studied_workload', 'test_score', 'notice', 'discipline',
             'discipline_name', 'create_date', 'status_display', 'servant_feedback', 'servant_analysis_date',
             'professor_feedback', 'professor_analysis_date', 'coordinator_feedback', 'coordinator_analysis_date',
-            'attachments'
+            'attachments', 'student_id', 'student', 'student', 'student_name', 'student_email', 'student_matricula',
+            'student_course'
         ]
 
+    def get_student_name(self, obj):
+        return obj.student.name if obj.student else None
+
+    def get_student_email(self, obj):
+        return obj.student.email if obj.student else None
+
     def create(self, validated_data):
-        # Extraindo os attachments, se houver
-        attachments_data = validated_data.pop('attachments', [])
-        requisition = RecognitionOfPriorLearning.objects.create(**validated_data)
-        # Se attachments existirem, adicione-os
-        for attachment in attachments_data:
-            Attachment.objects.create(requisition=requisition, **attachment)  # Certifique-se de que a relação está definida
+        student_id = validated_data.pop('student_id')
+        student = get_object_or_404(Student, id=student_id)
+        requisition = RecognitionOfPriorLearning.objects.create(student=student, **validated_data)
         return requisition
+
 
 class KnowledgeCertificationSerializer(serializers.ModelSerializer):
     attachments = AttachmentSerializer(many=True, read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     discipline_name = serializers.CharField(source='discipline.name', read_only=True)
+    student_id = serializers.IntegerField(write_only=True)
+    student = serializers.PrimaryKeyRelatedField(read_only=True)
+    student_name = serializers.SerializerMethodField()
+    student_email = serializers.SerializerMethodField()
+    student_matricula = serializers.CharField(source='student.matricula', read_only=True)
+    student_course = serializers.CharField(source='student.course', read_only=True)
 
     class Meta:
         model = KnowledgeCertification
@@ -49,14 +71,18 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
             'id', 'previous_knowledge', 'scheduling_date', 'test_score', 'notice', 'discipline',
             'discipline_name', 'create_date', 'status_display', 'servant_feedback', 'servant_analysis_date',
             'professor_feedback', 'professor_analysis_date', 'coordinator_feedback', 'coordinator_analysis_date',
-            'attachments'
+            'attachments', 'student_id', 'student', 'student_name', 'student_email', 'student_matricula',
+            'student_course'
         ]
 
+    def get_student_name(self, obj):
+        return obj.student.name if obj.student else None
+
+    def get_student_email(self, obj):
+        return obj.student.email if obj.student else None
+
     def create(self, validated_data):
-        # Extraindo os attachments, se houver
-        attachments_data = validated_data.pop('attachments', [])
-        certification = KnowledgeCertification.objects.create(**validated_data)
-        # Se attachments existirem, adicione-os
-        for attachment in attachments_data:
-            Attachment.objects.create(certification=certification, **attachment)  # Certifique-se de que a relação está definida
+        student_id = validated_data.pop('student_id')
+        student = get_object_or_404(Student, id=student_id)
+        certification = KnowledgeCertification.objects.create(student=student, **validated_data)
         return certification

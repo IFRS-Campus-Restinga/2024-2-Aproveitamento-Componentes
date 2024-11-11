@@ -1,20 +1,25 @@
 from django.contrib.auth.models import User
+
+from disciplines.models import Disciplines
 from notices.models import Notice
-from users.models import Student, Servant
 from users.enum.servant_type_enum import ServantTypeEnum
+from users.models import Student, Servant
+
 superuser = User.objects.create_superuser("admin", "admin@admin.com", "123")
 
-student1 = User.objects.create_user(username='murilo@hotmail.com', first_name='murilo', email='murilo@hotmail.com', password=None)
+student1 = User.objects.create_user(username='murilo@hotmail.com', first_name='murilo', email='murilo@hotmail.com',
+                                    password=None)
 Student.objects.create(
-    user= student1,
+    user=student1,
     name='murilo',
     email='murilo@hotmail.com',
     matricula="1994000401",
     course="ADS"
 )
-stundent2 = User.objects.create_user(username='eduador@hotmail.com', first_name='eduador', email='eduador@hotmail.com', password=None)
+stundent2 = User.objects.create_user(username='eduador@hotmail.com', first_name='eduador', email='eduador@hotmail.com',
+                                     password=None)
 Student.objects.create(
-    user= stundent2,
+    user=stundent2,
     name='eduardo',
     email='eduardo@hotmail.com',
     matricula="3212313",
@@ -39,17 +44,19 @@ Student.objects.create(
     course="ADS",
 )
 
-teacher = User.objects.create_user(username='ricardo@hotmail.com', first_name='ricardo', email='ricardo@hotmail.com', password=None)
-Servant.objects.create(
-    user= teacher,
+teacher = User.objects.create_user(username='ricardo@hotmail.com', first_name='ricardo', email='ricardo@hotmail.com',
+                                   password=None)
+servant = Servant.objects.create(
+    user=teacher,
     name='ricardo',
     email='ricardo@hotmail.com',
     siape="123123",
     servant_type=ServantTypeEnum.TEACHER.value,
 )
-coordenador = User.objects.create_user(username='roben@hotmail.com', first_name='roben', email='roben@hotmail.com', password=None)
+coordenador = User.objects.create_user(username='roben@hotmail.com', first_name='roben', email='roben@hotmail.com',
+                                       password=None)
 Servant.objects.create(
-    user= coordenador,
+    user=coordenador,
     name='roben',
     email='roben@hotmail.com',
     siape="3213234455",
@@ -57,7 +64,8 @@ Servant.objects.create(
     is_verified=True
 )
 
-cre = User.objects.create_user(username='servidor@hotmail.com', first_name='servidor', email='servidor@hotmail.com', password=None)
+cre = User.objects.create_user(username='servidor@hotmail.com', first_name='servidor', email='servidor@hotmail.com',
+                               password=None)
 Servant.objects.create(
     user= cre,
     name='ensino',
@@ -76,6 +84,7 @@ Servant.objects.create(
     is_verified=True
 )
 notice = Notice.objects.create(
+    id="1f7755ade0b341299ee00c46a12dc467",
     number="001-2023",
     publication_date="2023-10-01T09:00:00Z",
     documentation_submission_start="2023-10-05T09:00:00Z",
@@ -87,3 +96,11 @@ notice = Notice.objects.create(
     result_homologation_start="2023-10-23T09:00:00Z",
     result_homologation_end="2023-10-25T17:00:00Z"
 )
+
+discipline = Disciplines.objects.create(
+    id="fc40c88d-65ae-41ca-bd19-89075f9b4ea3",
+    name="test",
+    workload=123
+)
+
+discipline.professors.add(servant)
