@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from notices.models import Notice
 from users.models import Student, Servant
+from disciplines.models import Disciplines
 from users.enum.servant_type_enum import ServantTypeEnum
 superuser = User.objects.create_superuser("admin", "admin@admin.com", "123")
 
@@ -58,4 +59,18 @@ notice = Notice.objects.create(
     result_publication_end="2023-10-22T17:00:00Z",
     result_homologation_start="2023-10-23T09:00:00Z",
     result_homologation_end="2023-10-25T17:00:00Z"
+)
+
+Disciplines.objects.create(
+    name= "Dev3",
+    workload= "66h",
+    syllabus= "Desenvolvimento do sistema de aproveitamento",
+    professors= "Eliana Ricardo",
+)
+
+Disciplines.objects.create(
+    name= "Dev4",
+    workload= "66h",
+    syllabus= "Desenvolvimento do sistema de aproveitamento",
+    professors= "Eliana Ricardo",
 )
