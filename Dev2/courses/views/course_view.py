@@ -28,6 +28,28 @@ class ListCoursesAPIView(APIView):
         return Response({'courses': courses_serialized.data})
 
 
+class SearchCourseByNameAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        name = request.GET.get('name')
+
+        # Verifica se o parâmetro de nome foi passado
+        if not name:
+            return Response({"error": "Name parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Busca cursos cujo nome contém o valor especificado, ignorando maiúsculas/minúsculas
+        courses = Course.objects.filter(Q(name__icontains=name))
+
+        # Serializa os cursos encontrados
+        if courses.exists():
+            serializer = CourseSerializer(courses, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Retorna uma resposta vazia caso não encontre cursos
+        return Response({"message": "No courses found with the specified name."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
 class CreateCourseAPIView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = CourseSerializer(data=request.data)
