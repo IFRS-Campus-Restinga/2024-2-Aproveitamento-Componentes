@@ -59,7 +59,7 @@ const Notice = () => {
                   {useDateFormatter(notice.documentation_submission_end) ??
                     "N/A"}
                 </td>
-                <td>{notice.Link ?? "N/A"}</td>
+                <td>{notice.link ?? "N/A"}</td>
               </tr>
             ))}
           </tbody>

@@ -76,6 +76,8 @@ const ModalNotice = ({ onClose, editData = null }) => {
       result_homologation_end: new Date(
         `${formData.resultApprovalTo}T17:00:00Z`
       ).toISOString(),
+      link: formData.link,
+      rectifications: formData.rectifications.filter((link) => link !== ""),
     };
 
     try {
