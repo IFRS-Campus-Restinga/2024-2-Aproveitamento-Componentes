@@ -48,8 +48,6 @@ class SearchCourseByNameAPIView(APIView):
         return Response({"message": "No courses found with the specified name."}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-
 class CreateCourseAPIView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = CourseSerializer(data=request.data)
@@ -136,6 +134,7 @@ class UpdateCourseAPIView(APIView):
         except Course.DoesNotExist:
             # Retorna erro se o curso não for encontrado
             return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 class DeleteCourseAPIView(APIView):
     def delete(self, request, course_id, *args, **kwargs):
