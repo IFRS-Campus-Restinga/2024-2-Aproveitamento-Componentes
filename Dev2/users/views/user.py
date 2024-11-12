@@ -2,7 +2,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..serializers.user import CreateUserSerializer
+from ..serializers.user import CreateUserSerializer, UserSerializer
 from ..services.user import UserService
 from ..models import AbstractUser
 
@@ -22,6 +22,8 @@ class CreateUserView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class AlterActiveByEmailView(APIView):
 
    def get(self, request, email):
@@ -33,3 +35,18 @@ class AlterActiveByEmailView(APIView):
         userByEmail.is_active = not userByEmail.is_active
         userByEmail.save()
         return Response({'ok'},status=status.HTTP_201_CREATED)
+
+
+class RetrieveUserByIdAPIView(APIView):
+    def get(self, request, user_id, *args, **kwargs):
+        try:
+            # Busca o user pelo id
+            user = AbstractUser.objects.get(id=user_id)
+
+            # Serializa a user encontrada
+            serializer = UserSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except AbstractUser.DoesNotExist:
+            # Retorna uma mensagem de erro caso a user não seja encontrada
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)

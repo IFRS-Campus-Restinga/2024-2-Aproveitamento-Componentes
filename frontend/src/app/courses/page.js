@@ -5,7 +5,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import styles from "./course.module.css";
 import ModalCourse from "@/components/Modal/ModalCourse/modal";
 import { courseList } from "@/services/CourseService";
-import { getDisciplineById } from "@/services/DisciplineService";
+
 
 const Course = () => {
   const [courses, setCourses] = useState([]);
@@ -42,7 +42,6 @@ const Course = () => {
           <thead>
             <tr>
               <th>Cursos</th>
-              {/*<th>Professores</th>*/}
               <th>Disciplinas</th>
             </tr>
           </thead>

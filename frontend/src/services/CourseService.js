@@ -17,14 +17,22 @@ const getCourseById = async (courseId) => {
 
 const courseCreate = async (data) => {
   return await apiClient
-    .post(`courses/create/${id}`, data)
-    .then((response) => response.data.courses);
+    .post(`courses/create/`, data)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Erro ao criar curso:", error);
+      throw error;
+    });
 };
 
 const courseEdit = async (id, data) => {
   return await apiClient
-    .put(`courses/update/${id}`, data)
-    .then((response) => response.data.courses);
+    .put(`courses/update/${id}/`, data)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Erro ao editar curso:", error);
+      throw error;
+    });
 };
 
 export { courseList, courseCreate, courseEdit, getCourseById  };
