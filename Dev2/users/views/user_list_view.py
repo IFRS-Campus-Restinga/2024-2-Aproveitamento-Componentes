@@ -4,7 +4,7 @@ from ..models.student import Student
 from ..models.servant import Servant
 from api.views.custom_api_view import CustomAPIView
 from users.models.user import AbstractUser
-from ..serializers.user import UserPolymorphicSerializer, UserSerializer
+from ..serializers.user import UserPolymorphicSerializer
 from django.db.models import Q
 
 
@@ -37,23 +37,3 @@ class ListUsersAPIView(APIView):
 
         serializer = UserPolymorphicSerializer(queryset, many=True)
         return Response(serializer.data)
-
-
-class ListUserAPIView(APIView):
-
-    def get(self, request, *args, **kwargs):
-        user_name = request.GET.get('user_name')
-
-        users_filter = Q()
-
-        # Filtro pelo nome da disciplina
-        if user_name:
-            users_filter &= Q(name__icontains=user_name)
-
-        # Buscando disciplinas de acordo com os filtros aplicados
-        users = AbstractUser.objects.filter(users_filter)
-
-        # Serializando os resultados
-        users_serialized = UserSerializer(users, many=True)
-
-        return Response({'disciplines': users_serialized.data})
