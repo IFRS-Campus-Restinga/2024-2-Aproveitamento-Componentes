@@ -46,7 +46,6 @@ const CertificationRequestForm = () => {
       try {
         const noticeData = await noticeList();
         setNotices(noticeData);
-        console.log(noticeData);
       } catch (error) {
         console.error("Erro ao buscar notices:", error);
       }
@@ -134,12 +133,18 @@ const CertificationRequestForm = () => {
           required
         >
           <option value="">Selecione um edital</option>
-          {notices.map((notice) => (
-            <option key={notice.id} value={notice.id}>
-              {notice.number} -{" "}
-              {new Date(notice.publication_date).toLocaleDateString()}
-            </option>
-          ))}
+          {notices
+            .sort(
+              (a, b) =>
+                new Date(b.publication_date) - new Date(a.publication_date)
+            )
+            .slice(0, 1)
+            .map((notice) => (
+              <option key={notice.id} value={notice.id}>
+                {notice.number} -{" "}
+                {new Date(notice.publication_date).toLocaleDateString()}
+              </option>
+            ))}
         </select>
       </div>
       <div className={styles.typeContainer}>

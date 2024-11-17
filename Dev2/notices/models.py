@@ -15,7 +15,7 @@ class Notice(models.Model):
     result_publication_end = models.DateTimeField()
     result_homologation_start = models.DateTimeField()
     result_homologation_end = models.DateTimeField()
-    link = models.URLField(max_length=200, blank=True, null=True)
+    link = models.URLField(max_length=200, blank=False, null=False)
     rectifications = models.JSONField(default=list, blank=True)
     extra_fields = models.TextField(blank=True, null=True)
 

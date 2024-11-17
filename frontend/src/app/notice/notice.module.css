@@ -62,3 +62,16 @@
 .addButton:hover {
   color: white;
 }
+
+
+.filters {
+  display: flex;
+  padding: 16px;
+  gap: 32px;
+}
+
+.filterInput {
+  border: 1px solid grey;
+  border-radius: 6px;
+  padding: 16px;
+}

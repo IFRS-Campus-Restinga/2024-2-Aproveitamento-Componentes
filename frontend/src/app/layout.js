@@ -14,13 +14,16 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  // remoção de PrimeReactProvider e AuthProvider para ambiente de desenvolvimento
   return (
     <html>
       <body>
-        <NavBar />
-        <div style={{ minHeight: "500px" }}>{children}</div>
-        <Footer />
+        <PrimeReactProvider>
+          <AuthProvider>
+            <NavBar />
+            <div style={{ minHeight: "500px" }}>{children}</div>
+            <Footer />
+          </AuthProvider>
+        </PrimeReactProvider>
       </body>
     </html>
   );
