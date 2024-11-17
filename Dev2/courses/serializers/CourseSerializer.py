@@ -1,14 +1,14 @@
 from rest_framework import serializers
 
-from .DisciplineSerializer import DisciplineSerializer
 from ..models import Course
+from disciplines.models import Disciplines
+
+from users.models import Servant
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    disciplines = DisciplineSerializer(many=True, read_only=True)
-    professors = serializers.ListField(
-        child=serializers.UUIDField(format='hex_verbose')
-    )
+    professors = serializers.PrimaryKeyRelatedField(queryset=Servant.objects.all(), many=True)
+    disciplines = serializers.PrimaryKeyRelatedField(queryset=Disciplines.objects.all(), many=True)
 
     class Meta:
         model = Course

@@ -10,6 +10,9 @@ class Servant(AbstractUser):
         choices=[(tag.name, tag.value) for tag in ServantTypeEnum]
         # Definindo enum como choices
     )
+
+    def __str__(self):
+        return self.name + " - " + self.servant_type
     
     @property
     def type(self):

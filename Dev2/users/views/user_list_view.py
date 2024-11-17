@@ -5,6 +5,8 @@ from ..models.servant import Servant
 from api.views.custom_api_view import CustomAPIView
 from users.models.user import AbstractUser
 from ..serializers.user import UserPolymorphicSerializer
+from django.db.models import Q
+
 
 
 class ListUsersAPIView(APIView):
