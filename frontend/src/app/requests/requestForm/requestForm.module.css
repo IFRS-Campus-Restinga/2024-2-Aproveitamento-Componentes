@@ -38,3 +38,17 @@
     justify-content: space-between;
     width: 50%;
   }
+  .textForm {
+    /* Estilos para os labels */
+    font-weight: bold;
+    margin-bottom: 5px;
+    /* Outros estilos que desejar */
+}
+
+.selectForm {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}

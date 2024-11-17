@@ -17,11 +17,25 @@ class StepSerializer(serializers.ModelSerializer):
 class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attachment
-        fields = ['id', 'name', 'type', 'size', 'file']
+        fields = "__all__"
+        
+    def create(self, validated_data):
+        file = validated_data.pop('file')
+        certification_form = validated_data.pop('certification_form', None)
+        recognition_form = validated_data.pop('recognition_form', None)
+        attachment = Attachment(
+            file_name=file.name,
+            file_data=file.read(),
+            content_type=file.content_type,
+            certification_form=certification_form,
+            recognition_form=recognition_form,
+            **validated_data
+        )
+        attachment.save()
+        return attachment
 
 
 class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
-    attachments = AttachmentSerializer(many=True, read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     discipline_name = serializers.CharField(source='discipline.name', read_only=True)
     student_id = serializers.IntegerField(write_only=True)
@@ -30,6 +44,7 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
     student_email = serializers.SerializerMethodField()
     student_matricula = serializers.CharField(source='student.matricula', read_only=True)
     student_course = serializers.CharField(source='student.course', read_only=True)
+    attachments = AttachmentSerializer(many=True, read_only=True)
 
     class Meta:
         model = RecognitionOfPriorLearning
@@ -48,14 +63,22 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
         return obj.student.email if obj.student else None
 
     def create(self, validated_data):
+        attachments_files = self.context['request'].FILES.getlist('attachment')
         student_id = validated_data.pop('student_id')
         student = get_object_or_404(Student, id=student_id)
         requisition = RecognitionOfPriorLearning.objects.create(student=student, **validated_data)
+
+        for attachment_file in attachments_files:
+            attachment_data = {
+                'file': attachment_file,
+                'recognition_form': requisition
+            }
+            AttachmentSerializer().create(attachment_data)
+
         return requisition
 
 
 class KnowledgeCertificationSerializer(serializers.ModelSerializer):
-    attachments = AttachmentSerializer(many=True, read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     discipline_name = serializers.CharField(source='discipline.name', read_only=True)
     student_id = serializers.IntegerField(write_only=True)
@@ -64,6 +87,7 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
     student_email = serializers.SerializerMethodField()
     student_matricula = serializers.CharField(source='student.matricula', read_only=True)
     student_course = serializers.CharField(source='student.course', read_only=True)
+    attachments = AttachmentSerializer(many=True, read_only=True)
 
     class Meta:
         model = KnowledgeCertification
@@ -82,7 +106,14 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
         return obj.student.email if obj.student else None
 
     def create(self, validated_data):
+        attachments_files = self.context['request'].FILES.getlist('attachment')
         student_id = validated_data.pop('student_id')
         student = get_object_or_404(Student, id=student_id)
         certification = KnowledgeCertification.objects.create(student=student, **validated_data)
+        for attachment_file in attachments_files:
+            attachment_data = {
+                'file': attachment_file,
+                'certification_form': certification
+            }
+            AttachmentSerializer().create(attachment_data)
         return certification
