@@ -9,7 +9,7 @@ import {baseURL} from "@/libs/api";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faClock, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Button} from 'primereact/button';
-import {getEnumIndexByValue} from "@/app/requests/status";
+import {getEnumIndexByValue, getFailed} from "@/app/requests/status";
 
 const Details = () => {
     const [details, setDetails] = useState(null);
@@ -185,7 +185,27 @@ const Details = () => {
             <h1 className={styles.center_title}>Detalhes da Solicitação</h1>
             {details ? (
                 <div>
-                    <Stepper currentStep={details.status_display}/>
+                    {details.status_display !== "Cancelado" ? (
+                        <Stepper currentStep={details.status_display}/>
+                    ) : (
+                        <div className={styles.centered}>
+                            <div
+                                className={`${styles.statusContainer} ${styles.red}`}>
+                                <strong>Status: </strong>
+                                <div className={styles.statusButton}>
+                                    <FontAwesomeIcon icon={faTimes}/>
+                                    {"Cancelado pelo aluno"}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {role === "Estudante" && !getFailed().includes(details.status_display) && (
+                        <div className={styles.centered}>
+                            <Button label="Cancelar solicitação" icon="pi pi-times"
+                                    onClick={() => rejectRequest("CANCELED")}
+                                    className="p-button-danger"/>
+                        </div>
+                    )}
                     <div className={styles.analysis}>
                         <h1 className={styles.center_title}>Análise do Ensino</h1>
                         <div className={styles.columns}>
@@ -273,27 +293,29 @@ const Details = () => {
                                     </>
                                 )}
                             </div>
-                            <div className={styles.actionColumn}>
-                                <div
-                                    className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 0).color]}`}>
-                                    <strong>Status: </strong>
-                                    <div className={styles.statusButton}>
-                                        <FontAwesomeIcon icon={getStatusProps(details.status_display, 0).icon}/>
-                                        {getStatusProps(details.status_display, 0).label}
+                            {details.status_display !== 'Cancelado' && (
+                                <div className={styles.actionColumn}>
+                                    <div
+                                        className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 0).color]}`}>
+                                        <strong>Status: </strong>
+                                        <div className={styles.statusButton}>
+                                            <FontAwesomeIcon icon={getStatusProps(details.status_display, 0).icon}/>
+                                            {getStatusProps(details.status_display, 0).label}
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/*role === "Ensino" && */details.status_display === "Em análise do Ensino" && (
-                                    <div className={styles.actionButtons}>
-                                        <Button label="Aprovar" icon="pi pi-check"
-                                                onClick={() => approveRequest("COORD")}
-                                                className="p-button-success"/>
-                                        <Button label="Rejeitar" icon="pi pi-times"
-                                                onClick={() => rejectRequest("RJ_CRE")}
-                                                className="p-button-danger"/>
-                                    </div>
-                                )}
-                            </div>
+                                    {/*role === "Ensino" && */details.status_display === "Em análise do Ensino" && (
+                                        <div className={styles.actionButtons}>
+                                            <Button label="Aprovar" icon="pi pi-check"
+                                                    onClick={() => approveRequest("COORD")}
+                                                    className="p-button-success"/>
+                                            <Button label="Rejeitar" icon="pi pi-times"
+                                                    onClick={() => rejectRequest("RJ_CRE")}
+                                                    className="p-button-danger"/>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                     {getEnumIndexByValue(details.status_display) >= 2 && (<div className={styles.analysis}>
@@ -305,15 +327,16 @@ const Details = () => {
                                     </p>
                                 </div>
                                 <div className={styles.actionColumn}>
-                                    <div
-                                        className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 2).color]}`}>
-                                        <strong>Status: </strong>
-                                        <div className={styles.statusButton}>
-                                            <FontAwesomeIcon icon={getStatusProps(details.status_display, 2).icon}/>
-                                            {getStatusProps(details.status_display, 2).label}
+                                    {details.status_display !== 'Cancelado' && (
+                                        <div
+                                            className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 2).color]}`}>
+                                            <strong>Status: </strong>
+                                            <div className={styles.statusButton}>
+                                                <FontAwesomeIcon icon={getStatusProps(details.status_display, 2).icon}/>
+                                                {getStatusProps(details.status_display, 2).label}
+                                            </div>
                                         </div>
-                                    </div>
-
+                                    )}
                                     {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador" && (
                                         <div className={styles.actionButtons}>
                                             <Button label="Aprovar" icon="pi pi-check"
@@ -328,7 +351,7 @@ const Details = () => {
                             </div>
                         </div>
                     )}
-                    {role != "Estudante" && (
+                    {role !== "Estudante" && (
                         <div className={styles.analysis}>
                             <h1 className={styles.center_title}>Marcar Prova</h1>
                         </div>

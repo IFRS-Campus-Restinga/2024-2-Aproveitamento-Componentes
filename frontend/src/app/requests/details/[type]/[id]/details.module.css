@@ -41,6 +41,28 @@
     font-size: 28px;
 }
 
+.canceled_div {
+    align-items: center;
+    text-align: center;
+}
+
+.canceled {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    background-color: red;
+    border-radius: 10px;
+    padding: 10px;
+    align-items: center;
+    display: inline-block;
+}
+
+.centered {
+    text-align: center;
+    padding: 10px;
+}
+
 .center_title {
     text-align: center;
     padding: 16px 4px;
@@ -171,8 +193,10 @@
     color: white;
     border-radius: 5px;
     padding: 10px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    text-align: center;
+    justify-content: center;
     gap: 10px;
 }
 

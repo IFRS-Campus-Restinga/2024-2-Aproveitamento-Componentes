@@ -22,6 +22,7 @@ class CreateUserView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class UpdateActiveByIdView(APIView):
 
    def get(self, request, id):
@@ -32,6 +33,7 @@ class UpdateActiveByIdView(APIView):
         user.is_active = not user.is_active
         user.save()
         return Response({'ok'},status=status.HTTP_201_CREATED)
+   
 class UpdateUserByIdView(APIView):
 
     parser_classes = (MultiPartParser, FormParser)
