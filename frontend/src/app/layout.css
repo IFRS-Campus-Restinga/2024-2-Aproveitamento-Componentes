@@ -1,3 +1,16 @@
+body {
+    background-color: #fff;
+    color: #000;
+}
+
+/* Estilos para o modo escuro */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #ffffff;
+    }
+}
+
 .light {
     background-color: #fff;
     color: #000;
