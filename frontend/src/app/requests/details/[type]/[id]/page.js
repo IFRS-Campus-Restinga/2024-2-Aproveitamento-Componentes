@@ -348,16 +348,17 @@ const Details = () => {
                                             </div>
                                         </div>
                                     )}
-                                    {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador" && (
-                                        <div className={styles.actionButtons}>
-                                            <Button label="Aprovar" icon="pi pi-check"
-                                                    onClick={() => approveRequest("PROF")}
-                                                    className="p-button-success"/>
-                                            <Button label="Rejeitar" icon="pi pi-times"
-                                                    onClick={() => rejectRequest("RJ_COORD")}
-                                                    className="p-button-danger"/>
-                                        </div>
-                                    )}
+                                    {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador"
+                                        && details.coordinator_feedback && (
+                                            <div className={styles.actionButtons}>
+                                                <Button label="Aprovar" icon="pi pi-check"
+                                                        onClick={() => approveRequest("PROF")}
+                                                        className="p-button-success"/>
+                                                <Button label="Rejeitar" icon="pi pi-times"
+                                                        onClick={() => rejectRequest("RJ_COORD")}
+                                                        className="p-button-danger"/>
+                                            </div>
+                                        )}
                                 </div>
                             </div>
                         </div>
@@ -417,16 +418,17 @@ const Details = () => {
                                             </div>
                                         </div>
                                     )}
-                                    {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador" && (
-                                        <div className={styles.actionButtons}>
-                                            <Button label="Aprovar" icon="pi pi-check"
-                                                    onClick={() => approveRequest("PROF")}
-                                                    className="p-button-success"/>
-                                            <Button label="Rejeitar" icon="pi pi-times"
-                                                    onClick={() => rejectRequest("RJ_COORD")}
-                                                    className="p-button-danger"/>
-                                        </div>
-                                    )}
+                                    {/*role === "Professor" && */details.status_display === "Em análise do Professor"
+                                        && details.test_score && details.professor_feedback && (
+                                            <div className={styles.actionButtons}>
+                                                <Button label="Aprovar" icon="pi pi-check"
+                                                        onClick={() => approveRequest("GRANTED")}
+                                                        className="p-button-success"/>
+                                                <Button label="Rejeitar" icon="pi pi-times"
+                                                        onClick={() => rejectRequest("RJ_PROF")}
+                                                        className="p-button-danger"/>
+                                            </div>
+                                        )}
                                 </div>
                             </div>
                         </div>
