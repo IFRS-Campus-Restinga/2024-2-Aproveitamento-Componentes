@@ -127,6 +127,10 @@ const Details = () => {
             e.currentTarget.textContent = newValue;
         }
 
+        if (field === 'previous_knowledge') {
+            setEditedKnowledge(newValue);
+        }
+
         if (field === 'course_workload') {
             setEditedCourseWorkload(newValue);
         }
@@ -319,7 +323,7 @@ const Details = () => {
                                             className={`${styles.editableSpan} ${isEditing ? styles.editing : ''}`}
                                             onInput={(e) => handleInput(e, 'previous_knowledge')}
                                         >
-                                    {editedKnowledge}
+                                    {details.previous_knowledge || "Pendente"}
                                 </span>
                                         {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
                                             <>
@@ -345,7 +349,7 @@ const Details = () => {
                                                 className={`${styles.editableSpan} ${isEditing ? styles.editing : ''}`}
                                                 onInput={(e) => handleInput(e, 'course_workload')}
                                             >
-                                        {editedCourseWorkload}
+                                        {details.course_workload || "Pendente"}
                                     </span>
                                             {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
                                                 <>
@@ -367,7 +371,7 @@ const Details = () => {
                                                 className={`${styles.editableSpan} ${isEditing ? styles.editing : ''}`}
                                                 onInput={(e) => handleInput(e, 'course_studied_workload')}
                                             >
-                                        {editedCourseStudiedWorkload}
+                                        {details.course_studied_workload || "Pendente"}
                                     </span>
                                             {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
                                                 <>
