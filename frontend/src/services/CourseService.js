@@ -17,7 +17,7 @@ const getCourseById = async (courseId) => {
 
 const courseCreate = async (data) => {
   return await apiClient
-    .post(`courses/create/`, data)
+    .post(`courses/create`, data)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Erro ao criar curso:", error);
