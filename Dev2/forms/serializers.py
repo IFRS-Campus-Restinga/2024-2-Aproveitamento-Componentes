@@ -17,7 +17,7 @@ class StepSerializer(serializers.ModelSerializer):
 class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attachment
-        fields = "__all__"
+        fields = ['id', 'file_name', 'content_type', 'certification_form', 'recognition_form']
         
     def create(self, validated_data):
         file = validated_data.pop('file')
@@ -69,11 +69,12 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
         requisition = RecognitionOfPriorLearning.objects.create(student=student, **validated_data)
 
         for attachment_file in attachments_files:
-            attachment_data = {
-                'file': attachment_file,
-                'recognition_form': requisition
-            }
-            AttachmentSerializer().create(attachment_data)
+            Attachment.objects.create(
+                file_name=attachment_file.name,
+                file_data=attachment_file.read(),
+                content_type=attachment_file.content_type,
+                recognition_form=requisition
+            )
 
         return requisition
 
@@ -111,9 +112,11 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
         student = get_object_or_404(Student, id=student_id)
         certification = KnowledgeCertification.objects.create(student=student, **validated_data)
         for attachment_file in attachments_files:
-            attachment_data = {
-                'file': attachment_file,
-                'certification_form': certification
-            }
-            AttachmentSerializer().create(attachment_data)
+            Attachment.objects.create(
+                file_name=attachment_file.name,
+                file_data=attachment_file.read(),
+                content_type=attachment_file.content_type,
+                certification_form=certification
+            )
+
         return certification

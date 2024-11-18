@@ -90,11 +90,10 @@ const CertificationRequestForm = () => {
         ? await RequestService.CreateKnowledgeCertification(formData)
         : await RequestService.CreateRecognitionForm(formData)
 
-        if (response.ok) {
+        if (response.status === 200) {
             console.log("Formulário enviado com sucesso!");
         } else {
-            const errorData = await response.json();
-            console.error("Erro ao enviar o formulário:", errorData);
+            console.error("Erro ao enviar o formulário:", response);
         }
 };
 

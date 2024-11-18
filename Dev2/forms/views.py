@@ -1,10 +1,11 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-
-from .models import RecognitionOfPriorLearning, KnowledgeCertification, Step, RequestStatus
+from rest_framework.views import APIView
+from .models import RecognitionOfPriorLearning, KnowledgeCertification, Step, RequestStatus, Attachment
 from .serializers import (
     RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer, StepSerializer
 )
+from django.http import HttpResponse, Http404
 
 
 # View para listar e criar Steps
@@ -51,7 +52,7 @@ class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateDestroyAPIView
         instance.save()
 
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return Response(status.HTTP_201_CREATED)
 
 
 # View para listar e criar KnowledgeCertification
@@ -82,4 +83,15 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance.save()
 
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return Response(status.HTTP_201_CREATED)
+
+class AttachmentDownloadView(APIView):
+    def get(self, request, attachment_id):
+        try:
+            attachment = Attachment.objects.get(id=attachment_id)
+        except Attachment.DoesNotExist:
+            raise Http404("Attachment not found")
+
+        response = HttpResponse(attachment.file_data, content_type=attachment.content_type)
+        response['Content-Disposition'] = f'attachment; filename="{attachment.file_name}"'
+        return response

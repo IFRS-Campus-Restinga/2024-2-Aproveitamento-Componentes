@@ -10,6 +10,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faClock, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Button} from 'primereact/button';
 import {getEnumIndexByValue} from "@/app/requests/status";
+import RequestService from "@/services/RequestService";
 
 const Details = () => {
     const [details, setDetails] = useState(null);
@@ -94,6 +95,10 @@ const Details = () => {
         } catch (error) {
             setError(error.message);
         }
+    };
+
+    const handleDownloadAttachment = async (attachmentId) => {
+        await RequestService.DownloadAttachment(attachmentId);
     };
 
     const handleEditToggle = () => {
@@ -198,6 +203,26 @@ const Details = () => {
                                 <p className={styles.info}><strong>Componente
                                     curricular: </strong>{details.discipline_name}
                                 </p>
+                                {details.attachments && details.attachments.length > 0 && (
+                                    <div className={styles.attachmentsSection}>
+                                        <h3>Anexos</h3>
+                                        <ul className={styles.attachmentsList}>
+                                            {details.attachments.map((attachment) => (
+                                                <li key={attachment.id} className={styles.attachmentItem}>
+                                                    <div className={styles.attachmentItemContent}>
+                                                        <span>{attachment.file_name}</span>
+                                                        <Button
+                                                            icon="pi pi-download"
+                                                            className="p-button-text p-button-rounded"
+                                                            onClick={() => handleDownloadAttachment(attachment.id)}
+                                                            tooltip="Baixar Anexo"
+                                                        />
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
 
                                 {type === "knowledge-certifications" && (
                                     <div className={styles.infoField}>
@@ -333,7 +358,7 @@ const Details = () => {
                             <h1 className={styles.center_title}>Marcar Prova</h1>
                         </div>
                     )}
-                    {() => getEnumIndexByValue(details.status_display) >= 4 && (<div className={styles.analysis}>
+                    {getEnumIndexByValue(details.status_display) >= 4 && (<div className={styles.analysis}>
                             <h1 className={styles.center_title}>Análise do Professor</h1>
                         </div>
                     )}
