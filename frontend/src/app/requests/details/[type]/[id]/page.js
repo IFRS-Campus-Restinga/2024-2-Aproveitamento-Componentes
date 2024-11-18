@@ -36,28 +36,28 @@ const Details = () => {
     const type = segments.at(-2);
     const role = user.user.type;
 
+    const fetchDetails = async () => {
+        try {
+            const response = await fetch(`${baseURL}/forms/${type}/${id}/`);
+            if (!response.ok) throw new Error("Erro ao buscar detalhes");
+            const data = await response.json();
+            setDetails(data);
+            setEditedSchedulingDate((prev) => (prev ? prev : data.scheduling_date || ""));
+            setEditedKnowledge((prev) => (prev ? prev : data.previous_knowledge || ""));
+            setEditedCourseWorkload((prev) => (prev ? prev : data.course_workload || ""));
+            setEditedCourseStudiedWorkload((prev) => (prev ? prev : data.course_studied_workload || ""));
+            setEditedCoordinatorFeedback((prev) => (prev ? prev : data.coordinator_feedback || ""));
+            setEditedProfessorFeedback((prev) => (prev ? prev : data.professor_feedback || ""));
+            setEditedTestScore((prev) => (prev !== "" ? prev : data.test_score || ""));
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     useEffect(() => {
         if (!disableReactivity && id && type) {
-            const fetchDetails = async () => {
-                try {
-                    const response = await fetch(`${baseURL}/forms/${type}/${id}/`);
-                    if (!response.ok) throw new Error("Erro ao buscar detalhes");
-                    const data = await response.json();
-                    setDetails(data);
-                    setEditedSchedulingDate((prev) => (prev ? prev : data.scheduling_date || ""));
-                    setEditedKnowledge((prev) => (prev ? prev : data.previous_knowledge || ""));
-                    setEditedCourseWorkload((prev) => (prev ? prev : data.course_workload || ""));
-                    setEditedCourseStudiedWorkload((prev) => (prev ? prev : data.course_studied_workload || ""));
-                    setEditedCoordinatorFeedback((prev) => (prev ? prev : data.coordinator_feedback || ""));
-                    setEditedProfessorFeedback((prev) => (prev ? prev : data.professor_feedback || ""));
-                    setEditedTestScore((prev) => (prev !== "" ? prev : data.test_score || ""));
-                } catch (error) {
-                    setError(error.message);
-                } finally {
-                    setLoading(false);
-                }
-            };
-
             fetchDetails();
         } else {
             setLoading(false);
@@ -77,9 +77,7 @@ const Details = () => {
             });
 
             if (!response.ok) throw new Error("Erro ao aprovar solicitação");
-
-            const updatedDetails = await response.json();
-            setDetails(updatedDetails);
+            await fetchDetails();
         } catch (error) {
             setError(error.message);
         }
