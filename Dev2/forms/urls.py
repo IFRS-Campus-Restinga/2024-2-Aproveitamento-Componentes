@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     StepListCreateView, RecognitionOfPriorLearningListCreateView, RecognitionOfPriorLearningDetailView,
-    KnowledgeCertificationListCreateView, KnowledgeCertificationDetailView
+    KnowledgeCertificationListCreateView, KnowledgeCertificationDetailView, AttachmentDownloadView
 )
 
 urlpatterns = [
@@ -10,4 +10,5 @@ urlpatterns = [
     path('recognition-forms/<uuid:id>/', RecognitionOfPriorLearningDetailView.as_view(), name='recognition-form-detail'),
     path('knowledge-certifications/', KnowledgeCertificationListCreateView.as_view(), name='knowledge-certifications-list-create'),
     path('knowledge-certifications/<uuid:id>/', KnowledgeCertificationDetailView.as_view(), name='knowledge-certification-detail'),
+    path('attachments/<uuid:attachment_id>/', AttachmentDownloadView.as_view(), name='download_attachment'),
 ]
