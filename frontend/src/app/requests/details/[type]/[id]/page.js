@@ -96,9 +96,7 @@ const Details = () => {
             });
 
             if (!response.ok) throw new Error("Erro ao rejeitar solicitação");
-
-            const updatedDetails = await response.json();
-            setDetails(updatedDetails);
+            await fetchDetails();
         } catch (error) {
             setError(error.message);
         }
