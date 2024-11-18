@@ -24,12 +24,24 @@ async function CreateDiscipline(data) {
 
 // Função para obter uma disciplina específica pelo ID
 async function GetDiscipline(id) {
-    return apiClient.get(`/api/disciplines/${id}/`).then((response) => response.data);
+    try {
+      const response = await apiClient.get(`/api/disciplines/${id}/`);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao buscar disciplina com ID ${id}:`, error);
+      throw error;
+    }
 }
 
 // Função para atualizar uma disciplina existente pelo ID
-async function UpdateDiscipline(id, data) {
-    return apiClient.put(`/api/disciplines/${id}/`, data).then((response) => response.data);
+async function UpdateDiscipline(uuid, data) {
+  try {
+    const response = await apiClient.put(`/api/disciplines/${uuid}/`, data);
+    return response.data;
+  } catch (error) {
+    console.error(`Erro ao atualizar disciplina com UUID ${uuid}:`, error);
+    throw error;
+  }
 }
 
 // Função para deletar uma disciplina pelo ID
@@ -50,4 +62,3 @@ export default {
     UpdateDiscipline,
     DeleteDiscipline
 }
-

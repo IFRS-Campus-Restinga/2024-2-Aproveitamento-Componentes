@@ -1,80 +1,146 @@
 .modalBackground {
-  min-height: 100vh;
-  width: 100%;
-  background-color: rgb(0, 0, 0, 0.2);
   position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 .modalContainer {
-  height: 450px;
-  width: 700px;
-  display: flex;
-  flex-direction: column;
-  padding: 25px;
-  border-radius: 15px;
-  background-color: white;
-  justify-content: center;
-  gap: 10px;
-  overflow-y: auto; /* Se o conteúdo for maior que a altura, vai permitir rolar */
+  background: #fff;
+  padding: 30px;
+  width: 90%; /* Aumente a largura para 90% da tela */
+  max-width: 1400px; /* Aumente a largura máxima para 1400px */
+  min-width: 800px; /* Defina uma largura mínima maior, se necessário */
+  border-radius: 12px;
+  max-height: 800px; /* Define uma altura máxima */
+  height: auto; /* Permite que o conteúdo defina a altura até o limite */
+  overflow-y: auto; /* Ativa a rolagem vertical se o conteúdo ultrapassar a altura */
 }
 
-/* Form Fields Container */
-.inputContainer {
+.topSection {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Para garantir que ocupe toda a largura disponível */
+  margin-bottom: 20px;
   gap: 10px;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  position: relative; /* Necessário para o ícone se posicionar dentro do campo */
+  order: 2; /* Coloca a pesquisa à direita */
+  margin-left: auto; /* Garante que a pesquisa fique à direita */
+  width: 100%; /* A barra de pesquisa ocupará 100% da largura disponível */
+  max-width: 700px; /* Limita o tamanho máximo da barra de pesquisa */
+}
+
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
   width: 100%;
 }
 
-/* Label */
-.inputLabel {
-  font-weight: 700;
-  font-size: 16px;
-  margin-bottom: 5px;
+.searchInput {
+  width: 100%; /* Aumenta o tamanho horizontal */
+  max-width: 700px; /* Limita o tamanho máximo */
+  padding: 12px 12px 12px 40px; /* Mais espaço interno para conforto */
+  border: 2px solid black; /* Borda azul primária */
+  border-radius: 10px; /* Bordas arredondadas */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+  transition: border-color 0.3s, box-shadow 0.3s; /* Suaviza animações */
+  outline: none; /* Remove o estilo padrão do navegador */
 }
 
-.disciplineInput {
-  padding: 12px;
-  border-radius: 15px;
-  width: 50%;
-  margin-bottom: 20px;
+.searchInput:focus {
+  border-color: black; /* Cor da borda ao focar */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra mais intensa ao focar */
+  padding-left: 30px; /* Espaço adicional à esquerda para o ícone */
+}
+
+.searchInput:focus + .searchIcon {
+  color: black; /* Muda a cor da lupa quando o campo de pesquisa está em foco */
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa; /* Cor neutra do ícone */
+}
+
+.registerButton, .backButton  {
+  order:1;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  margin-right: 5px;
+  border-radius: 5px; /* Bordas arredondadas */
+  border: none; /* Remove borda padrão */
+  cursor: pointer; /* Cursor em forma de mão */
+  order: 1;
+}
+
+.tableSection {
+  margin-top: 20px;
+  border: 2px solid black;
+  border-radius: 8px; /* Cantos arredondados */
 }
 
 .table {
-  border: 2px solid #c7c7c7e1;
-  border-collapse: collapse;
   width: 100%;
+  border-collapse: collapse;
+  border: 2px solid black; /* Borda preta ao redor da tabela */
+  border-radius: 8px; /* Cantos arredondados */
+  overflow: hidden; /* Garante que o arredondamento seja aplicado */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destacar a tabela */
+}
+
+.table th {
+  background-color: #28a745; /* Cor verde */
+  color: white; /* Cor do texto para garantir boa legibilidade */
+  padding: 10px;
+  border: 1px solid black;
+  text-align: left; /* Alinhamento do texto */
+}
+
+.table td {
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.formSection {
   margin-top: 20px;
 }
 
-.table thead {
-  position: sticky;
-  top: -3px;
-  background-color: #2f9e41;
+.inputContainer {
+  margin-bottom: 10px;
 }
 
-.table thead th {
-  padding: 16px;
-  border-bottom: 1px solid #c7c7c7e1;
-  text-align: left;
+.inputLabel {
+  font-weight: bold;
 }
 
-.table td,
-.table th {
-  border: 1px solid #ddd;
+.disciplineInput {
+  width: 100%;
   padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
 
-.table tr:nth-child(even) {
-  background-color: #f2f2f2;
+.bottomSection {
+  margin-top: 20px;
 }
 
-.table tbody tr:hover {
-  background-color: #ddd;
+.backButton {
+  background-color: #ff6f61;
+  color: white;
 }
-
