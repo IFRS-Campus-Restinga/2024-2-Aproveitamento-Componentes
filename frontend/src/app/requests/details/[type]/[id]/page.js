@@ -10,6 +10,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faClock, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Button} from 'primereact/button';
 import {getEnumIndexByValue, getFailed} from "@/app/requests/status";
+import {TextField} from "@mui/material";
 
 const Details = () => {
     const [details, setDetails] = useState(null);
@@ -18,6 +19,7 @@ const Details = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedKnowledge, setEditedKnowledge] = useState("");
     const [editedCourseWorkload, setEditedCourseWorkload] = useState("");
+    const [editedSchedulingDate, setEditedSchedulingDate] = useState("");
     const [editedCourseStudiedWorkload, setEditedCourseStudiedWorkload] = useState("");
     const [hasChanges, setHasChanges] = useState(false);
     const [disableReactivity, setDisableReactivity] = useState(false);
@@ -38,6 +40,7 @@ const Details = () => {
                     if (!response.ok) throw new Error("Erro ao buscar detalhes");
                     const data = await response.json();
                     setDetails(data);
+                    setEditedSchedulingDate(data.scheduling_date || "");
                     setEditedKnowledge(data.previous_knowledge || "");
                     setEditedCourseWorkload(data.course_workload || "");
                     setEditedCourseStudiedWorkload(data.course_studied_workload || "");
@@ -127,6 +130,7 @@ const Details = () => {
             if (type === "knowledge-certifications") {
                 body = JSON.stringify({
                     previous_knowledge: editableRef.current.textContent, // Pegue o valor do DOM.
+                    scheduling_date: editedSchedulingDate,
                 });
             } else {
                 body = JSON.stringify({
@@ -155,6 +159,7 @@ const Details = () => {
                 previous_knowledge: editableRef.current.textContent,
                 course_workload: editedCourseWorkload,
                 course_studied_workload: editedCourseStudiedWorkload,
+                scheduling_date: editedSchedulingDate
             }));
         } catch (error) {
             setError("Erro ao salvar alterações");
@@ -179,6 +184,12 @@ const Details = () => {
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
+
+    const handleDateChange = (e) => {
+        const {value} = e.target;
+        setEditedSchedulingDate(value);  // Atualiza diretamente o valor da data
+    };
+
 
     return (
         <div className={styles.container}>
@@ -351,13 +362,73 @@ const Details = () => {
                             </div>
                         </div>
                     )}
-                    {role !== "Estudante" && (
-                        <div className={styles.analysis}>
-                            <h1 className={styles.center_title}>Marcar Prova</h1>
-                        </div>
-                    )}
-                    {() => getEnumIndexByValue(details.status_display) >= 4 && (<div className={styles.analysis}>
+                    {getEnumIndexByValue(details.status_display) >= 4 && (<div className={styles.analysis}>
                             <h1 className={styles.center_title}>Análise do Professor</h1>
+                            <div className={styles.columns}>
+                                <div className={styles.infoColumn}>
+                                    {type === "knowledge-certifications" && !details.scheduling_date /* && role === "Professor"*/ && (
+                                        <div className={styles.date_time_container}>
+                                            <p className={styles.info}><strong>Agendar
+                                                prova: </strong>
+                                            </p>
+                                            <TextField
+                                                className={styles.date_time}
+                                                type="datetime-local"
+                                                name="schedulingDate"
+                                                value={editedSchedulingDate}
+                                                onChange={handleDateChange}
+                                                fullWidth
+                                                slotProps={{
+                                                    htmlInput: {
+                                                        min: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                                                    },
+                                                }}
+                                            />
+                                            {editedSchedulingDate !== "" && (
+                                                <div className={styles.iconSpacing}>
+                                                    <FontAwesomeIcon icon={faSave} onClick={handleSave}
+                                                                     className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
+                                                    <span className={styles.saveIcon}
+                                                          onClick={handleSave}>Agendar</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                    <p className={styles.info}><strong>Data da
+                                        prova: </strong>{details.scheduling_date
+                                        ? new Date(details.scheduling_date).toLocaleString("pt-BR")
+                                        : "Pendente"}
+                                    </p>
+                                    <p className={styles.info}>
+                                        <strong>Avaliação: </strong>{details.test_score ? details.test_score : "Pendente"}
+                                    </p>
+                                    <p className={styles.info}><strong>Parecer do
+                                        professor: </strong>{details.professor_feedback ? details.professor_feedback : "Pendente"}
+                                    </p>
+                                </div>
+                                <div className={styles.actionColumn}>
+                                    {details.status_display !== 'Cancelado' && (
+                                        <div
+                                            className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 4).color]}`}>
+                                            <strong>Status: </strong>
+                                            <div className={styles.statusButton}>
+                                                <FontAwesomeIcon icon={getStatusProps(details.status_display, 4).icon}/>
+                                                {getStatusProps(details.status_display, 4).label}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador" && (
+                                        <div className={styles.actionButtons}>
+                                            <Button label="Aprovar" icon="pi pi-check"
+                                                    onClick={() => approveRequest("PROF")}
+                                                    className="p-button-success"/>
+                                            <Button label="Rejeitar" icon="pi pi-times"
+                                                    onClick={() => rejectRequest("RJ_COORD")}
+                                                    className="p-button-danger"/>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

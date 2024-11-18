@@ -1,3 +1,15 @@
+.date_time_container {
+    justify-content: center;
+    align-items: center;
+    vertical-align: center;
+}
+
+.date_time {
+    display: block;
+    max-width: 60%;
+    gap: 20px;
+}
+
 .infoField {
     width: 50%;
     display: flex;
