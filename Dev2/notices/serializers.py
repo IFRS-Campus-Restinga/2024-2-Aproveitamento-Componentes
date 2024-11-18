@@ -4,7 +4,10 @@ from rest_framework import serializers
 from .models import Notice
 
 class NoticeSerializer(serializers.ModelSerializer):
-    extra_fields = serializers.JSONField(required=False)  # Define como JSONField no serializer
+    extra_fields = serializers.JSONField(required=False)
+    rectifications = serializers.ListField(
+        child=serializers.URLField(), required=False, allow_empty=True
+    )
 
     class Meta:
         model = Notice
@@ -14,7 +17,7 @@ class NoticeSerializer(serializers.ModelSerializer):
             'proposal_analysis_start', 'proposal_analysis_end',
             'result_publication_start', 'result_publication_end',
             'result_homologation_start', 'result_homologation_end',
-            'extra_fields'
+            'link', 'rectifications', 'extra_fields'
         ]
 
     def to_representation(self, instance):

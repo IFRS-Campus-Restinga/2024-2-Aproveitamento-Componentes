@@ -14,7 +14,6 @@ export default function GetUsers() {
         console.log(response);
 
         setUsers(response.data);
-
       } catch (err) {
         setError("Error fetching users");
       } finally {
@@ -35,5 +34,3 @@ export default function GetUsers() {
 
   return users;
 }
-
-// import { apiClient } from "@/libs/api";
