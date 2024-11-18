@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import generics, status
 from rest_framework.response import Response
 
@@ -39,7 +41,8 @@ class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateDestroyAPIView
         instance = self.get_object()
         data = request.data
 
-        allowed_fields = ['status', 'previous_knowledge']
+        allowed_fields = ['status', 'course_workload', 'course_studied_workload', 'coordinator_feedback',
+                          'professor_feedback']
 
         for field in allowed_fields:
             if field in data:
@@ -70,14 +73,24 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         data = request.data
 
-        allowed_fields = ['status', 'course_workload', 'course_studied_workload']
+        allowed_fields = ['status', 'previous_knowledge', 'scheduling_date', 'coordinator_feedback',
+                          'professor_feedback', 'test_score']
 
         for field in allowed_fields:
             if field in data:
                 if field == 'status' and data[field] not in dict(RequestStatus.choices):
                     return Response({"detail": "Status inválido"}, status=status.HTTP_400_BAD_REQUEST)
 
-                setattr(instance, field, data[field])
+                if field == 'scheduling_date':
+                    try:
+                        scheduling_date = datetime.strptime(data[field], "%Y-%m-%dT%H:%M")
+                        setattr(instance, field,
+                                scheduling_date)
+                    except ValueError:
+                        return Response({"detail": "Formato de data e hora inválido"},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    setattr(instance, field, data[field])
 
         instance.save()
 

@@ -1,3 +1,15 @@
+.date_time_container {
+    justify-content: center;
+    align-items: center;
+    vertical-align: center;
+}
+
+.date_time {
+    display: block;
+    max-width: 60%;
+    gap: 20px;
+}
+
 .infoField {
     width: 50%;
     display: flex;
@@ -39,6 +51,28 @@
     padding: 16px 4px;
     position: relative;
     font-size: 28px;
+}
+
+.canceled_div {
+    align-items: center;
+    text-align: center;
+}
+
+.canceled {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    background-color: red;
+    border-radius: 10px;
+    padding: 10px;
+    align-items: center;
+    display: inline-block;
+}
+
+.centered {
+    text-align: center;
+    padding: 10px;
 }
 
 .center_title {
@@ -171,8 +205,10 @@
     color: white;
     border-radius: 5px;
     padding: 10px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    text-align: center;
+    justify-content: center;
     gap: 10px;
 }
 
