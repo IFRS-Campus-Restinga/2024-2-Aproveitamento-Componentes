@@ -1,6 +1,6 @@
 import { apiClient } from "@/libs/api";
 
-async function DisciplineList() {
+export async function DisciplineList() {
     return apiClient.get('/api/disciplines/').then((response) => response.data);
 }
 
@@ -23,7 +23,7 @@ async function CreateDiscipline(data) {
   }
 
 // Função para obter uma disciplina específica pelo ID
-async function GetDiscipline(id) {
+export async function GetDiscipline(id) {
     return apiClient.get(`/api/disciplines/${id}/`).then((response) => response.data);
 }
 
