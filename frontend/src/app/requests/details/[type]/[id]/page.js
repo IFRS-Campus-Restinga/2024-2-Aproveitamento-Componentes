@@ -21,6 +21,7 @@ const Details = () => {
     const [editedCourseWorkload, setEditedCourseWorkload] = useState("");
     const [editedSchedulingDate, setEditedSchedulingDate] = useState("");
     const [editedCourseStudiedWorkload, setEditedCourseStudiedWorkload] = useState("");
+    const [editedCoordinatorFeedback, setEditedCoordinatorFeedback] = useState("")
     const [hasChanges, setHasChanges] = useState(false);
     const [disableReactivity, setDisableReactivity] = useState(false);
     const pathname = usePathname();
@@ -44,6 +45,7 @@ const Details = () => {
                     setEditedKnowledge(data.previous_knowledge || "");
                     setEditedCourseWorkload(data.course_workload || "");
                     setEditedCourseStudiedWorkload(data.course_studied_workload || "");
+                    setEditedCoordinatorFeedback(data.coordinator_feedback || "");
                 } catch (error) {
                     setError(error.message);
                 } finally {
@@ -116,9 +118,14 @@ const Details = () => {
             e.currentTarget.textContent = newValue;
         }
 
+        if (field === 'coordinator_feedback') {
+            setEditedCoordinatorFeedback(newValue);
+        }
+
         if ((field === 'previous_knowledge' && newValue !== details.previous_knowledge) ||
             (field === 'course_workload' && newValue !== details.course_workload) ||
-            (field === 'course_studied_workload' && newValue !== details.course_studied_workload)) {
+            (field === 'course_studied_workload' && newValue !== details.course_studied_workload) ||
+            field === 'coordinator_feedback' && newValue !== details.coordinator_feedback) {
             setHasChanges(true);
         }
     };
@@ -126,18 +133,20 @@ const Details = () => {
 
     const handleSave = async () => {
         try {
-            let body;
+            // Crie um objeto para armazenar os dados a serem enviados
+            const updatedData = {};
+
             if (type === "knowledge-certifications") {
-                body = JSON.stringify({
-                    previous_knowledge: editableRef.current.textContent, // Pegue o valor do DOM.
-                    scheduling_date: editedSchedulingDate,
-                });
+                if (editedKnowledge?.trim()) updatedData.previous_knowledge = editedKnowledge;
+                if (editedSchedulingDate?.trim()) updatedData.scheduling_date = editedSchedulingDate;
+                if (editedCoordinatorFeedback?.trim()) updatedData.coordinator_feedback = editedCoordinatorFeedback;
             } else {
-                body = JSON.stringify({
-                    course_workload: editedCourseWorkload,
-                    course_studied_workload: editedCourseStudiedWorkload,
-                });
+                if (editedCourseWorkload?.trim()) updatedData.course_workload = editedCourseWorkload;
+                if (editedCourseStudiedWorkload?.trim()) updatedData.course_studied_workload = editedCourseStudiedWorkload;
+                if (editedCoordinatorFeedback?.trim()) updatedData.coordinator_feedback = editedCoordinatorFeedback;
             }
+
+            const body = JSON.stringify(updatedData);
 
             const response = await fetch(`${baseURL}/forms/${type}/${id}/`, {
                 method: "PATCH",
@@ -153,13 +162,9 @@ const Details = () => {
             setIsEditing(false);
             setDisableReactivity(false);
 
-            // Atualize o estado React apenas após o salvamento.
             setDetails((prevDetails) => ({
                 ...prevDetails,
-                previous_knowledge: editableRef.current.textContent,
-                course_workload: editedCourseWorkload,
-                course_studied_workload: editedCourseStudiedWorkload,
-                scheduling_date: editedSchedulingDate
+                ...updatedData,
             }));
         } catch (error) {
             setError("Erro ao salvar alterações");
@@ -333,8 +338,32 @@ const Details = () => {
                             <h1 className={styles.center_title}>Análise do Coordenador</h1>
                             <div className={styles.columns}>
                                 <div className={styles.infoColumn}>
-                                    <p className={styles.info}><strong>Parecer do
-                                        coordenador: </strong>{details.coordinator_feedback ? details.coordinator_feedback : "Pendente"}
+                                    <p className={styles.info}>
+                                        <strong>Parecer do coordenador: </strong>
+                                        <span
+                                            ref={editableRef}
+                                            contentEditable={isEditing}
+                                            suppressContentEditableWarning={true}
+                                            className={`${styles.editableSpan} ${isEditing ? styles.editing : ''}`}
+                                            onInput={(e) => handleInput(e, 'coordinator_feedback')}>
+            {details.coordinator_feedback || "Pendente"}
+        </span>
+                                        {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador" && (
+                                            <>
+                                                <FontAwesomeIcon
+                                                    icon={faEdit}
+                                                    onClick={handleEditToggle}
+                                                    className={`${styles.iconSpacing} ${styles.editIcon}`}
+                                                />
+                                                {isEditing && hasChanges && (
+                                                    <FontAwesomeIcon
+                                                        icon={faSave}
+                                                        onClick={handleSave}
+                                                        className={`${styles.iconSpacing} ${styles.saveIcon}`}
+                                                    />
+                                                )}
+                                            </>
+                                        )}
                                     </p>
                                 </div>
                                 <div className={styles.actionColumn}>
