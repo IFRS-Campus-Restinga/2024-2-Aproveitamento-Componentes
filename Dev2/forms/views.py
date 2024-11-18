@@ -41,7 +41,8 @@ class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateDestroyAPIView
         instance = self.get_object()
         data = request.data
 
-        allowed_fields = ['status', 'course_workload', 'course_studied_workload', 'coordinator_feedback']
+        allowed_fields = ['status', 'course_workload', 'course_studied_workload', 'coordinator_feedback',
+                          'professor_feedback']
 
         for field in allowed_fields:
             if field in data:
@@ -72,7 +73,8 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         data = request.data
 
-        allowed_fields = ['status', 'previous_knowledge', 'scheduling_date', 'coordinator_feedback']
+        allowed_fields = ['status', 'previous_knowledge', 'scheduling_date', 'coordinator_feedback',
+                          'professor_feedback', 'test_score']
 
         for field in allowed_fields:
             if field in data:
