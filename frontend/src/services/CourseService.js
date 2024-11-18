@@ -27,7 +27,7 @@ const courseCreate = async (data) => {
 
 const courseEdit = async (id, data) => {
   return await apiClient
-    .put(`courses/update/${id}/`, data)
+    .put(`courses/update/${id}`, data)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Erro ao editar curso:", error);

@@ -24,7 +24,7 @@ useEffect(() => {
         const users = await UserList();
         const professors = users.filter(
           (user) =>
-            (user.servant_type === "Professor" || user.servant_type === "Coordenador") &&
+          /*(user.servant_type === "Professor" || user.servant_type === "Coordenador") &&*/
             editData.professors.includes(user.id)
         );
         setSelectedProfessors(professors);
@@ -54,7 +54,7 @@ useEffect(() => {
     try {
       const users = await UserList();
       const professors = users.filter(
-        (user) => user.servant_type === "Professor" || user.servant_type === "Coordinator"
+        (user) => user.servant_type === "Professor" || user.servant_type === "Coordenador"
       );
       setAvailableProfessors(professors);
     } catch (error) {
@@ -76,22 +76,60 @@ useEffect(() => {
   fetchAvailableProfessors();
 }, [editData]);
 
+  const handleRemoveProfessor = (prof) => {
+    setSelectedProfessors((prevProfessors) =>
+      prevProfessors.filter((p) => p.id !== prof.id) // Remove o professor pelo ID
+    );
+  };
+
+  const handleAddProfessors = (professorId) => {
+    if (!professorId) return;
+
+    const selectedProfessor = availableProfessors.find(
+      (prof) => prof.id.toString() === professorId
+    );
+
+    if (selectedProfessor && !selectedProfessors.some((prof) => prof.id === selectedProfessor.id)) {
+      setSelectedProfessors((prev) => [...prev, selectedProfessor]);
+    }
+  };
+
+  const handleRemoveDiscipline = (disc) => {
+    setSelectedDisciplines((prevDisciplines) =>
+      prevDisciplines.filter((d) => d.id !== disc.id)
+    );
+  };
+
+  const handleAddDiscipline = (disciplineId) => {
+    if (!disciplineId) return;
+
+    const selectedDiscipline = availableDisciplines.find(
+      (disc) => disc.id.toString() === disciplineId
+    );
+
+    if (selectedDiscipline && !selectedDisciplines.some((disc) => disc.id === selectedDiscipline.id)) {
+      setSelectedDisciplines((prev) => [...prev, selectedDiscipline]);
+    }
+  };
 
 
   const handleSubmit = async () => {
+    console.log("Handle submit foi chamado");
     const courseData = {
-      name: courseName,
-      professors: selectedProfessors.map((prof) => ({ id: prof.id })),
-      disciplines: selectedDisciplines.map((disc) => ({ id: disc.id })),
+        name: courseName,
+        professors: selectedProfessors.map((prof) => prof.id), // Apenas IDs
+        disciplines: selectedDisciplines.map((disc) => disc.id), // Apenas UUIDs
     };
 
+    console.log(courseData);
     try {
       if (editData) {
-        await courseEdit(editData.id, courseData);
-      } else {
-        await courseCreate(courseData);
-      }
+          await courseEdit(editData.id, courseData);
+        } else {
+          await courseCreate(courseData);
+        }
       onClose();
+      window.location.reload();
     } catch (error) {
       console.log("Erro ao salvar o curso:", error);
     }
@@ -113,13 +151,13 @@ useEffect(() => {
           <label style={{fontWeight: "700"}}>Professores</label>
           <div className={styles.selectedItems}>
             {selectedProfessors.map((prof, index) => (
-                <span key={index} className={styles.selectedItem}>
-                  {prof.name}
-                  <FontAwesomeIcon
-                      icon={faTrash}
-                      onClick={() => handleRemoveProfessor(prof)}
-                      style={{cursor: "pointer", marginLeft: "5px"}}
-                  />
+              <span key={index} className={styles.selectedItem}>
+                {prof.name}
+                <FontAwesomeIcon
+                    icon={faTrash}
+                    onClick={() => handleRemoveProfessor(prof)}
+                    style={{cursor: "pointer", marginLeft: "5px"}}
+                />
               </span>
             ))}
           </div>
@@ -161,6 +199,8 @@ useEffect(() => {
           <Button onClick={handleSubmit}>
             {editData ? "Salvar Alterações" : "Cadastrar"}
           </Button>
+        </div>
+        <div>
           <Button color="#af0a0a" onClick={onClose}>
             Cancelar
           </Button>
