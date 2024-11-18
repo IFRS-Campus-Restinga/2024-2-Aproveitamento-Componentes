@@ -24,12 +24,15 @@ def discipline_detail(request, pk):
         discipline = Disciplines.objects.get(pk=pk)
     except Disciplines.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     if request.method == 'GET':
         serializer = DisciplineSerializer(discipline)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
+        print("Método PUT chamado")  # Log de teste
         serializer = DisciplineSerializer(discipline, data=request.data)
         if serializer.is_valid():
             serializer.save()
