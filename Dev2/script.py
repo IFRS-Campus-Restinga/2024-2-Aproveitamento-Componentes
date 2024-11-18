@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+
+from courses.models import Course
 from notices.models import Notice
 from users.models import Student, Servant
 from disciplines.models import Disciplines
@@ -119,3 +121,18 @@ Disciplines.objects.create(
     syllabus= "Desenvolvimento do sistema de aproveitamento",
     professors= "Eliana Ricardo",
 )
+
+
+course1 = Course.objects.create(name="Ciencia da Computacao")
+course1.professors.add(Servant.objects.get(name='ricardo'))
+course1.disciplines.add(Disciplines.objects.filter(name="test").first())  # Usa o primeiro registro encontrado
+
+course2 = Course.objects.create(name="Engenharia de Software")
+course2.professors.add(Servant.objects.get(user__username='ricardo@hotmail.com'))
+course2.disciplines.add(Disciplines.objects.filter(name="Dev3").first())  # Usa o primeiro registro encontrado
+
+course3 = Course.objects.create(name="Sistemas de Informacao")
+course3.professors.add(Servant.objects.get(user__email='roben@hotmail.com'))
+course3.disciplines.add(Disciplines.objects.filter(name="Dev4").first())  # Usa o primeiro registro encontrado
+
+print("Cursos criados com sucesso!")
