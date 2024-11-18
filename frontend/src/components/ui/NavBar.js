@@ -1,5 +1,5 @@
-'use client'
-import { useState } from 'react';
+'use client';
+import { useState, useEffect } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import ptBR from 'date-fns/locale/pt-BR';
@@ -7,16 +7,15 @@ import { useAuth, handleUserLogout } from "@/context/AuthContext";
 import { Button } from '@mui/material';
 import { Menu } from "primereact/menu";
 
-
-
 const NavBar = ({ data = false }) => {
   const { user } = useAuth();
   const isUserAuth = !!user || false;
   const [dropdownMenu, setDropdownMenu] = useState(false);
+  const [theme, setTheme] = useState('light'); // Estado para controlar o tema
 
   const handleDropdown = () => {
     setDropdownMenu(!dropdownMenu);
-  }
+  };
 
   const items = [
     {
@@ -31,13 +30,11 @@ const NavBar = ({ data = false }) => {
           label: 'Configurações',
           icon: 'pi pi-cog',
           command: () => window.location.href = `/utilsComponents`
-
         },
         {
           label: 'Lista de users',
           icon: 'pi pi-cog',
           command: () => window.location.href = `/usersList`
-
         },
         {
           label: 'Sair',
@@ -47,11 +44,12 @@ const NavBar = ({ data = false }) => {
       ]
     }
   ];
+
   const menuAuth = () => (
     <>
       <div className='px-3'>Bem vindo, <b>{user?.name || 'Usuário'}</b></div>
       <div className='px-2'>
-        <button style={{border: "1px solid grey", padding: "10px", borderRadius: "15px"}} onClick={handleDropdown}>Menu de Agora</button>
+        <button style={{ border: "1px solid grey", padding: "10px", borderRadius: "15px" }} onClick={handleDropdown}>Menu de Agora</button>
         {dropdownMenu ? <Menu model={items} className='absolute z-50' popupAlignment="right" /> : ''}
         <Button label="Sair" icon='p-icon pi pi-fw pi-sign-in' onClick={handleUserLogout} />
       </div>
@@ -73,6 +71,19 @@ const NavBar = ({ data = false }) => {
     </>
   );
 
+  // Função para alternar entre temas
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.body.classList.remove(theme);
+    document.body.classList.add(newTheme);
+  };
+
+  useEffect(() => {
+    // Adiciona o tema inicial com base na preferência do usuário ou no estado
+    document.body.classList.add(theme);
+  }, []);
+
   return (
     <div style={{ backgroundColor: "#2f9e41" }}>
       <div className="flex items-center justify-between max-w-screen-lg p-3 mx-auto">
@@ -88,6 +99,14 @@ const NavBar = ({ data = false }) => {
 
         <div className='flex items-center justify-around text-white'>
           {isUserAuth ? menuAuth() : menuNotAuth()}
+
+          {/* Botão para alternar o tema */}
+          <Button 
+            style={{ backgroundColor: '#fff', color: '#000', marginLeft: '10px' }} 
+            onClick={toggleTheme}
+          >
+            {theme === 'light' ? 'Modo Escuro' : 'Modo Claro'}
+          </Button>
         </div>
       </div>
       <style jsx>{`
@@ -112,6 +131,6 @@ const NavBar = ({ data = false }) => {
               `}</style>
     </div>
   );
-}
+};
 
 export default NavBar;
