@@ -1,16 +1,20 @@
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import serializers
 from users.models import Student
 
-from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification
+from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification, \
+    RequestStatus
 
 
 class StepSerializer(serializers.ModelSerializer):
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
     class Meta:
         model = Step
         fields = [
-            'id', 'notice_id', 'student_id', 'responsible_id',
-            'description', 'initial_step_date', 'final_step_date'
+            'id', 'status', 'status_display','responsible_id', 'feedback', 'initial_step_date', 'final_step_date',
+            'current', 'recognition_form', 'certification_form'
         ]
 
 
@@ -18,7 +22,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attachment
         fields = ['id', 'file_name', 'content_type', 'certification_form', 'recognition_form']
-        
+
     def create(self, validated_data):
         file = validated_data.pop('file')
         certification_form = validated_data.pop('certification_form', None)
@@ -36,7 +40,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
 
 class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    status_display = serializers.SerializerMethodField(read_only=True)
     discipline_name = serializers.CharField(source='discipline.name', read_only=True)
     student_id = serializers.IntegerField(write_only=True)
     student = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -45,15 +49,14 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
     student_matricula = serializers.CharField(source='student.matricula', read_only=True)
     student_course = serializers.CharField(source='student.course', read_only=True)
     attachments = AttachmentSerializer(many=True, read_only=True)
+    steps = StepSerializer(many=True, read_only=True)
 
     class Meta:
         model = RecognitionOfPriorLearning
         fields = [
             'id', 'course_workload', 'course_studied_workload', 'test_score', 'notice', 'discipline',
-            'discipline_name', 'create_date', 'status_display', 'servant_feedback', 'servant_analysis_date',
-            'professor_feedback', 'professor_analysis_date', 'coordinator_feedback', 'coordinator_analysis_date',
-            'attachments', 'student_id', 'student', 'student', 'student_name', 'student_email', 'student_matricula',
-            'student_course'
+            'discipline_name', 'create_date', 'status_display', 'attachments', 'student_id', 'student', 'student',
+            'student_name', 'student_email', 'student_matricula', 'student_course', 'steps'
         ]
 
     def get_student_name(self, obj):
@@ -62,11 +65,27 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
     def get_student_email(self, obj):
         return obj.student.email if obj.student else None
 
+    def get_status_display(self, obj):
+        latest_step = Step.objects.filter(recognition_form=obj).order_by('-initial_step_date').first()
+        print(latest_step)
+        if latest_step:
+            print(f"Latest step found: {latest_step.status}")
+            return latest_step.get_status_display()
+        return "Status não disponível"
+
     def create(self, validated_data):
         attachments_files = self.context['request'].FILES.getlist('attachment')
         student_id = validated_data.pop('student_id')
         student = get_object_or_404(Student, id=student_id)
         requisition = RecognitionOfPriorLearning.objects.create(student=student, **validated_data)
+
+        Step.objects.create(
+            recognition_form=requisition,
+            status=RequestStatus.IN_ANALYSIS_BY_CRE,
+            # responsible_id=responsible_id,
+            initial_step_date=timezone.now(),
+            current=True
+        )
 
         for attachment_file in attachments_files:
             Attachment.objects.create(
@@ -80,7 +99,7 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
 
 
 class KnowledgeCertificationSerializer(serializers.ModelSerializer):
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    status_display = serializers.SerializerMethodField(read_only=True)
     discipline_name = serializers.CharField(source='discipline.name', read_only=True)
     student_id = serializers.IntegerField(write_only=True)
     student = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -89,15 +108,14 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
     student_matricula = serializers.CharField(source='student.matricula', read_only=True)
     student_course = serializers.CharField(source='student.course', read_only=True)
     attachments = AttachmentSerializer(many=True, read_only=True)
+    steps = StepSerializer(many=True, read_only=True)
 
     class Meta:
         model = KnowledgeCertification
         fields = [
             'id', 'previous_knowledge', 'scheduling_date', 'test_score', 'notice', 'discipline',
-            'discipline_name', 'create_date', 'status_display', 'servant_feedback', 'servant_analysis_date',
-            'professor_feedback', 'professor_analysis_date', 'coordinator_feedback', 'coordinator_analysis_date',
-            'attachments', 'student_id', 'student', 'student_name', 'student_email', 'student_matricula',
-            'student_course'
+            'discipline_name', 'create_date', 'status_display', 'attachments', 'student_id', 'student',
+            'student_name', 'student_email', 'student_matricula', 'student_course', 'steps'
         ]
 
     def get_student_name(self, obj):
@@ -106,11 +124,27 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
     def get_student_email(self, obj):
         return obj.student.email if obj.student else None
 
+    def get_status_display(self, obj):
+        latest_step = Step.objects.filter(certification_form=obj).order_by('-initial_step_date').first()
+        if latest_step:
+            print(f"Latest step found: {latest_step.status}")
+            return latest_step.get_status_display()
+        return "Status não disponível"
+
     def create(self, validated_data):
         attachments_files = self.context['request'].FILES.getlist('attachment')
         student_id = validated_data.pop('student_id')
         student = get_object_or_404(Student, id=student_id)
         certification = KnowledgeCertification.objects.create(student=student, **validated_data)
+
+        Step.objects.create(
+            certification_form=certification,
+            status=RequestStatus.IN_ANALYSIS_BY_CRE,
+            # responsible_id=responsible_id,
+            initial_step_date=timezone.now(),
+            current=True
+        )
+
         for attachment_file in attachments_files:
             Attachment.objects.create(
                 file_name=attachment_file.name,

@@ -5,8 +5,8 @@ export const StatusEnum = Object.freeze([
     "Rejeitado pelo Coordenador",
     "Em análise do Professor",
     "Rejeitado pelo Professor",
-    "Deferido",
-    "Indeferido",
+    "Em homologação do Coordenador",
+    "Em homologação do Ensino",
     "Cancelado",
 ]);
 

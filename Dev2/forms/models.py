@@ -11,8 +11,8 @@ class RequestStatus(models.TextChoices):
     REJECTED_BY_COORDINATOR = "RJ_COORD", "Rejeitado pelo Coordenador"
     IN_ANALYSIS_BY_PROFESSOR = "PROF", "Em análise do Professor"
     REJECTED_BY_PROFESSOR = "RJ_PROF", "Rejeitado pelo Professor"
-    GRANTED = "GRANTED", "Deferido"
-    REJECTED = "REJECTED", "Indeferido"
+    IN_APPROVAL_BY_COORDINATOR = "AP_COORD", "Em homologação do Coordenador"
+    IN_APPROVAL_BY_CRE = "AP_CRE", "Em homologação do Ensino"
     CANCELED = "CANCELED", "Cancelado"
 
 class Attachment(models.Model):
@@ -38,20 +38,12 @@ class Attachment(models.Model):
     def __str__(self):
         return self.file.name
 
-
 # Model abstrato RequisitionForm
 class RequisitionForm(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student = models.ForeignKey('users.Student', on_delete=models.CASCADE)
     discipline = models.ForeignKey('disciplines.Disciplines', on_delete=models.CASCADE)
     create_date = models.DateTimeField(default=timezone.now)
-    status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.IN_ANALYSIS_BY_CRE)
-    servant_feedback = models.TextField(blank=True, null=True)
-    servant_analysis_date = models.DateTimeField(null=True, blank=True)
-    professor_feedback = models.TextField(blank=True, null=True)
-    professor_analysis_date = models.DateTimeField(null=True, blank=True)
-    coordinator_feedback = models.TextField(blank=True, null=True)
-    coordinator_analysis_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -85,12 +77,26 @@ class KnowledgeCertification(RequisitionForm):
 # Model de Step
 class Step(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    notice_id = models.UUIDField()
-    student_id = models.UUIDField()
-    responsible_id = models.UUIDField()
-    description = models.TextField()
+    status = models.CharField(max_length=20, choices=RequestStatus.choices)
+    responsible_id = models.UUIDField(blank=True, null=True)
+    feedback = models.TextField(blank=True, null=True)
     initial_step_date = models.DateTimeField(default=timezone.now)
     final_step_date = models.DateTimeField(null=True, blank=True)
+    current = models.BooleanField(default=True)
+    recognition_form = models.ForeignKey(
+        'RecognitionOfPriorLearning',
+        related_name='steps',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    certification_form = models.ForeignKey(
+        'KnowledgeCertification',
+        related_name='steps',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
-        return f"Step {self.id} - {self.description}"
+        return f"Step {self.id} - {self.status}"

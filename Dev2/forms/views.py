@@ -3,23 +3,20 @@ from datetime import datetime
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import RecognitionOfPriorLearning, KnowledgeCertification, Step, RequestStatus, Attachment
+from .models import RecognitionOfPriorLearning, KnowledgeCertification, RequestStatus, Attachment
 from .serializers import (
-    RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer, StepSerializer
+    RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer
 )
 from django.http import HttpResponse, Http404
-
-
-# View para listar e criar Steps
-class StepListCreateView(generics.ListCreateAPIView):
-    queryset = Step.objects.all()
-    serializer_class = StepSerializer
-
 
 # View para listar e criar RecognitionOfPriorLearning
 class RecognitionOfPriorLearningListCreateView(generics.ListCreateAPIView):
     queryset = RecognitionOfPriorLearning.objects.all()
     serializer_class = RecognitionOfPriorLearningSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset
 
     def create(self, request, *args, **kwargs):
         print("Método create chamado com dados:", request.data)
@@ -61,7 +58,21 @@ class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateDestroyAPIView
 # View para listar e criar KnowledgeCertification
 class KnowledgeCertificationListCreateView(generics.ListCreateAPIView):
     queryset = KnowledgeCertification.objects.all()
+    print(queryset)
     serializer_class = KnowledgeCertificationSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        print("Método create chamado com dados:", request.data)
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            print("Dados validados com sucesso.")
+        else:
+            print("Dados inválidos:", serializer.errors)
+        return super().create(request, *args, **kwargs)
 
 
 # View para detalhes de uma KnowledgeCertification específica
