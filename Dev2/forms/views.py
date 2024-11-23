@@ -106,5 +106,5 @@ class AttachmentDownloadView(APIView):
             raise Http404("Attachment not found")
 
         response = HttpResponse(attachment.file_data, content_type=attachment.content_type)
-        response['Content-Disposition'] = f'attachment; filename="{attachment.file_name}"'
+        response['Content-Disposition'] = f'inline; filename="{attachment.file_name}"'
         return response
