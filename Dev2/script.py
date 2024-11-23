@@ -53,6 +53,15 @@ servant = Servant.objects.create(
     siape="123123",
     servant_type=ServantTypeEnum.TEACHER.value,
 )
+teacher2 = User.objects.create_user(username='eliana@hotmail.com', first_name='eliana', email='eliana@hotmail.com',
+                                   password=None)
+servant = Servant.objects.create(
+    user=teacher2,
+    name='eliana',
+    email='elinana@hotmail.com',
+    siape="32323",
+    servant_type=ServantTypeEnum.TEACHER.value,
+)
 coordenador = User.objects.create_user(username='roben@hotmail.com', first_name='roben', email='roben@hotmail.com',
                                        password=None)
 Servant.objects.create(
@@ -74,12 +83,12 @@ Servant.objects.create(
     servant_type=ServantTypeEnum.ENSINO.value,
     is_verified=True
 )
-cre2 = User.objects.create_user(username='103891655523380520625', first_name='servidor', email='aluno.ifrs.restinga@gmail.com', password=None)
+cre2 = User.objects.create_user(username='115057358381224992868', first_name='servidor', email='naoresponda_sistema@restinga.ifrs.edu.br', password=None)
 Servant.objects.create(
     user= cre2,
-    name='servidor teste',
-    email='aluno.ifrs.restinga@gmail.com',
-    siape="3231213",
+    name='ADMINISTRADOR',
+    email='naoresponda_sistema@restinga.ifrs.edu.br',
+    siape="0000000",
     servant_type=ServantTypeEnum.ENSINO.value,
     is_verified=True
 )

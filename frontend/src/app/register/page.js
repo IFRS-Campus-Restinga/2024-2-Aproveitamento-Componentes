@@ -12,7 +12,7 @@ const RegisterPage = () => {
                 id: '',
                 name: name,
                 email: email,
-                type: (email.endsWith('@aluno.restinga.ifrs.edu.br') || email.endsWith('@restinga.ifrs.edu.br')) ? 'Estudante' : 'Servidor',
+                type: emailType(email),
                 matricula: '',
                 course: '',
                 siape: '',
@@ -21,8 +21,18 @@ const RegisterPage = () => {
         }
 
     }
+    function emailType(email) {
+        const [localPart, domain] = email.split('@');
+        if (domain.includes('aluno')) {
+            return 'Estudante';
+        }
+        if (/^\d+$/.test(localPart)) {
+            return 'Estudante';
+        }
+        return 'Servidor';
+    }
     return (
-        <FormProfile user={user} onCancel={() => window.location.href = `/profile` } />
+        <FormProfile user={user} onCancel={() => window.location.href = `/profile`} />
     );
 }
 
