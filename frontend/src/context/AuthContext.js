@@ -66,5 +66,6 @@ export const AuthProvider = ({children}) => {
 
 export const handleUserLogout = async () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('data');
     window.location.href = '/auth';
 }

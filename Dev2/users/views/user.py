@@ -5,10 +5,12 @@ from rest_framework import status
 from ..serializers.user import CreateUserSerializer, UserPolymorphicSerializer
 from ..services.user import UserService
 from ..models import AbstractUser
+from rest_framework.permissions import IsAuthenticated
 
 
 class CreateUserView(APIView):
 
+    permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
     user_service = UserService()
 
@@ -16,8 +18,8 @@ class CreateUserView(APIView):
         usuario = request.user
         serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid():
-            criarUsuario = self.user_service.createUser(usuario, serializer)
-            if criarUsuario is not None:
+            criar_usuario = self.user_service.createUser(usuario, serializer)
+            if criar_usuario is not None:
                 return Response({"id": usuario.id}, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -25,10 +27,14 @@ class CreateUserView(APIView):
     
 class UpdateActiveByIdView(APIView):
 
-   def get(self, request, id):
-        #if usuario type is coordenador ou ensino
+    permission_classes = [IsAuthenticated]
+    user_service = UserService()
+
+    def get(self, request, id):
+        usuario = request.user
+        user_autorized = self.user_service.userAutorized(usuario)
         user = AbstractUser.objects.get(id=id)
-        if user is None:
+        if not user_autorized:
             return Response({'not ok'}, status=status.HTTP_400_BAD_REQUEST)
         user.is_active = not user.is_active
         user.save()
@@ -36,15 +42,18 @@ class UpdateActiveByIdView(APIView):
    
 class UpdateUserByIdView(APIView):
 
+    permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
     user_service = UserService()
 
     def put(self, request, id):
         usuario = request.user
+        user_autorized = self.user_service.userAutorized(usuario)
         serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid():
-            updated = self.user_service.updateUserById(id, serializer, usuario)
-            if updated is not None:
-                updated = UserPolymorphicSerializer(updated)
-                return Response({"id": updated.data}, status=status.HTTP_201_CREATED)
+            updated = self.user_service.updateUserById(id, serializer, usuario, user_autorized)
+            if updated is None:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            updated = UserPolymorphicSerializer(updated)
+            return Response({"id": updated.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

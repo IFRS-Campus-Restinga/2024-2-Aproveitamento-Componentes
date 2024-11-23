@@ -8,6 +8,7 @@ from .serializers import (
     RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer, StepSerializer
 )
 from django.http import HttpResponse, Http404
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 # View para listar e criar Steps
@@ -99,6 +100,9 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Response(status.HTTP_201_CREATED)
 
 class AttachmentDownloadView(APIView):
+
+    permission_classes = [AllowAny]
+
     def get(self, request, attachment_id):
         try:
             attachment = Attachment.objects.get(id=attachment_id)
