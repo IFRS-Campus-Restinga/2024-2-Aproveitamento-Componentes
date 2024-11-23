@@ -1,10 +1,11 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers
-from users.models import Student
 
+from users.models import Student
 from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification, \
-    RequestStatus
+    RequestStatus, FAILED_STATUS, ANALYSIS_STATUS, STUDENT_STATUS, CRE_STATUS, COORD_STATUS, PROF_STATUS
 
 
 class StepSerializer(serializers.ModelSerializer):
@@ -13,9 +14,75 @@ class StepSerializer(serializers.ModelSerializer):
     class Meta:
         model = Step
         fields = [
-            'id', 'status', 'status_display','responsible_id', 'feedback', 'initial_step_date', 'final_step_date',
+            'id', 'status', 'status_display', 'responsible_id', 'feedback', 'initial_step_date', 'final_step_date',
             'current', 'recognition_form', 'certification_form'
         ]
+
+    def validate(self, data):
+        recognition_form = data.get('recognition_form')
+        certification_form = data.get('certification_form')
+
+        if (recognition_form and certification_form) or (not recognition_form and not certification_form):
+            raise serializers.ValidationError(
+                "Deve ser fornecida uma requisição"
+            )
+
+        latest_step = None
+        if recognition_form:
+            latest_step = Step.objects.filter(recognition_form=recognition_form).order_by('-initial_step_date').first()
+        elif certification_form:
+            latest_step = Step.objects.filter(certification_form=certification_form).order_by(
+                '-initial_step_date').first()
+
+        status = data.get('status')
+
+        if not status:
+            raise serializers.ValidationError("Status é obrigatório para a criação")
+
+        if latest_step:
+            current_status = latest_step.status
+
+        current_status = None
+
+        user = self.context.get('user')
+
+        if not user:
+            raise serializers.ValidationError("Usuário não autenticado")
+
+        user_role = None
+        try:
+            if hasattr(user, 'users_servant'):
+                user_role = user.users_servant.servant_type
+            elif hasattr(user, 'users_student'):
+                user_role = 'Aluno'
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError("Erro ao identificar o tipo de usuário")
+
+        if current_status in FAILED_STATUS or current_status == RequestStatus.APPROVED_BY_CRE:
+            if status != current_status:
+                raise serializers.ValidationError("Não é permitido alterar o status após finalização")
+
+        if user_role == 'Aluno':
+            if status not in STUDENT_STATUS:
+                raise serializers.ValidationError(f"Aluno não pode definir o status como '{status}'.")
+
+        elif user_role == 'Ensino':
+            if status not in CRE_STATUS:
+                raise serializers.ValidationError(f"CRE não pode definir o status como '{status}'.")
+
+        elif user_role == 'Coordenador':
+            if status not in COORD_STATUS:
+                raise serializers.ValidationError(f"Coordenador não pode definir o status como '{status}'.")
+
+        elif user_role == 'Professor':
+            if status not in PROF_STATUS:
+                raise serializers.ValidationError(f"Professor não pode definir o status como '{status}'.")
+
+        if status not in [ANALYSIS_STATUS] and status != RequestStatus.CANCELED:
+            if not data.get('feedback'):
+                raise serializers.ValidationError("É necessário informar um feedback")
+
+        return data
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
