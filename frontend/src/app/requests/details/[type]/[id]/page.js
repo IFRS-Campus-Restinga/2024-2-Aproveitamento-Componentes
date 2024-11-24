@@ -44,7 +44,6 @@ const Details = () => {
 
     const fetchDetails = async () => {
         try {
-            console.log('user' + user.name);
             const response = await apiClient.get(`${baseURL}/forms/${type}/${id}/`);
             if (!response.ok) throw new Error("Erro ao buscar detalhes");
             const data = await response.json();
