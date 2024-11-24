@@ -105,7 +105,7 @@ discipline = Disciplines.objects.create(
     professors= "Eliana Ricardo"
 )
 
-discipline.professors.add(servant)
+#discipline.professors.add(servant)
 
 
 Disciplines.objects.create(
