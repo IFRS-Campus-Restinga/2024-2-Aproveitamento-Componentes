@@ -1,0 +1,76 @@
+/* Modal Overlay */
+.modal-overlay {
+    min-height: 100vh;
+    width: 100%;
+    background-color: rgb(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Modal Content */
+.modal-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+  border-radius: 15px;
+  background-color: white;
+  gap: 32px;
+}
+
+/* Animação do modal - slideIn */
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Estilos do botão */
+.textareaFeedback {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.modal-actions {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn.green {
+    background-color: green;
+    color: white;
+}
+
+.btn.red {
+    background-color: red;
+    color: white;
+}
+
+.btn.yellow {
+    background-color: yellow;
+    color: black;
+}
+
+.btnSecondary {
+    background-color: grey;
+    color: white;
+}

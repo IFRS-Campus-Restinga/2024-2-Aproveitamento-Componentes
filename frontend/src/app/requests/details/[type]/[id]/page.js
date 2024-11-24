@@ -12,6 +12,7 @@ import {Button} from 'primereact/button';
 import {getEnumIndexByValue} from "@/app/requests/status";
 import RequestService from "@/services/RequestService";
 import {TextField} from "@mui/material";
+import Modal from "@/components/Modal/ModalRequest/modal"
 
 const Details = () => {
     const [details, setDetails] = useState(null);
@@ -41,6 +42,8 @@ const Details = () => {
     const segments = pathname.split("/");
     const id = segments.at(-1);
     const type = segments.at(-2);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [status, setStatus] = useState("pending");
 
     const fetchDetails = async () => {
         try {
@@ -85,6 +88,22 @@ const Details = () => {
         } catch (error) {
             setError(error.message);
         }
+    };
+
+    const openModal = (status) => {
+        setStatus(status);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleConfirm = (feedback) => {
+        // Aqui você pode enviar a request com o feedback
+        // createStep(status);
+        console.log("Feedback enviado:", feedback);
+        closeModal();
     };
 
     const handleDownloadAttachment = async (attachmentId) => {
@@ -231,308 +250,317 @@ const Details = () => {
 
 
     return (
-        <div className={styles.container}>
-            <h1 className={styles.center_title}>Detalhes da Solicitação</h1>
-            {details ? (
-                <div>
-                    {details.status_display !== "Cancelado" ? (
-                        <Stepper currentStep={details.status_display}/>
-                    ) : (
-                        <div className={styles.centered}>
-                            <div
-                                className={`${styles.statusContainer} ${styles.red}`}>
-                                <strong>Status: </strong>
-                                <div className={styles.statusButton}>
-                                    <FontAwesomeIcon icon={faTimes}/>
-                                    {"Cancelado pelo aluno"}
+        <div>
+            <div className={styles.container}>
+                <h1 className={styles.center_title}>Detalhes da Solicitação</h1>
+                {details ? (
+                    <div>
+                        {details.status_display !== "Cancelado" ? (
+                            <Stepper currentStep={details.status_display}/>
+                        ) : (
+                            <div className={styles.centered}>
+                                <div
+                                    className={`${styles.statusContainer} ${styles.red}`}>
+                                    <strong>Status: </strong>
+                                    <div className={styles.statusButton}>
+                                        <FontAwesomeIcon icon={faTimes}/>
+                                        {"Cancelado pelo aluno"}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
-                    {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
-                        <div className={styles.centered}>
-                            <Button label="Cancelar solicitação" icon="pi pi-times"
-                                    onClick={() => createStep("CANCELED")}
-                                    className="p-button-danger"/>
-                        </div>
-                    )}
-                    <div className={styles.analysis}>
-                        <h1 className={styles.center_title}>Análise do Ensino</h1>
-                        <div className={styles.columns}>
-                            <div className={styles.infoColumn}>
-                                <p className={styles.info}><strong>Aluno: </strong>{details.student_name}</p>
-                                <p className={styles.info}><strong>E-mail: </strong>{details.student_email}</p>
-                                <p className={styles.info}><strong>Matrícula: </strong>{details.student_matricula}
-                                </p>
-                                <p className={styles.info}><strong>Curso: </strong>{details.student_course}</p>
-                                <p className={styles.info}><strong>Componente
-                                    curricular: </strong>{details.discipline_name}
-                                </p>
-                                {details.attachments && details.attachments.length > 0 && (
-                                    <div className={styles.attachmentsSection}>
-                                        <h3>Anexos</h3>
-                                        <ul className={styles.attachmentsList}>
-                                            {details.attachments.map((attachment) => (
-                                                <li key={attachment.id} className={styles.attachmentItem}>
-                                                    <div className={styles.attachmentItemContent}>
-                                                        <span>{attachment.file_name}</span>
-                                                        <Button
-                                                            icon="pi pi-download"
-                                                            className="p-button-text p-button-rounded"
-                                                            onClick={() => handleDownloadAttachment(attachment.id)}
-                                                            tooltip="Baixar Anexo"
-                                                        />
-                                                    </div>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-
-                                {type === "knowledge-certifications" && (
-                                    <div className={styles.infoField}>
-                                        <strong className={styles.info}>Experiência anterior: </strong>
-                                        <span
-                                            ref={editableRef}
-                                            contentEditable={isEditingKnowledge}
-                                            suppressContentEditableWarning={true}
-                                            className={`${styles.editableSpan} ${isEditingKnowledge ? styles.editing : ''}`}
-                                            onInput={(e) => handleInput(e, 'previous_knowledge')}
-                                        >
-                                    {details.previous_knowledge || "Pendente"}
-                                </span>
-                                        {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
-                                            <>
-                                                <FontAwesomeIcon icon={faEdit} onClick={handleEditToggleKnowledge}
-                                                                 className={`${styles.iconSpacing} ${styles.editIcon}`}/>
-                                                {isEditingKnowledge && hasChangesKnowledge && (
-                                                    <FontAwesomeIcon icon={faSave}
-                                                                     onClick={() => handleSave('previous_knowledge')}
-                                                                     className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
-                                                )}
-                                            </>
-                                        )}
-                                    </div>
-                                )}
-
-                                {type === "recognition-forms" && (
-                                    <>
-                                        <div className={styles.infoField}>
-                                            <strong className={styles.info}>Carga horária: </strong>
-                                            <span
-                                                ref={editableRef}
-                                                contentEditable={isEditingCourseWorkload}
-                                                suppressContentEditableWarning={true}
-                                                className={`${styles.editableSpan} ${isEditingCourseWorkload ? styles.editing : ''}`}
-                                                onInput={(e) => handleInput(e, 'course_workload')}
-                                            >
-                                        {details.course_workload || "Pendente"}
-                                    </span>
-                                            {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
-                                                <>
-                                                    <FontAwesomeIcon icon={faEdit}
-                                                                     onClick={handleEditToggleCourseWorkload}
-                                                                     className={`${styles.iconSpacing} ${styles.editIcon}`}/>
-                                                    {isEditingCourseWorkload && hasChangesWorkload && (
-                                                        <FontAwesomeIcon icon={faSave}
-                                                                         onClick={() => handleSave('course_workload')}
-                                                                         className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
-                                                    )}
-                                                </>
-                                            )}
-                                        </div>
-                                        <div className={styles.infoField}>
-                                            <strong className={styles.info}>Carga horária efetiva: </strong>
-                                            <span
-                                                ref={editableRef}
-                                                contentEditable={isEditingCourseStudiedWorkload}
-                                                suppressContentEditableWarning={true}
-                                                className={`${styles.editableSpan} ${isEditingCourseStudiedWorkload ? styles.editing : ''}`}
-                                                onInput={(e) => handleInput(e, 'course_studied_workload')}
-                                            >
-                                        {details.course_studied_workload || "Pendente"}
-                                    </span>
-                                            {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
-                                                <>
-                                                    <FontAwesomeIcon icon={faEdit}
-                                                                     onClick={handleEditToggleCourseStudiedWorkload}
-                                                                     className={`${styles.iconSpacing} ${styles.editIcon}`}/>
-                                                    {isEditingCourseStudiedWorkload && hasChangesStudiedWorkload && (
-                                                        <FontAwesomeIcon icon={faSave}
-                                                                         onClick={() => handleSave('course_studied_workload')}
-                                                                         className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
-                                                    )}
-                                                </>
-                                            )}
-                                        </div>
-                                    </>
-                                )}
+                        )}
+                        {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
+                            <div className={styles.centered}>
+                                <Button label="Cancelar solicitação" icon="pi pi-times"
+                                        onClick={() => createStep("CANCELED")}
+                                        className="p-button-danger"/>
                             </div>
-                            {details.status_display !== 'Cancelado' && (
-                                <div className={styles.actionColumn}>
-                                    <div
-                                        className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 0).color]}`}>
-                                        <strong>Status: </strong>
-                                        <div className={styles.statusButton}>
-                                            <FontAwesomeIcon icon={getStatusProps(details.status_display, 0).icon}/>
-                                            {getStatusProps(details.status_display, 0).label}
-                                        </div>
-                                    </div>
-
-                                    {/*role === "Ensino" && */details.status_display === "Em análise do Ensino" && (
-                                        <div className={styles.actionButtons}>
-                                            <Button label="Aprovar" icon="pi pi-check"
-                                                    onClick={() => createStep("COORD")}
-                                                    className="p-button-success"/>
-                                            <Button label="Rejeitar" icon="pi pi-times"
-                                                    onClick={() => createStep("RJ_CRE")}
-                                                    className="p-button-danger"/>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    {getEnumIndexByValue(details.status_display) >= 2 && (<div className={styles.analysis}>
-                            <h1 className={styles.center_title}>Análise do Coordenador</h1>
+                        )}
+                        <div className={styles.analysis}>
+                            <h1 className={styles.center_title}>Análise do Ensino</h1>
                             <div className={styles.columns}>
                                 <div className={styles.infoColumn}>
-                                    <p className={styles.info}><strong>Parecer do
-                                        coordenador: </strong>{details.coordinator_feedback || "Pendente"}
+                                    <p className={styles.info}><strong>Aluno: </strong>{details.student_name}</p>
+                                    <p className={styles.info}><strong>E-mail: </strong>{details.student_email}</p>
+                                    <p className={styles.info}><strong>Matrícula: </strong>{details.student_matricula}
                                     </p>
-                                </div>
-                                <div className={styles.actionColumn}>
-                                    {details.status_display !== 'Cancelado' && (
-                                        <div
-                                            className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 2).color]}`}>
-                                            <strong>Status: </strong>
-                                            <div className={styles.statusButton}>
-                                                <FontAwesomeIcon icon={getStatusProps(details.status_display, 2).icon}/>
-                                                {getStatusProps(details.status_display, 2).label}
-                                            </div>
+                                    <p className={styles.info}><strong>Curso: </strong>{details.student_course}</p>
+                                    <p className={styles.info}><strong>Componente
+                                        curricular: </strong>{details.discipline_name}
+                                    </p>
+                                    {details.attachments && details.attachments.length > 0 && (
+                                        <div className={styles.attachmentsSection}>
+                                            <h3>Anexos</h3>
+                                            <ul className={styles.attachmentsList}>
+                                                {details.attachments.map((attachment) => (
+                                                    <li key={attachment.id} className={styles.attachmentItem}>
+                                                        <div className={styles.attachmentItemContent}>
+                                                            <span>{attachment.file_name}</span>
+                                                            <Button
+                                                                icon="pi pi-download"
+                                                                className="p-button-text p-button-rounded"
+                                                                onClick={() => handleDownloadAttachment(attachment.id)}
+                                                                tooltip="Baixar Anexo"
+                                                            />
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
                                         </div>
-                                    )}
-                                    {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador"
-                                        && details.coordinator_feedback && (
-                                            <div className={styles.actionButtons}>
-                                                <Button label="Aprovar" icon="pi pi-check"
-                                                        onClick={() => createStep("PROF")}
-                                                        className="p-button-success"/>
-                                                <Button label="Rejeitar" icon="pi pi-times"
-                                                        onClick={() => createStep("RJ_COORD")}
-                                                        className="p-button-danger"/>
-                                            </div>
-                                        )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {getEnumIndexByValue(details.status_display) >= 4 && (<div className={styles.analysis}>
-                            <h1 className={styles.center_title}>Análise do Professor</h1>
-                            <div className={styles.columns}>
-                                <div className={styles.infoColumn}>
-                                    {type === "knowledge-certifications" && !details.scheduling_date /* && role === "Professor"*/ && (
-                                        <div className={styles.date_time_container}>
-                                            <p className={styles.info}><strong>Agendar
-                                                prova: </strong>
-                                            </p>
-                                            <TextField
-                                                className={styles.date_time}
-                                                type="datetime-local"
-                                                name="schedulingDate"
-                                                value={editedSchedulingDate}
-                                                onChange={handleDateChange}
-                                                fullWidth
-                                                slotProps={{
-                                                    htmlInput: {
-                                                        min: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-                                                    },
-                                                }}
-                                            />
-                                            {editedSchedulingDate !== "" && (
-                                                <div className={styles.iconSpacing}>
-                                                    <FontAwesomeIcon icon={faSave} onClick={handleSave}
-                                                                     className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
-                                                    <span className={styles.saveIcon}
-                                                          onClick={handleSave}>Agendar</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {type === "knowledge-certifications" && details.scheduling_date && (
-                                        <p className={styles.info}><strong>Data da
-                                            prova: </strong>{details.scheduling_date
-                                            ? new Date(details.scheduling_date).toLocaleString("pt-BR")
-                                            : "Pendente"}
-                                        </p>
                                     )}
 
                                     {type === "knowledge-certifications" && (
-                                        <p className={styles.info}>
-                                            <strong>Avaliação: </strong>
+                                        <div className={styles.infoField}>
+                                            <strong className={styles.info}>Experiência anterior: </strong>
                                             <span
                                                 ref={editableRef}
-                                                contentEditable={isEditingTestScore}
+                                                contentEditable={isEditingKnowledge}
                                                 suppressContentEditableWarning={true}
-                                                className={`${styles.editableSpan} ${isEditingTestScore ? styles.editing : ''}`}
-                                                onInput={(e) => handleInput(e, 'test_score')}>
-            {details.test_score || "Pendente"}
-        </span>
-                                            {/*role === "Professor" && */details.status_display === "Em análise do Professor" && (
+                                                className={`${styles.editableSpan} ${isEditingKnowledge ? styles.editing : ''}`}
+                                                onInput={(e) => handleInput(e, 'previous_knowledge')}
+                                            >
+                                    {details.previous_knowledge || "Pendente"}
+                                </span>
+                                            {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
                                                 <>
-                                                    <FontAwesomeIcon
-                                                        icon={faEdit}
-                                                        onClick={handleEditToggleTestScore}
-                                                        className={`${styles.iconSpacing} ${styles.editIcon}`}
-                                                    />
-                                                    {isEditingTestScore && hasChangesTestScore && (
-                                                        <FontAwesomeIcon
-                                                            icon={faSave}
-                                                            onClick={() => handleSave('test_score')}
-                                                            className={`${styles.iconSpacing} ${styles.saveIcon}`}
-                                                        />
+                                                    <FontAwesomeIcon icon={faEdit} onClick={handleEditToggleKnowledge}
+                                                                     className={`${styles.iconSpacing} ${styles.editIcon}`}/>
+                                                    {isEditingKnowledge && hasChangesKnowledge && (
+                                                        <FontAwesomeIcon icon={faSave}
+                                                                         onClick={() => handleSave('previous_knowledge')}
+                                                                         className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
                                                     )}
                                                 </>
                                             )}
-                                        </p>
-                                    )}
-
-                                    <p className={styles.info}><strong>Parecer do
-                                        professor: </strong>{details.professor_feedback || "Pendente"}
-                                    </p>
-                                </div>
-                                <div className={styles.actionColumn}>
-                                    {details.status_display !== 'Cancelado' && (
-                                        <div
-                                            className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 4).color]}`}>
-                                            <strong>Status: </strong>
-                                            <div className={styles.statusButton}>
-                                                <FontAwesomeIcon icon={getStatusProps(details.status_display, 4).icon}/>
-                                                {getStatusProps(details.status_display, 4).label}
-                                            </div>
                                         </div>
                                     )}
-                                    {/*role === "Professor" && */details.status_display === "Em análise do Professor"
-                                        && details.professor_feedback && (
+
+                                    {type === "recognition-forms" && (
+                                        <>
+                                            <div className={styles.infoField}>
+                                                <strong className={styles.info}>Carga horária: </strong>
+                                                <span
+                                                    ref={editableRef}
+                                                    contentEditable={isEditingCourseWorkload}
+                                                    suppressContentEditableWarning={true}
+                                                    className={`${styles.editableSpan} ${isEditingCourseWorkload ? styles.editing : ''}`}
+                                                    onInput={(e) => handleInput(e, 'course_workload')}
+                                                >
+                                        {details.course_workload || "Pendente"}
+                                    </span>
+                                                {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
+                                                    <>
+                                                        <FontAwesomeIcon icon={faEdit}
+                                                                         onClick={handleEditToggleCourseWorkload}
+                                                                         className={`${styles.iconSpacing} ${styles.editIcon}`}/>
+                                                        {isEditingCourseWorkload && hasChangesWorkload && (
+                                                            <FontAwesomeIcon icon={faSave}
+                                                                             onClick={() => handleSave('course_workload')}
+                                                                             className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                            <div className={styles.infoField}>
+                                                <strong className={styles.info}>Carga horária efetiva: </strong>
+                                                <span
+                                                    ref={editableRef}
+                                                    contentEditable={isEditingCourseStudiedWorkload}
+                                                    suppressContentEditableWarning={true}
+                                                    className={`${styles.editableSpan} ${isEditingCourseStudiedWorkload ? styles.editing : ''}`}
+                                                    onInput={(e) => handleInput(e, 'course_studied_workload')}
+                                                >
+                                        {details.course_studied_workload || "Pendente"}
+                                    </span>
+                                                {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
+                                                    <>
+                                                        <FontAwesomeIcon icon={faEdit}
+                                                                         onClick={handleEditToggleCourseStudiedWorkload}
+                                                                         className={`${styles.iconSpacing} ${styles.editIcon}`}/>
+                                                        {isEditingCourseStudiedWorkload && hasChangesStudiedWorkload && (
+                                                            <FontAwesomeIcon icon={faSave}
+                                                                             onClick={() => handleSave('course_studied_workload')}
+                                                                             className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                                {details.status_display !== 'Cancelado' && (
+                                    <div className={styles.actionColumn}>
+                                        <div
+                                            className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 0).color]}`}>
+                                            <strong>Status: </strong>
+                                            <div className={styles.statusButton}>
+                                                <FontAwesomeIcon icon={getStatusProps(details.status_display, 0).icon}/>
+                                                {getStatusProps(details.status_display, 0).label}
+                                            </div>
+                                        </div>
+
+                                        {/*role === "Ensino" && */details.status_display === "Em análise do Ensino" && (
                                             <div className={styles.actionButtons}>
                                                 <Button label="Aprovar" icon="pi pi-check"
-                                                        onClick={() => createStep("GRANTED")}
+                                                        onClick={() => openModal("Analisado pelo Ensino")}
                                                         className="p-button-success"/>
                                                 <Button label="Rejeitar" icon="pi pi-times"
-                                                        onClick={() => createStep("RJ_PROF")}
+                                                        onClick={() => openModal("Cancelado pelo Ensino")}
                                                         className="p-button-danger"/>
                                             </div>
                                         )}
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    )}
-                </div>
-            ) : (
-                <div>Nenhum detalhe disponível</div>
-            )}
-            <Button label="Voltar" onClick={handleBack} className={styles.backButton}/>
+                        {getEnumIndexByValue(details.status_display) >= 2 && (<div className={styles.analysis}>
+                                <h1 className={styles.center_title}>Análise do Coordenador</h1>
+                                <div className={styles.columns}>
+                                    <div className={styles.infoColumn}>
+                                        <p className={styles.info}><strong>Parecer do
+                                            coordenador: </strong>{details.coordinator_feedback || "Pendente"}
+                                        </p>
+                                    </div>
+                                    <div className={styles.actionColumn}>
+                                        {details.status_display !== 'Cancelado' && (
+                                            <div
+                                                className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 2).color]}`}>
+                                                <strong>Status: </strong>
+                                                <div className={styles.statusButton}>
+                                                    <FontAwesomeIcon
+                                                        icon={getStatusProps(details.status_display, 2).icon}/>
+                                                    {getStatusProps(details.status_display, 2).label}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador"
+                                            && details.coordinator_feedback && (
+                                                <div className={styles.actionButtons}>
+                                                    <Button label="Aprovar" icon="pi pi-check"
+                                                            onClick={() => createStep("PROF")}
+                                                            className="p-button-success"/>
+                                                    <Button label="Rejeitar" icon="pi pi-times"
+                                                            onClick={() => createStep("RJ_COORD")}
+                                                            className="p-button-danger"/>
+                                                </div>
+                                            )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {getEnumIndexByValue(details.status_display) >= 4 && (<div className={styles.analysis}>
+                                <h1 className={styles.center_title}>Análise do Professor</h1>
+                                <div className={styles.columns}>
+                                    <div className={styles.infoColumn}>
+                                        {type === "knowledge-certifications" && !details.scheduling_date /* && role === "Professor"*/ && (
+                                            <div className={styles.date_time_container}>
+                                                <p className={styles.info}><strong>Agendar
+                                                    prova: </strong>
+                                                </p>
+                                                <TextField
+                                                    className={styles.date_time}
+                                                    type="datetime-local"
+                                                    name="schedulingDate"
+                                                    value={editedSchedulingDate}
+                                                    onChange={handleDateChange}
+                                                    fullWidth
+                                                    slotProps={{
+                                                        htmlInput: {
+                                                            min: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+                                                        },
+                                                    }}
+                                                />
+                                                {editedSchedulingDate !== "" && (
+                                                    <div className={styles.iconSpacing}>
+                                                        <FontAwesomeIcon icon={faSave} onClick={handleSave}
+                                                                         className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
+                                                        <span className={styles.saveIcon}
+                                                              onClick={handleSave}>Agendar</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {type === "knowledge-certifications" && details.scheduling_date && (
+                                            <p className={styles.info}><strong>Data da
+                                                prova: </strong>{details.scheduling_date
+                                                ? new Date(details.scheduling_date).toLocaleString("pt-BR")
+                                                : "Pendente"}
+                                            </p>
+                                        )}
+
+                                        {type === "knowledge-certifications" && (
+                                            <p className={styles.info}>
+                                                <strong>Avaliação: </strong>
+                                                <span
+                                                    ref={editableRef}
+                                                    contentEditable={isEditingTestScore}
+                                                    suppressContentEditableWarning={true}
+                                                    className={`${styles.editableSpan} ${isEditingTestScore ? styles.editing : ''}`}
+                                                    onInput={(e) => handleInput(e, 'test_score')}>
+            {details.test_score || "Pendente"}
+        </span>
+                                                {/*role === "Professor" && */details.status_display === "Em análise do Professor" && (
+                                                    <>
+                                                        <FontAwesomeIcon
+                                                            icon={faEdit}
+                                                            onClick={handleEditToggleTestScore}
+                                                            className={`${styles.iconSpacing} ${styles.editIcon}`}
+                                                        />
+                                                        {isEditingTestScore && hasChangesTestScore && (
+                                                            <FontAwesomeIcon
+                                                                icon={faSave}
+                                                                onClick={() => handleSave('test_score')}
+                                                                className={`${styles.iconSpacing} ${styles.saveIcon}`}
+                                                            />
+                                                        )}
+                                                    </>
+                                                )}
+                                            </p>
+                                        )}
+
+                                        <p className={styles.info}><strong>Parecer do
+                                            professor: </strong>{details.professor_feedback || "Pendente"}
+                                        </p>
+                                    </div>
+                                    <div className={styles.actionColumn}>
+                                        {details.status_display !== 'Cancelado' && (
+                                            <div
+                                                className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 4).color]}`}>
+                                                <strong>Status: </strong>
+                                                <div className={styles.statusButton}>
+                                                    <FontAwesomeIcon
+                                                        icon={getStatusProps(details.status_display, 4).icon}/>
+                                                    {getStatusProps(details.status_display, 4).label}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {/*role === "Professor" && */details.status_display === "Em análise do Professor"
+                                            && details.professor_feedback && (
+                                                <div className={styles.actionButtons}>
+                                                    <Button label="Aprovar" icon="pi pi-check"
+                                                            onClick={() => createStep("GRANTED")}
+                                                            className="p-button-success"/>
+                                                    <Button label="Rejeitar" icon="pi pi-times"
+                                                            onClick={() => createStep("RJ_PROF")}
+                                                            className="p-button-danger"/>
+                                                </div>
+                                            )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div>Nenhum detalhe disponível</div>
+                )}
+                <Button label="Voltar" onClick={handleBack} className={styles.backButton}/>
+            </div>
+            {isModalOpen && <Modal
+                status={status}
+                onClose={closeModal}
+                onConfirm={handleConfirm}
+                isOpen={isModalOpen}/>}
         </div>
     );
 };

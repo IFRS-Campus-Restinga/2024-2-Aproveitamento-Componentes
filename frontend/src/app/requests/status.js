@@ -30,7 +30,7 @@ export function getSucceeded() {
 
 export function getFailed() {
     return ["Cancelado pelo Aluno", "Cancelado pelo Ensino", "Cancelado pelo Coordenador",
-        "Rejeitado pelo Professor", "Rejeitado pelo Coordenador", "Rejeitado pelo Ensino",];
+        "Rejeitado pelo Professor", "Rejeitado pelo Coordenador", "Rejeitado pelo Ensino"];
 }
 
 export function getPending() {
