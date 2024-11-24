@@ -25,7 +25,7 @@ const Modal = ({ status, onClose, onConfirm, isOpen }) => {
             setIsFeedbackValid(false);
             return;
         }
-        onConfirm(feedback); // Se válido, confirma o feedback
+        onConfirm(feedback);
     };
 
     useEffect(() => {
@@ -36,7 +36,7 @@ const Modal = ({ status, onClose, onConfirm, isOpen }) => {
     }, [isOpen]);
 
     return (
-        <div className={styles.modalOverlay}>
+        <div className={styles.modalBackground}>
             <div className={styles.modalContent}>
                 <h2>Informe o seu parecer sobre {getMessage()} desta etapa da solicitação:</h2>
 
@@ -50,7 +50,7 @@ const Modal = ({ status, onClose, onConfirm, isOpen }) => {
                 />
                 {!isFeedbackValid && <p style={{ color: "red" }}>*O parecer é obrigatório</p>}
 
-                <div className="modal-actions">
+                <div className="modalActions">
                     <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={onClose}>
                         Cancelar
                     </button>

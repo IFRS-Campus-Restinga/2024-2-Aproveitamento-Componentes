@@ -9,7 +9,7 @@ import styles from "./details.module.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faClock, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Button} from 'primereact/button';
-import {getEnumIndexByValue} from "@/app/requests/status";
+import {getEnumIndexByValue, getStatus} from "@/app/requests/status";
 import RequestService from "@/services/RequestService";
 import {TextField} from "@mui/material";
 import Modal from "@/components/Modal/ModalRequest/modal"
@@ -73,11 +73,12 @@ const Details = () => {
         }
     }, [pathname, disableReactivity]);
 
-    const createStep = async (status) => {
+    const createStep = async (status, feedback) => {
         try {
             const formType = type === "knowledge-certifications" ? "certification_form" : "recognition_form";
             const body = JSON.stringify({
                 status: status,
+                feedback: [feedback].toString(),
                 [formType]: details.id
             });
             const response = await apiClient.post(`${baseURL}/forms/steps/`, body);
@@ -101,7 +102,11 @@ const Details = () => {
 
     const handleConfirm = (feedback) => {
         // Aqui você pode enviar a request com o feedback
-        // createStep(status);
+        let fb;
+        if (feedback) {
+            fb = feedback.toString();
+        }
+        createStep(getStatus(status), fb);
         console.log("Feedback enviado:", feedback);
         closeModal();
     };

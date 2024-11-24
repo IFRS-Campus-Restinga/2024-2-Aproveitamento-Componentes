@@ -16,7 +16,7 @@ export const StatusEnum = Object.freeze([
     "Em homologação do Ensino",
     "Retornado pelo Ensino",
     "Rejeitado pelo Ensino",
-    "Aprovado pelo Ensino"
+    "Aprovado pelo Ensino",
 ]);
 
 export function getEnumIndexByValue(value) {
@@ -36,4 +36,45 @@ export function getFailed() {
 export function getPending() {
     return ["Em análise do Ensino", "Em análise do Coordenador", "Em análise do Professor", "Em homologação do Coordenador",
         "Retornado pelo Coordenador", "Em homologação do Ensino", "Retornado pelo Ensino"]
+}
+
+export function getStatus(status) {
+    switch (status) {
+        case "Em análise do Ensino":
+            return "CRE";
+        case "Cancelado pelo Aluno":
+            return "CANCELED";
+        case "Cancelado pelo Ensino":
+            return "C_CRE";
+        case "Analisado pelo Ensino":
+            return "A_CRE";
+        case "Em análise do Coordenador":
+            return "COORD";
+        case "Cancelado pelo Coordenador":
+            return "C_COORD";
+        case "Analisado pelo Coordenador":
+            return "A_COORD";
+        case "Em análise do Professor":
+            return "PROF";
+        case "Rejeitado pelo Professor":
+            return "RJ_PROF";
+        case "Analisado pelo Professor":
+            return "A_PROF";
+        case "Em homologação do Coordenador":
+            return "IN_AP_COORD";
+        case "Retornado pelo Coordenador":
+            return "R_COORD";
+        case "Rejeitado pelo Coordenador":
+            return "RJ_COORD";
+        case "Aprovado pelo Coordenador":
+            return "AP_COORD";
+        case "Em homologação do Ensino":
+            return "IN_AP_CRE";
+        case "Retornado pelo Ensino":
+            return "R_CRE";
+        case "Rejeitado pelo Ensino":
+            return "RJ_CRE";
+        case "Aprovado pelo Ensino":
+            return "AP_CRE";
+    }
 }
