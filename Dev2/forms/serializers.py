@@ -1,8 +1,8 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers
 
+from users.models import Servant, AbstractUser
 from users.models import Student
 from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification, \
     RequestStatus, FAILED_STATUS, ANALYSIS_STATUS, STUDENT_STATUS, CRE_STATUS, COORD_STATUS, PROF_STATUS
@@ -45,23 +45,22 @@ class StepSerializer(serializers.ModelSerializer):
             current_status = latest_step.status
 
         user = self.context.get('user')
-        responsible_id = user.id
-        print(user)
-        print(self.context.get('user.id'))
-        print(responsible_id)
+        abstract_user = AbstractUser.objects.filter(user_id=user.id).first()
+        responsible_id = abstract_user.id
         data['responsible_id'] = responsible_id
 
         if not user:
             raise serializers.ValidationError("Usuário não autenticado")
 
-        user_role = None
-        try:
-            if hasattr(user, 'users_servant'):
-                user_role = user.users_servant.servant_type
-            elif hasattr(user, 'users_student'):
-                user_role = 'Aluno'
-        except ObjectDoesNotExist:
+        servant = Servant.objects.filter(id=responsible_id).first()
+        student = Student.objects.filter(id=responsible_id).first()
+        user_role = servant.servant_type if servant else 'Aluno'
+        print(responsible_id)
+        print(user_role)
+
+        if not servant and not student:
             raise serializers.ValidationError("Erro ao identificar o tipo de usuário")
+
 
         if current_status in FAILED_STATUS or current_status == RequestStatus.APPROVED_BY_CRE:
             if status != current_status:

@@ -45,8 +45,8 @@ const Details = () => {
     const fetchDetails = async () => {
         try {
             const response = await apiClient.get(`${baseURL}/forms/${type}/${id}/`);
-            if (!response.ok) throw new Error("Erro ao buscar detalhes");
-            const data = await response.json();
+            if (response.status !== 200) throw new Error("Erro ao buscar detalhes");
+            const data = await response.data;
             setDetails(data);
             // setEditedSchedulingDate((prev) => (prev ? prev : data.scheduling_date || ""));
             setEditedKnowledge((prev) => (prev ? prev : data.previous_knowledge || ""));
@@ -79,7 +79,7 @@ const Details = () => {
             });
             const response = await apiClient.post(`${baseURL}/forms/steps/`, body);
 
-            if (!response.ok) throw new Error("Erro ao alterar solicitação");
+            if (response.status !== 201) throw new Error("Erro ao alterar solicitação");
 
             await fetchDetails();
         } catch (error) {
@@ -167,7 +167,7 @@ const Details = () => {
 
             const response = await apiClient.patch(`${baseURL}/forms/${type}/${id}/`, body);
 
-            if (!response.ok) throw new Error("Erro ao salvar alterações");
+            if (response.status !== 200) throw new Error("Erro ao salvar alterações");
 
             switch (field) {
                 case 'previous_knowledge':

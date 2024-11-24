@@ -25,7 +25,6 @@ class StepCreateView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        print(request.user.is_authenticated)
 
         if serializer.is_valid():
             self.perform_create(serializer)
@@ -83,7 +82,6 @@ class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateAPIView):
 # View para listar e criar KnowledgeCertification
 class KnowledgeCertificationListCreateView(generics.ListCreateAPIView):
     queryset = KnowledgeCertification.objects.all()
-    print(queryset)
     serializer_class = KnowledgeCertificationSerializer
 
     def get_queryset(self):
