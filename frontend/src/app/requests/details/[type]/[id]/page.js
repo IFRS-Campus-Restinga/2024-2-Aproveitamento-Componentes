@@ -1,11 +1,11 @@
 "use client";
 
+import {apiClient, baseURL} from "@/libs/api";
 import {useEffect, useRef, useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {useAuth} from "@/context/AuthContext";
 import {default as Stepper} from "@/components/Stepper/stepper";
 import styles from "./details.module.css";
-import {baseURL} from "@/libs/api";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faClock, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Button} from 'primereact/button';
@@ -21,7 +21,6 @@ const Details = () => {
     const [isEditingCourseWorkload, setisEditingCourseWorkload] = useState(false);
     const [isEditingCourseStudiedWorkload, setIsEditingCourseStudiedWorkload] = useState(false);
     const [isEditingTestScore, setIsEditingTestScore] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
     const [editedKnowledge, setEditedKnowledge] = useState("");
     const [editedCourseWorkload, setEditedCourseWorkload] = useState("");
     const [editedSchedulingDate, setEditedSchedulingDate] = useState("");
@@ -33,20 +32,20 @@ const Details = () => {
     const [hasChangesWorkload, setHasChangesWorkload] = useState(false);
     const [hasChangesStudiedWorkload, setHasChangesStudiedWorkload] = useState(false);
     const [hasChangesTestScore, setHasChangesTestScore] = useState(false);
-    const [hasChanges, setHasChanges] = useState(false);
     const [disableReactivity, setDisableReactivity] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
-    const user = useAuth();
+    const {user} = useAuth();
+    const role = user.type;
     const editableRef = useRef(null);
     const segments = pathname.split("/");
     const id = segments.at(-1);
     const type = segments.at(-2);
-    const role = user.user.type;
 
     const fetchDetails = async () => {
         try {
-            const response = await fetch(`${baseURL}/forms/${type}/${id}/`);
+            console.log('user' + user.name);
+            const response = await apiClient.get(`${baseURL}/forms/${type}/${id}/`);
             if (!response.ok) throw new Error("Erro ao buscar detalhes");
             const data = await response.json();
             setDetails(data);
@@ -72,42 +71,17 @@ const Details = () => {
         }
     }, [pathname, disableReactivity]);
 
-    const approveRequest = async (status) => {
-        try {
-            const response = await fetch(`${baseURL}/forms/${type}/${id}/`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    status: status,
-                }),
-            });
-
-            if (!response.ok) throw new Error("Erro ao aprovar solicitação");
-            await fetchDetails();
-        } catch (error) {
-            setError(error.message);
-        }
-    };
-
-    const rejectRequest = async (status) => {
+    const createStep = async (status) => {
         try {
             const formType = type === "knowledge-certifications" ? "certification_form" : "recognition_form";
-            console.log(formType);
-            console.log(details);
-            const response = await fetch(`${baseURL}/forms/steps/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    status: status,
-                    [formType]: details.id
-                }),
+            const body = JSON.stringify({
+                status: status,
+                [formType]: details.id
             });
+            const response = await apiClient.post(`${baseURL}/forms/steps/`, body);
 
-            if (!response.ok) throw new Error("Erro ao rejeitar solicitação");
+            if (!response.ok) throw new Error("Erro ao alterar solicitação");
+
             await fetchDetails();
         } catch (error) {
             setError(error.message);
@@ -192,17 +166,11 @@ const Details = () => {
 
             const body = JSON.stringify(updatedData);
 
-            const response = await fetch(`${baseURL}/forms/${type}/${id}/`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: body,
-            });
+            const response = await apiClient.patch(`${baseURL}/forms/${type}/${id}/`, body);
 
             if (!response.ok) throw new Error("Erro ao salvar alterações");
 
-                        switch (field) {
+            switch (field) {
                 case 'previous_knowledge':
                     setHasChangesKnowledge(false);
                     setIsEditingKnowledge(false);
@@ -285,7 +253,7 @@ const Details = () => {
                     {role === "Estudante" && details.status_display === "Em análise do Ensino" && (
                         <div className={styles.centered}>
                             <Button label="Cancelar solicitação" icon="pi pi-times"
-                                    onClick={() => rejectRequest("CANCELED")}
+                                    onClick={() => createStep("CANCELED")}
                                     className="p-button-danger"/>
                         </div>
                     )}
@@ -339,7 +307,8 @@ const Details = () => {
                                                 <FontAwesomeIcon icon={faEdit} onClick={handleEditToggleKnowledge}
                                                                  className={`${styles.iconSpacing} ${styles.editIcon}`}/>
                                                 {isEditingKnowledge && hasChangesKnowledge && (
-                                                    <FontAwesomeIcon icon={faSave} onClick={() => handleSave('previous_knowledge')}
+                                                    <FontAwesomeIcon icon={faSave}
+                                                                     onClick={() => handleSave('previous_knowledge')}
                                                                      className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
                                                 )}
                                             </>
@@ -366,7 +335,8 @@ const Details = () => {
                                                                      onClick={handleEditToggleCourseWorkload}
                                                                      className={`${styles.iconSpacing} ${styles.editIcon}`}/>
                                                     {isEditingCourseWorkload && hasChangesWorkload && (
-                                                        <FontAwesomeIcon icon={faSave} onClick={() => handleSave('course_workload')}
+                                                        <FontAwesomeIcon icon={faSave}
+                                                                         onClick={() => handleSave('course_workload')}
                                                                          className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
                                                     )}
                                                 </>
@@ -389,7 +359,8 @@ const Details = () => {
                                                                      onClick={handleEditToggleCourseStudiedWorkload}
                                                                      className={`${styles.iconSpacing} ${styles.editIcon}`}/>
                                                     {isEditingCourseStudiedWorkload && hasChangesStudiedWorkload && (
-                                                        <FontAwesomeIcon icon={faSave} onClick={() => handleSave('course_studied_workload')}
+                                                        <FontAwesomeIcon icon={faSave}
+                                                                         onClick={() => handleSave('course_studied_workload')}
                                                                          className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
                                                     )}
                                                 </>
@@ -412,10 +383,10 @@ const Details = () => {
                                     {/*role === "Ensino" && */details.status_display === "Em análise do Ensino" && (
                                         <div className={styles.actionButtons}>
                                             <Button label="Aprovar" icon="pi pi-check"
-                                                    onClick={() => approveRequest("COORD")}
+                                                    onClick={() => createStep("COORD")}
                                                     className="p-button-success"/>
                                             <Button label="Rejeitar" icon="pi pi-times"
-                                                    onClick={() => rejectRequest("RJ_CRE")}
+                                                    onClick={() => createStep("RJ_CRE")}
                                                     className="p-button-danger"/>
                                         </div>
                                     )}
@@ -446,10 +417,10 @@ const Details = () => {
                                         && details.coordinator_feedback && (
                                             <div className={styles.actionButtons}>
                                                 <Button label="Aprovar" icon="pi pi-check"
-                                                        onClick={() => approveRequest("PROF")}
+                                                        onClick={() => createStep("PROF")}
                                                         className="p-button-success"/>
                                                 <Button label="Rejeitar" icon="pi pi-times"
-                                                        onClick={() => rejectRequest("RJ_COORD")}
+                                                        onClick={() => createStep("RJ_COORD")}
                                                         className="p-button-danger"/>
                                             </div>
                                         )}
@@ -547,10 +518,10 @@ const Details = () => {
                                         && details.professor_feedback && (
                                             <div className={styles.actionButtons}>
                                                 <Button label="Aprovar" icon="pi pi-check"
-                                                        onClick={() => approveRequest("GRANTED")}
+                                                        onClick={() => createStep("GRANTED")}
                                                         className="p-button-success"/>
                                                 <Button label="Rejeitar" icon="pi pi-times"
-                                                        onClick={() => rejectRequest("RJ_PROF")}
+                                                        onClick={() => createStep("RJ_PROF")}
                                                         className="p-button-danger"/>
                                             </div>
                                         )}

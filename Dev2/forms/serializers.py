@@ -39,12 +39,17 @@ class StepSerializer(serializers.ModelSerializer):
         if not status:
             raise serializers.ValidationError("Status é obrigatório para a criação")
 
+        current_status = None
+
         if latest_step:
             current_status = latest_step.status
 
-        current_status = None
-
         user = self.context.get('user')
+        responsible_id = user.id
+        print(user)
+        print(self.context.get('user.id'))
+        print(responsible_id)
+        data['responsible_id'] = responsible_id
 
         if not user:
             raise serializers.ValidationError("Usuário não autenticado")
@@ -81,6 +86,11 @@ class StepSerializer(serializers.ModelSerializer):
         if status not in [ANALYSIS_STATUS] and status != RequestStatus.CANCELED:
             if not data.get('feedback'):
                 raise serializers.ValidationError("É necessário informar um feedback")
+
+        if latest_step:
+            latest_step.final_step_date = timezone.now()
+            latest_step.current = False
+            latest_step.save()
 
         return data
 
@@ -134,9 +144,7 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
 
     def get_status_display(self, obj):
         latest_step = Step.objects.filter(recognition_form=obj).order_by('-initial_step_date').first()
-        print(latest_step)
         if latest_step:
-            print(f"Latest step found: {latest_step.status}")
             return latest_step.get_status_display()
         return "Status não disponível"
 
@@ -194,7 +202,6 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
     def get_status_display(self, obj):
         latest_step = Step.objects.filter(certification_form=obj).order_by('-initial_step_date').first()
         if latest_step:
-            print(f"Latest step found: {latest_step.status}")
             return latest_step.get_status_display()
         return "Status não disponível"
 

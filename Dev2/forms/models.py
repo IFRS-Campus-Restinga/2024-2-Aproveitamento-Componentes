@@ -163,7 +163,7 @@ class KnowledgeCertification(RequisitionForm):
 class Step(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=20, choices=RequestStatus.choices)
-    responsible_id = models.UUIDField(blank=True, null=True)
+    responsible_id = models.IntegerField(blank=True, null=True)
     feedback = models.TextField(blank=True, null=True)
     initial_step_date = models.DateTimeField(default=timezone.now)
     final_step_date = models.DateTimeField(null=True, blank=True)

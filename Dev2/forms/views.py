@@ -25,6 +25,7 @@ class StepCreateView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
+        print(request.user.is_authenticated)
 
         if serializer.is_valid():
             self.perform_create(serializer)
