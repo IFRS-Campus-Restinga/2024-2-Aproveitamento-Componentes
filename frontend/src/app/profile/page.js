@@ -2,7 +2,7 @@
 import { useAuth } from "@/context/AuthContext";
 import styles from "./profile.module.css";
 import { Button } from 'primereact/button';
-import ModalDisciplineRegistration from "@/components/Modal/modal";
+import ModalDisciplineRegistration from "@/components/Modal/ModalDiscipline/modal";
 import { useState } from "react";
 
 

@@ -20,9 +20,9 @@ const BtnContainer = styled.button`
   font-size: 15px;
 `;
 
-export const Button = ({ children, type, color, onClick }) => {
+export const Button = ({ children, type, color, onClick, disabled }) => {
   return (
-    <BtnContainer type={type} color={color} onClick={onClick}>
+    <BtnContainer type={type} color={color} onClick={onClick} disabled={disabled}>
       {children}
     </BtnContainer>
   );

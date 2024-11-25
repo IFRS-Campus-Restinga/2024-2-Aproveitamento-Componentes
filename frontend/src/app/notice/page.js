@@ -8,15 +8,17 @@ import { noticeList } from "@/services/NoticeService";
 import AuthService from "@/services/AuthService";
 import { useDateFormatter } from "@/hooks/useDateFormatter";
 import { Button } from "@/components/Button/button";
+import Toast from "@/utils/toast";
 
 const Notice = () => {
   const [notices, setNotices] = useState([]);
   const [filteredNotices, setFilteredNotices] = useState([]);
-  const [numberFilter, setNumberFilter] = useState("");
-  const [yearFilter, setYearFilter] = useState("");
-  const [linkFilter, setLinkFilter] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
   const [modal, setModal] = useState(false);
   const [editData, setEditData] = useState(null);
+
+  const [toast, setToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState({});
 
   useEffect(() => {
     const fetchNotices = async () => {
@@ -44,29 +46,23 @@ const Notice = () => {
   }, [modal]);
 
   useEffect(() => {
-    const applyFilters = () => {
-      let filtered = notices;
+    const applyFilter = () => {
+      if (!searchFilter) {
+        setFilteredNotices(notices);
+        return;
+      }
 
-      if (numberFilter) {
-        filtered = filtered.filter((notice) =>
-          notice.number?.toLowerCase().includes(numberFilter.toLowerCase())
-        );
-      }
-      if (yearFilter) {
-        filtered = filtered.filter((notice) =>
-          notice.publication_date.includes(yearFilter)
-        );
-      }
-      if (linkFilter) {
-        filtered = filtered.filter((notice) =>
-          notice.link?.toLowerCase().includes(linkFilter.toLowerCase())
-        );
-      }
+      const lowerSearch = searchFilter.toLowerCase();
+      const filtered = notices.filter((notice) =>
+        Object.values(notice).some((value) =>
+          value?.toString().toLowerCase().includes(lowerSearch)
+        )
+      );
       setFilteredNotices(filtered);
     };
 
-    applyFilters();
-  }, [numberFilter, yearFilter, linkFilter, notices]);
+    applyFilter();
+  }, [searchFilter, notices]);
 
   const openModalForEdit = (notice) => {
     setEditData(notice);
@@ -79,34 +75,41 @@ const Notice = () => {
   };
 
   const clearFilters = () => {
-    setNumberFilter("");
-    setYearFilter("");
-    setLinkFilter("");
+    setSearchFilter("");
     setFilteredNotices(notices);
   };
+
+  const response = (responseModal) => {
+    const messages = {
+      edit: "Edital atualizado com sucesso!",
+      create: "Edital criado com sucesso!",
+      error: "Erro ao enviar os dados. Tente novamente.",
+    };
+  
+    setToast(true);
+    setToastMessage({
+      type: responseModal === "error" ? "error" : "success",
+      text: messages[responseModal],
+    });
+  };
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   return (
     <div className={styles.contentWrapper}>
       <div className={styles.filters}>
         <input
           type="text"
-          placeholder="Filtrar por edital..."
-          value={numberFilter}
-          onChange={(e) => setNumberFilter(e.target.value)}
-          className={styles.filterInput}
-        />
-        <input
-          type="text"
-          placeholder="Filtrar por ano..."
-          value={yearFilter}
-          onChange={(e) => setYearFilter(e.target.value)}
-          className={styles.filterInput}
-        />
-        <input
-          type="text"
-          placeholder="Filtrar por link..."
-          value={linkFilter}
-          onChange={(e) => setLinkFilter(e.target.value)}
+          placeholder="Pesquisar..."
+          value={searchFilter}
+          onChange={(e) => setSearchFilter(e.target.value)}
           className={styles.filterInput}
         />
         <Button onClick={clearFilters} color={"#46b5ff"}>
@@ -146,7 +149,14 @@ const Notice = () => {
       <button onClick={() => setModal(true)} className={styles.addButton}>
         <FontAwesomeIcon icon={faPlus} size="2x" />
       </button>
-      {modal && <ModalNotice onClose={closeModal} editData={editData} />}
+      {modal && (
+        <ModalNotice
+          onClose={closeModal}
+          editData={editData}
+          response={response}
+        />
+      )}
+      {toast ? <Toast type={toastMessage.type}>{toastMessage.text}</Toast> : ""}
     </div>
   );
 };

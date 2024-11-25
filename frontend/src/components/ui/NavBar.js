@@ -1,61 +1,107 @@
-'use client'
-import { useState } from 'react';
+"use client";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import ptBR from 'date-fns/locale/pt-BR';
+import ptBR from "date-fns/locale/pt-BR";
 import { useAuth, handleUserLogout } from "@/context/AuthContext";
-import { Button } from '@mui/material';
+import { Button } from "@mui/material";
 import { Menu } from "primereact/menu";
-
-
+import styles from "./navBar.module.css";
+import MenuIcon from "@mui/icons-material/Menu";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 
 const NavBar = ({ data = false }) => {
   const { user } = useAuth();
   const isUserAuth = !!user || false;
   const [dropdownMenu, setDropdownMenu] = useState(false);
+  const [theme, setTheme] = useState("light"); // Estado para controlar o tema
+  const [path, setPath] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setPath(window.location.pathname); // Obtém o caminho da URL
+    }
+  }, []);
 
   const handleDropdown = () => {
     setDropdownMenu(!dropdownMenu);
-  }
+  };
 
   const items = [
     {
-      label: 'Perfil',
       items: [
         {
-          label: 'Perfil',
-          icon: 'pi pi-user',
-          command: () => window.location.href = `/profile`
+          label: "Perfil",
+          icon: "pi pi-user",
+          command: () => (window.location.href = `/profile`),
         },
         {
-          label: 'Configurações',
-          icon: 'pi pi-cog',
-          command: () => window.location.href = `/utilsComponents`
-
+          label: "Alterar dados",
+          icon: "pi pi-cog",
+          command: () => (window.location.href = `/register`),
         },
         {
-          label: 'Lista de users',
-          icon: 'pi pi-cog',
-          command: () => window.location.href = `/usersList`
-
+          label: "Sair",
+          icon: "pi pi-sign-out",
+          command: () => handleUserLogout(),
         },
-        {
-          label: 'Sair',
-          icon: 'pi pi-sign-out',
-          command: () => handleUserLogout()
-        }
-      ]
-    }
+      ],
+    },
   ];
+
   const menuAuth = () => (
     <>
-      <div className='px-3'>Bem vindo, <b>{user?.name || 'Usuário'}</b></div>
-      <div className='px-2'>
-        <button style={{border: "1px solid grey", padding: "10px", borderRadius: "15px"}} onClick={handleDropdown}>Menu de Agora</button>
-        {dropdownMenu ? <Menu model={items} className='absolute z-50' popupAlignment="right" /> : ''}
+      <div className="px-3">
+        Bem vindo, <b>{user?.name || "Usuário"}</b>
+      </div>
+      <div className="px-2">
+        <button
+          style={{
+            border: "1px solid grey",
+            padding: "10px",
+            borderRadius: "15px",
+          }}
+          onClick={handleDropdown}
+        >
+          Menu de Agora
+        </button>
+        {dropdownMenu ? (
+          <Menu
+            model={items}
+            className="absolute z-50"
+            popupAlignment="right"
+          />
+        ) : (
+          ""
+        )}
       </div>
     </>
   );
+
+  //função para ambiente de dev
+  // const menuAuthDev = () => (
+  //   <>
+  //     <div className="px-3">
+  //       Bem vindo, <b>{user?.name || "Usuário"}</b>
+  //     </div>
+  //     <div className="px-2">
+  //       <MenuIcon
+  //         onClick={handleDropdown}
+  //         style={{ cursor: "pointer" }}
+  //       ></MenuIcon>
+  //       {dropdownMenu ? (
+  //         <Menu
+  //           model={items}
+  //           className="absolute z-50 right-10"
+  //           popupAlignment="right"
+  //         />
+  //       ) : (
+  //         ""
+  //       )}
+  //     </div>
+  //   </>
+  // );
 
   const menuNotAuth = () => (
     <>
@@ -72,10 +118,71 @@ const NavBar = ({ data = false }) => {
     </>
   );
 
+  const navOptions = () => (
+    <>
+      <ul className={styles.navBarOptions} style={{ listStyle: "none" }}>
+        <li
+          onClick={() => (window.location.href = `/home`)}
+          className={path === "/home" ? styles.active : ""}
+        >
+          Home
+        </li>
+        <li
+          onClick={() => (window.location.href = `/requests`)}
+          className={path === "/requests" ? styles.active : ""}
+        >
+          Solicitações
+        </li>
+        <li
+          onClick={() => (window.location.href = `/notice`)}
+          className={path === "/notice" ? styles.active : ""}
+        >
+          Editais
+        </li>
+      </ul>
+      {user.type === "Estudante" && user?.is_verified && (
+        <ul className={styles.navBarOptions} style={{ listStyle: "none" }}>
+          <li
+            onClick={() => (window.location.href = `/requests/requestForm`)}
+            className={path === "/requests/requestForm" ? styles.active : ""}
+          >
+            Realizar Solicitação
+          </li>
+        </ul>
+      )}
+      {(user?.type === "Coordenador" || user?.type === "Ensino") &&
+        user?.is_verified && (
+          <ul className={styles.navBarOptions} style={{ listStyle: "none" }}>
+            <li
+              onClick={() => (window.location.href = `/usersList`)}
+              className={path === "/usersList" ? styles.active : ""}
+            >
+              Usuários
+            </li>
+            esperando integração com a tela de disciplina
+            <li>Cadastrar Disciplina</li>
+          </ul>
+        )}
+    </>
+  );
+
+  // Função para alternar entre temas
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.body.classList.remove(theme);
+    document.body.classList.add(newTheme);
+  };
+
+  useEffect(() => {
+    // Adiciona o tema inicial com base na preferência do usuário ou no estado
+    document.body.classList.add(theme);
+  }, []);
+
   return (
     <div style={{ backgroundColor: "#2f9e41" }}>
       <div className="flex items-center justify-between max-w-screen-xlg pl-20 pt-8 pb-8 pr-20 mx-auto">
-        <Link href={isUserAuth ? '/profile' : '/auth'} className='pl-12'>
+        <Link href={isUserAuth ? "/profile" : "/auth"} className="pl-12">
           <Image
             src="/ifrs.png"
             alt="IFRS Logo"
@@ -84,33 +191,18 @@ const NavBar = ({ data = false }) => {
             width={151}
           />
         </Link>
-
-        <div className='flex items-center justify-around text-white'>
+        {!isUserAuth ? navOptions() : ""}
+        <div className="flex items-center justify-around text-white">
           {isUserAuth ? menuAuth() : menuNotAuth()}
+          {theme === "light" ? (
+            <DarkModeIcon cursor="pointer" onClick={toggleTheme} />
+          ) : (
+            <LightModeIcon cursor="pointer" onClick={toggleTheme} />
+          )}
         </div>
       </div>
-      <style jsx>{`
-                  .suggestions-container {
-                      position: absolute;
-                      top: 100%;
-                      left: 0;
-                      background-color: white;
-                      border: 1px solid #ccc;
-                      border-top: none;
-                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                      z-index: 1000;
-                      width: 100%;
-                  }
-                  .suggestion-item {
-                      padding: 10px;
-                      cursor: pointer;
-                  }
-                  .suggestion-item:hover {
-                      background-color: #f0f0f0;
-                  }
-              `}</style>
     </div>
   );
-}
+};
 
 export default NavBar;

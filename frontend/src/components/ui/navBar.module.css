@@ -1,0 +1,15 @@
+.navBarOptions {
+  display: flex;
+  gap: 30px;
+  color: white;
+  list-style: none;
+
+  & li {
+    cursor: pointer;
+  }
+}
+
+.active {
+  border-bottom: 2px solid #ffffff;
+  font-weight: bold;
+}
