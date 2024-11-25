@@ -1,0 +1,51 @@
+.homeContainer {
+  display: flex;
+  padding: 32px;
+  gap: 16px;
+}
+
+.requestInfoContainer {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.noticeInfoContainer {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.infoTitle {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  & span {
+    padding: 8px;
+    border: 1px solid rgb(131, 131, 131);
+    border-radius: 15px;
+    height: fit-content;
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  & div {
+    display: flex;
+    width: 100%;
+
+    & strong {
+      width: 20%;;
+    }
+
+    & span {
+      width: 80%;;
+    }
+  }
+}

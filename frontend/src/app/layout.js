@@ -17,13 +17,13 @@ export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <PrimeReactProvider>
-          <AuthProvider>
+        {/* <PrimeReactProvider>
+          <AuthProvider> */}
             <NavBar />
             <div style={{ minHeight: "500px" }}>{children}</div>
             <Footer />
-          </AuthProvider>
-        </PrimeReactProvider>
+          {/* </AuthProvider>
+        </PrimeReactProvider> */}
       </body>
     </html>
   );

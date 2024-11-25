@@ -3,8 +3,9 @@ import { TextField } from "@mui/material";
 import styles from "./modalNotice.module.css";
 import { Button } from "../../Button/button";
 import { noticeCreate, noticeEdit } from "@/services/NoticeService";
+import Toast from "../../../utils/toast";
 
-const ModalNotice = ({ onClose, editData = null }) => {
+const ModalNotice = ({ onClose, editData = null, response }) => {
   const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
@@ -15,6 +16,7 @@ const ModalNotice = ({ onClose, editData = null }) => {
   };
 
   const [isFormValid, setIsFormValid] = useState();
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const [formData, setFormData] = useState({
     number: editData?.number || "",
@@ -121,12 +123,14 @@ const ModalNotice = ({ onClose, editData = null }) => {
     try {
       if (editData) {
         await noticeEdit(editData.id, payload);
+        response("edit");
       } else {
         await noticeCreate(payload);
+        response("create");
       }
       onClose();
     } catch (error) {
-      console.log("Erro ao enviar os dados:", error);
+      response("error");
     }
   };
 
@@ -154,6 +158,56 @@ const ModalNotice = ({ onClose, editData = null }) => {
     setIsFormValid(isValid && isLinkValid && areRectificationsValid);
   }, [formData]);
 
+  useEffect(() => {
+    const validateFields = () => {
+      const errors = {};
+
+      const requiredFields = [
+        "number",
+        "publicationDate",
+        "documentationDeadlineFrom",
+        "documentationDeadlineTo",
+        "proposalAnalysisFrom",
+        "proposalAnalysisTo",
+        "resultPublicationFrom",
+        "resultPublicationTo",
+        "resultApprovalFrom",
+        "resultApprovalTo",
+        "link",
+      ];
+
+      requiredFields.forEach((field) => {
+        if (!formData[field]?.trim()) {
+          errors[field] = "Campo obrigatório";
+        }
+      });
+
+      if (formData.number && !isValidNumber(formData.number)) {
+        errors.number = "Formato inválido (exemplo: 002-2024)";
+      }
+
+      if (formData.link && !isValidURL(formData.link)) {
+        errors.link = "URL inválida";
+      }
+
+      formData.rectifications.forEach((rect, index) => {
+        if (rect && !isValidURL(rect)) {
+          errors[`rectifications-${index}`] = "URL inválida";
+        }
+      });
+
+      setFieldErrors(errors);
+      setIsFormValid(Object.keys(errors).length === 0);
+    };
+
+    validateFields();
+  }, [formData]);
+
+  const isValidNumber = (number) => {
+    const pattern = /^\d{3}-\d{4}$/;
+    return pattern.test(number);
+  };
+
   const isValidURL = (url) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w .-]*)*\\/?$",
@@ -178,6 +232,8 @@ const ModalNotice = ({ onClose, editData = null }) => {
               placeholder="Ex: 002-2024"
               className={styles.textInput}
               fullWidth
+              error={!!fieldErrors.number}
+              helperText={fieldErrors.number}
             />
             <label style={{ fontWeight: "700", fontSize: "20px" }}>
               Data de Publicação do Edital *
@@ -188,8 +244,10 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 name="publicationDate"
                 value={formData.publicationDate}
                 onChange={handleChange}
-                className={styles.dateInput}
+                className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors.publicationDate}
+                helperText={fieldErrors.publicationDate}
               />
             </div>
           </div>
@@ -204,8 +262,10 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 name="documentationDeadlineFrom"
                 value={formData.documentationDeadlineFrom}
                 onChange={handleChange}
-                className={styles.dateInput}
+                className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors.documentationDeadlineFrom}
+                helperText={fieldErrors.documentationDeadlineFrom}
               />
               <label>Até</label>
               <TextField
@@ -213,8 +273,10 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 name="documentationDeadlineTo"
                 value={formData.documentationDeadlineTo}
                 onChange={handleChange}
-                className={styles.dateInput}
+                className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors.documentationDeadlineTo}
+                helperText={fieldErrors.documentationDeadlineTo}
                 inputProps={{
                   min: formData.documentationDeadlineFrom || undefined,
                 }}
@@ -230,8 +292,10 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 name="proposalAnalysisFrom"
                 value={formData.proposalAnalysisFrom}
                 onChange={handleChange}
-                className={styles.dateInput}
+                className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors.proposalAnalysisFrom}
+                helperText={fieldErrors.proposalAnalysisFrom}
               />
               <label>Até</label>
               <TextField
@@ -239,8 +303,10 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 name="proposalAnalysisTo"
                 value={formData.proposalAnalysisTo}
                 onChange={handleChange}
-                className={styles.dateInput}
+                className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors.proposalAnalysisTo}
+                helperText={fieldErrors.proposalAnalysisTo}
                 inputProps={{ min: formData.proposalAnalysisFrom || undefined }}
               />
             </div>
@@ -254,8 +320,10 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 name="resultPublicationFrom"
                 value={formData.resultPublicationFrom}
                 onChange={handleChange}
-                className={styles.dateInput}
+                className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors.resultPublicationFrom}
+                helperText={fieldErrors.resultPublicationFrom}
               />
               <label>Até</label>
               <TextField
@@ -263,8 +331,10 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 name="resultPublicationTo"
                 value={formData.resultPublicationTo}
                 onChange={handleChange}
-                className={styles.dateInput}
+                className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors.resultPublicationTo}
+                helperText={fieldErrors.resultPublicationTo}
                 inputProps={{
                   min: formData.resultPublicationFrom || undefined,
                 }}
@@ -280,8 +350,10 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 name="resultApprovalFrom"
                 value={formData.resultApprovalFrom}
                 onChange={handleChange}
-                className={styles.dateInput}
+                className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors.resultApprovalFrom}
+                helperText={fieldErrors.resultApprovalFrom}
               />
               <label>Até</label>
               <TextField
@@ -289,8 +361,10 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 name="resultApprovalTo"
                 value={formData.resultApprovalTo}
                 onChange={handleChange}
-                className={styles.dateInput}
+                className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors.resultApprovalTo}
+                helperText={fieldErrors.resultApprovalTo}
                 inputProps={{ min: formData.resultApprovalFrom || undefined }}
               />
             </div>
@@ -307,6 +381,8 @@ const ModalNotice = ({ onClose, editData = null }) => {
               placeholder="Insira o link do edital"
               className={styles.textInput}
               fullWidth
+              error={!!fieldErrors.link}
+              helperText={fieldErrors.link}
             />
             <label style={{ fontWeight: "700", fontSize: "20px" }}>
               Retificações
@@ -322,6 +398,8 @@ const ModalNotice = ({ onClose, editData = null }) => {
                 placeholder="Insira o link da retificação"
                 className={styles.textInput}
                 fullWidth
+                error={!!fieldErrors[`rectifications-${index}`]}
+                helperText={fieldErrors[`rectifications-${index}`]}
               />
             ))}
             <Button type="button" onClick={addRectification}>
@@ -332,7 +410,7 @@ const ModalNotice = ({ onClose, editData = null }) => {
         <div style={{ display: "flex", gap: "50px" }}>
           <Button
             type="submit"
-            disabled={isFormValid}
+            disabled={!isFormValid}
             color={!isFormValid ? "#bfbfbf" : "#046708"}
           >
             {editData ? "Salvar" : "Cadastrar"}
