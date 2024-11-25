@@ -3,14 +3,21 @@ from rest_framework.response import Response
 
 from .models import Notice
 from .serializers import NoticeSerializer
-
+from rest_framework.permissions import IsAuthenticated
+from users.services.user import UserService
 
 class NoticeListCreateView(generics.ListCreateAPIView):
+
+    permission_classes = [IsAuthenticated]
+
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
 
 
 class NoticeDetailView(generics.RetrieveUpdateDestroyAPIView):
+
+    permission_classes = [IsAuthenticated]
+
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
     lookup_field = 'id'

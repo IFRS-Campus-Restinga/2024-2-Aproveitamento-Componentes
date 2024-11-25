@@ -11,17 +11,21 @@ async function CreateRecognitionForm(data) {
 
 function DownloadAttachment(attachmentId) {
     const url = `${baseURL}/forms/attachments/${attachmentId}/`;
+    window.open(url, '_blank');
+}
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', '');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+async function GetKnowledgeCertifications() {
+    return apiClient.get('/forms/knowledge-certifications/');
+}
+
+async function GetRecognitionOfPriorLearning() {
+    return apiClient.get('/forms/recognition-forms/');
 }
 
 export default {
     CreateKnowledgeCertification,
     CreateRecognitionForm,
-    DownloadAttachment
+    DownloadAttachment,
+    GetRecognitionOfPriorLearning,
+    GetKnowledgeCertifications
 }

@@ -9,6 +9,8 @@ from .models import RecognitionOfPriorLearning, KnowledgeCertification, RequestS
 from .serializers import (
     RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer, StepSerializer
 )
+from django.http import HttpResponse, Http404
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class StepCreateView(generics.CreateAPIView):
@@ -134,6 +136,9 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateAPIView):
 
 
 class AttachmentDownloadView(APIView):
+
+    permission_classes = [AllowAny]
+
     def get(self, request, attachment_id):
         try:
             attachment = Attachment.objects.get(id=attachment_id)
@@ -141,5 +146,6 @@ class AttachmentDownloadView(APIView):
             raise Http404("Attachment not found")
 
         response = HttpResponse(attachment.file_data, content_type=attachment.content_type)
-        response['Content-Disposition'] = f'attachment; filename="{attachment.file_name}"'
+
+        response['Content-Disposition'] = f'inline; filename="{attachment.file_name}"'
         return response
