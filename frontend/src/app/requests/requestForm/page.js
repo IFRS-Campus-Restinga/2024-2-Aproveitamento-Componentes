@@ -9,7 +9,7 @@ import { noticeList } from "@/services/NoticeService";
 import { FileUpload } from "primereact/fileupload";
 import RequestService from "@/services/RequestService";
 import { courseList } from "@/services/CourseService";
-import {DisciplineList, GetDiscipline} from "@/services/DisciplineService";
+import { GetDiscipline } from "@/services/DisciplineService";
 
 const CertificationRequestForm = () => {
   const [requestType, setRequestType] = useState("");
