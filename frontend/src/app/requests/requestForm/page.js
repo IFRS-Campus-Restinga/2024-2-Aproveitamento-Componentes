@@ -8,6 +8,8 @@ import { baseURL } from "@/libs/api";
 import { noticeList } from "@/services/NoticeService";
 import { FileUpload } from "primereact/fileupload";
 import RequestService from "@/services/RequestService";
+import { courseList } from "@/services/CourseService";
+import { GetDiscipline } from "@/services/DisciplineService";
 
 const CertificationRequestForm = () => {
   const [requestType, setRequestType] = useState("");
@@ -22,29 +24,20 @@ const CertificationRequestForm = () => {
   const [selectedNotice, setSelectedNotice] = useState("");
   const [status] = useState("CR");
   const { user } = useAuth();
+  const [courses, setCourses] = useState([]);
   console.log("###" + JSON.stringify(user));
 
-  const courses = [
-    { id: 1, name: "Curso de Engenharia" },
-    { id: 2, name: "Curso de Medicina" },
-    { id: 3, name: "Curso de Direito" },
-  ];
-
-  const disciplinesData = {
-    // TODO REMOVER
-    1: [
-      { id: "fc40c88d-65ae-41ca-bd19-89075f9b4ea3", name: "Matemática" },
-      { id: "fc40c88d-65ae-41ca-bd19-89075f9b4ea3", name: "Física" },
-    ],
-    2: [
-      { id: "fc40c88d-65ae-41ca-bd19-89075f9b4ea3", name: "Anatomia" },
-      { id: "fc40c88d-65ae-41ca-bd19-89075f9b4ea3", name: "Fisiologia" },
-    ],
-    3: [
-      { id: "fc40c88d-65ae-41ca-bd19-89075f9b4ea3", name: "Teoria do Direito" },
-      { id: "fc40c88d-65ae-41ca-bd19-89075f9b4ea3", name: "Direito Civil" },
-    ],
-  };
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const data = await courseList();
+        setCourses(data.courses);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   const onFileSelect = (e) => {
     setAttachment(e.files);
@@ -69,11 +62,27 @@ const CertificationRequestForm = () => {
     fetchNotices();
   }, []);
 
-  const handleCourseChange = (e) => {
+  const handleCourseChange = async (e) => {
     const courseId = e.target.value;
     setSelectedCourse(courseId);
     setDisciplineId(""); // Reseta a disciplina ao mudar o curso
-    setDisciplines(disciplinesData[courseId] || []); // Atualiza as disciplinas com base no curso
+
+    if (courseId) {
+      try {
+        const course = courses.find((course) => course.id === courseId);
+        const disciplinePromises = course.disciplines.map((id) =>
+          GetDiscipline(id)
+        );
+
+        const disciplineResults = await Promise.all(disciplinePromises);
+        setDisciplines(disciplineResults);
+      } catch (error) {
+        console.error("Erro ao carregar as disciplinas:", error);
+        setDisciplines([]);
+      }
+    } else {
+      setDisciplines([]);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -167,7 +176,9 @@ const CertificationRequestForm = () => {
           required
         >
           <option value="">Selecione um curso</option>
-          {courses.map((course) => (
+          {courses
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((course) => (
             <option key={course.id} value={course.id}>
               {course.name}
             </option>
@@ -184,7 +195,9 @@ const CertificationRequestForm = () => {
           required
         >
           <option value="">Selecione uma disciplina</option>
-          {disciplines.map((discipline) => (
+          {disciplines
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((discipline) => (
             <option key={discipline.id} value={discipline.id}>
               {discipline.name}
             </option>

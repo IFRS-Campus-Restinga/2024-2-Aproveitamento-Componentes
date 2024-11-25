@@ -4,14 +4,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import styles from "./course.module.css";
 import ModalCourse from "@/components/Modal/ModalCourse/modal";
+import ModalDisciplineList from '@/components/Modal/ModalCourse/disciplineList/modal'
 import { courseList } from "@/services/CourseService";
 
 
 const Course = () => {
   const [courses, setCourses] = useState([]);
-  const [disciplinesNames, setDisciplinesNames] = useState({});
   const [modal, setModal] = useState(false);
   const [editData, setEditData] = useState(null);
+  const [disciplineModal, setDisciplineModal] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -35,6 +37,16 @@ const Course = () => {
     setModal(false);
   };
 
+  const openDisciplineModal = (course) => {
+    setSelectedCourse(course);
+    setDisciplineModal(true);
+  };
+
+  const closeDisciplineModal = () => {
+    setSelectedCourse(null);
+    setDisciplineModal(false);
+  };
+
   return (
     <div className={styles.contentWrapper}>
       <div className={styles.scrollableTable}>
@@ -51,8 +63,11 @@ const Course = () => {
                 <td>{course.name ?? "N/A"}</td>
                 <td>
                   <button
-                      className={styles.linkButton}
-                      onClick={() => router.push("/disciplinas")}
+                    className={styles.linkButton}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Evita conflito com `onClick` da linha
+                      openDisciplineModal(course);
+                    }}
                   >
                     Ver Disciplinas
                   </button>
@@ -66,6 +81,12 @@ const Course = () => {
         <FontAwesomeIcon icon={faPlus} size="2x" />
       </button>
       {modal && <ModalCourse onClose={closeModal} editData={editData} />}
+      {disciplineModal && (
+        <ModalDisciplineList
+          course={selectedCourse}
+          onClose={closeDisciplineModal}
+        />
+      )}
     </div>
   );
 };

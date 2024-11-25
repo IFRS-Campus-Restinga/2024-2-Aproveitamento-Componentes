@@ -4,8 +4,8 @@ import { Button } from "../../Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { courseCreate, courseEdit } from "@/services/CourseService";
-import { disciplineList, getDisciplineById } from "@/services/DisciplineService";
-import { UserList, getUserById } from "@/services/AuthService";
+import { UserList } from "@/services/AuthService";
+import { GetDiscipline, DisciplineList } from '@/services/DisciplineService';
 
 const ModalCourse = ({ onClose, editData = null }) => {
   const [courseName, setCourseName] = useState(editData ? editData.name : "");
@@ -14,97 +14,122 @@ const ModalCourse = ({ onClose, editData = null }) => {
   const [availableDisciplines, setAvailableDisciplines] = useState([]);
   const [availableProfessors, setAvailableProfessors] = useState([]);
 
-  useEffect(() => {
-    if (editData) {
-      setCourseName(editData.name);
-      const fetchProfessorNames = async () => {
-        if (editData && editData.professors.length > 0) {
-          const professorData = await Promise.all(
-            editData.professors.map(async (userId) => {
-              const professor = await getUserById(userId);
-              return professor;
-            })
-          );
-          setSelectedProfessors(professorData);
-        }
-      };
-      const fetchDisciplineNames = async () => {
-        if (editData && editData.disciplines.length > 0) {
-          const disciplineData = await Promise.all(
-            editData.disciplines.map(async (disciplineId) => {
-              const discipline = await getDisciplineById(disciplineId);
-              return discipline;
-            })
-          );
-          setSelectedDisciplines(disciplineData);
-        }
-      };
+useEffect(() => {
+  // Preenche os dados ao editar
+  if (editData) {
+    setCourseName(editData.name);
+
+    const fetchProfessorNames = async () => {
+      try {
+        const users = await UserList();
+        const professors = users.filter(
+          (user) =>
+          /*(user.servant_type === "Professor" || user.servant_type === "Coordenador") &&*/
+            editData.professors.includes(user.id)
+        );
+        setSelectedProfessors(professors);
+      } catch (error) {
+        console.error("Erro ao buscar professores associados:", error);
+      }
+    };
+
+    const fetchDisciplineNames = async () => {
+      if (editData.disciplines.length > 0) {
+        const disciplineData = await Promise.all(
+          editData.disciplines.map(async (disciplineId) => {
+            const discipline = await GetDiscipline(disciplineId);
+            return discipline;
+          })
+        );
+        setSelectedDisciplines(disciplineData);
+      }
+    };
 
     fetchDisciplineNames();
     fetchProfessorNames();
-    }
-  }, [editData]);
+  }
 
-  // Carrega todas os professores disponíveis para o select
-  useEffect(() => {
-    const loadAvailableProfessors = async () => {
-      const allProfessors = await UserList();
-      setAvailableProfessors(allProfessors);
-    };
-
-    loadAvailableProfessors();
-  }, []);
-
-  const handleAddProfessors = async (userId) => {
-    const professor = await getUserById(userId);
-    if (!selectedProfessors.some((disc) => disc.id === professor.id)) {
-      setSelectedProfessors([...selectedProfessors, professor]);
+  // Preenche professores disponíveis
+  const fetchAvailableProfessors = async () => {
+    try {
+      const users = await UserList();
+      const professors = users.filter(
+        (user) => user.servant_type === "Professor" || user.servant_type === "Coordenador"
+      );
+      setAvailableProfessors(professors);
+    } catch (error) {
+      console.error("Erro ao buscar professores disponíveis:", error);
     }
   };
 
-  const handleRemoveProfessor = (professor) => {
-    setSelectedProfessors(
-      selectedProfessors.filter((disc) => disc.id !== professor.id)
+  // Preenche disciplinas disponíveis
+  const fetchAvailableDisciplines = async () => {
+    try {
+      const disciplines = await DisciplineList();
+      setAvailableDisciplines(disciplines);
+    } catch (error) {
+      console.error("Erro ao buscar disciplinas disponíveis:", error);
+    }
+  };
+
+  fetchAvailableDisciplines();
+  fetchAvailableProfessors();
+}, [editData]);
+
+  const handleRemoveProfessor = (prof) => {
+    setSelectedProfessors((prevProfessors) =>
+      prevProfessors.filter((p) => p.id !== prof.id) // Remove o professor pelo ID
     );
   };
 
-  // Carrega todas as disciplinas disponíveis para o select
-  useEffect(() => {
-    const loadAvailableDisciplines = async () => {
-      const allDisciplines = await disciplineList();
-      setAvailableDisciplines(allDisciplines);
-    };
+  const handleAddProfessors = (professorId) => {
+    if (!professorId) return;
 
-    loadAvailableDisciplines();
-  }, []);
+    const selectedProfessor = availableProfessors.find(
+      (prof) => prof.id.toString() === professorId
+    );
 
-  const handleAddDiscipline = async (disciplineId) => {
-    const discipline = await getDisciplineById(disciplineId);
-    if (!selectedDisciplines.some((disc) => disc.id === discipline.id)) {
-      setSelectedDisciplines([...selectedDisciplines, discipline]);
+    if (selectedProfessor && !selectedProfessors.some((prof) => prof.id === selectedProfessor.id)) {
+      setSelectedProfessors((prev) => [...prev, selectedProfessor]);
     }
   };
 
-  const handleRemoveDiscipline = (discipline) => {
-    setSelectedDisciplines(
-      selectedDisciplines.filter((disc) => disc.id !== discipline.id)
+  const handleRemoveDiscipline = (disc) => {
+    setSelectedDisciplines((prevDisciplines) =>
+      prevDisciplines.filter((d) => d.id !== disc.id)
     );
   };
+
+  const handleAddDiscipline = (disciplineId) => {
+    if (!disciplineId) return;
+
+    const selectedDiscipline = availableDisciplines.find(
+      (disc) => disc.id.toString() === disciplineId
+    );
+
+    if (selectedDiscipline && !selectedDisciplines.some((disc) => disc.id === selectedDiscipline.id)) {
+      setSelectedDisciplines((prev) => [...prev, selectedDiscipline]);
+    }
+  };
+
 
   const handleSubmit = async () => {
+    console.log("Handle submit foi chamado");
     const courseData = {
-      name: courseName,
-      professors: selectedProfessors.map((prof) => ({ id: prof.id })),
-      disciplines: selectedDisciplines.map((disc) => ({ id: disc.id })),
+        name: courseName,
+        professors: selectedProfessors.map((prof) => prof.id), // Apenas IDs
+        disciplines: selectedDisciplines.map((disc) => disc.id), // Apenas UUIDs
     };
 
+    console.log(courseData);
     try {
       if (editData) {
-        await courseEdit(editData.id, courseData);
-      } else {
-        await courseCreate(courseData);
-      }
+          await courseEdit(editData.id, courseData);
+        } else {
+          await courseCreate(courseData);
+        }
       onClose();
+      window.location.reload();
     } catch (error) {
       console.log("Erro ao salvar o curso:", error);
     }
@@ -126,13 +151,13 @@ const ModalCourse = ({ onClose, editData = null }) => {
           <label style={{fontWeight: "700"}}>Professores</label>
           <div className={styles.selectedItems}>
             {selectedProfessors.map((prof, index) => (
-                <span key={index} className={styles.selectedItem}>
-                  {prof.name}
-                  <FontAwesomeIcon
-                      icon={faTrash}
-                      onClick={() => handleRemoveProfessor(prof)}
-                      style={{cursor: "pointer", marginLeft: "5px"}}
-                  />
+              <span key={index} className={styles.selectedItem}>
+                {prof.name}
+                <FontAwesomeIcon
+                    icon={faTrash}
+                    onClick={() => handleRemoveProfessor(prof)}
+                    style={{cursor: "pointer", marginLeft: "5px"}}
+                />
               </span>
             ))}
           </div>
@@ -174,6 +199,8 @@ const ModalCourse = ({ onClose, editData = null }) => {
           <Button onClick={handleSubmit}>
             {editData ? "Salvar Alterações" : "Cadastrar"}
           </Button>
+        </div>
+        <div>
           <Button color="#af0a0a" onClick={onClose}>
             Cancelar
           </Button>
