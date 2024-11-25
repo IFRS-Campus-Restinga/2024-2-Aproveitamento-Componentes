@@ -50,16 +50,8 @@ const getStepStatus = (stepArray, stepStatusFunc) => {
         .find(value => stepStatusFunc().includes(value.status_display));
 };
 
-export default function HorizontalLinearAlternativeLabelStepper(stepArray) {
-    // Pegando os passos de forma dinâmica
-    const stepsStatus = [
-        getStepStatus(stepArray, getStep1Status),
-        getStepStatus(stepArray, getStep2Status),
-        getStepStatus(stepArray, getStep3Status),
-        getStepStatus(stepArray, getStep4Status),
-        getStepStatus(stepArray, getStep5Status),
-    ];
-
+export default function HorizontalLinearAlternativeLabelStepper({stepsStatus}) {
+    console.log(stepsStatus);
     // Função para pegar o label
     const getLabel = (index) => stepsStatus[index] ? stepsStatus[index].status_display : steps[index];
 

@@ -47,15 +47,15 @@ export function getStep2Status() {
 }
 
 export function getStep3Status() {
-    return ["Em análise do Professor", "Rejeitado pelo Professor", "Analisado pelo Professor"]
+    return ["Em análise do Professor", "Rejeitado pelo Professor", "Analisado pelo Professor", "Retornado pelo Coordenador"]
 }
 
 export function getStep4Status() {
-    return ["Em homologação do Coordenador", "Retornado pelo Coordenador", "Rejeitado pelo Coordenador", "Aprovado pelo Coordenador"]
+    return ["Em homologação do Coordenador", "Rejeitado pelo Coordenador", "Aprovado pelo Coordenador", "Retornado pelo Ensino"]
 }
 
 export function getStep5Status() {
-    return ["Em homologação do Ensino", "Retornado pelo Ensino", "Rejeitado pelo Ensino", "Aprovado pelo Ensino"]
+    return ["Em homologação do Ensino", "Rejeitado pelo Ensino", "Aprovado pelo Ensino"]
 }
 
 export function getStatus(status) {

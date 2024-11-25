@@ -87,8 +87,8 @@
     content: "";
     position: absolute;
     top: 50%;
-    width: 30%;
-    height: 1px;
+    width: 20%;
+    height: 2px;
     background-color: #ccc;
 }
 
@@ -243,16 +243,30 @@
     gap: 10px;
 }
 
-.p-button-success {
+.pButtonSuccess {
     background-color: #28a745;
     border-color: #28a745;
 }
 
-.p-button-danger {
+.pButtonReturn {
+    background-color: #ffcc00;
+    border-color: #ffcc00;
+}
+
+.pButtonDanger {
     background-color: #dc3545;
     border-color: #dc3545;
 }
 
 .backButton {
-    margin-top: 20px;
+    background-color: #28a745;
+    border-color: #28a745;
+    position: fixed;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    top: 40%;
+    left: 5%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
 }

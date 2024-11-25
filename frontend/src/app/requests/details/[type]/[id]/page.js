@@ -27,6 +27,7 @@ import Modal from "@/components/Modal/ModalRequest/modal"
 
 const Details = () => {
     const [details, setDetails] = useState(null);
+    const [stepsStatus, setStepsStatus] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isEditingKnowledge, setIsEditingKnowledge] = useState(false);
@@ -39,6 +40,8 @@ const Details = () => {
     const [editedCourseStudiedWorkload, setEditedCourseStudiedWorkload] = useState("");
     const [coordinatorFeedback, setCoordinatorFeedback] = useState("")
     const [professorFeedback, setProfessorFeedback] = useState("")
+    const [coordinatorSecondFeedback, setCoordinatorSecondFeedback] = useState("")
+    const [creFeedback, setCreFeedback] = useState("")
     const [editedTestScore, setEditedTestScore] = useState("")
     const [hasChangesKnowledge, setHasChangesKnowledge] = useState(false);
     const [hasChangesWorkload, setHasChangesWorkload] = useState(false);
@@ -62,13 +65,19 @@ const Details = () => {
             if (response.status !== 200) throw new Error("Erro ao buscar detalhes");
             const data = await response.data;
             setDetails(data);
+            setStepsStatus([
+                getStepStatus(data.steps, getStep1Status),
+                getStepStatus(data.steps, getStep2Status),
+                getStepStatus(data.steps, getStep3Status),
+                getStepStatus(data.steps, getStep4Status),
+                getStepStatus(data.steps, getStep5Status),
+            ]);
             setEditedKnowledge((prev) => (prev ? prev : data.previous_knowledge || ""));
             setEditedCourseWorkload((prev) => (prev ? prev : data.course_workload || ""));
             setEditedCourseStudiedWorkload((prev) => (prev ? prev : data.course_studied_workload || ""));
             setEditedTestScore((prev) => (prev !== "" ? prev : data.test_score || ""));
-            console.log(data.steps);
-            const coordinator = data.steps.reverse().find(value => getStep2Status().includes(value.status_display));
-            const professor = data.steps.reverse().find(value => getStep3Status().includes(value.status_display));
+            const coordinator = getStepStatus(data.steps, getStep2Status);
+            const professor = getStepStatus(data.steps, getStep3Status);
             if (coordinator) setCoordinatorFeedback(coordinator.feedback)
             if (professor) setProfessorFeedback(professor.feedback)
         } catch (error) {
@@ -78,6 +87,10 @@ const Details = () => {
         }
     };
 
+    // useEffect(() => {
+    //     console.log(stepsStatus);
+    // }, [stepsStatus])
+
     useEffect(() => {
         if (!disableReactivity && id && type) {
             fetchDetails();
@@ -85,6 +98,11 @@ const Details = () => {
             setLoading(false);
         }
     }, [pathname, disableReactivity]);
+
+    const getStepStatus = (stepArray, stepStatusFunc) => {
+        const reverseArray = stepArray => [...stepArray].reverse();
+        return reverseArray(stepArray).find(value => stepStatusFunc().includes(value.status_display));
+    };
 
     const createStep = async (status, feedback) => {
         try {
@@ -255,28 +273,10 @@ const Details = () => {
     };
 
     const getStatusProps = (step) => {
-        let status;
-        switch (step) {
-            case 0:
-                status = Object.values(details.steps).reverse().find(value => getStep1Status().includes(value.status_display));
-                break;
-            case 1:
-                status = Object.values(details.steps).reverse().find(value => getStep2Status().includes(value.status_display));
-                break;
-            case 2:
-                status = Object.values(details.steps).reverse().find(value => getStep3Status().includes(value.status_display));
-                break;
-            case 3:
-                status = Object.values(details.steps).reverse().find(value => getStep4Status().includes(value.status_display));
-                break;
-            case 4:
-                status = Object.values(details.steps).reverse().find(value => getStep5Status().includes(value.status_display));
-                break;
-            default:
-                return {color: "gray", icon: faClock, label: "Desconhecido"};
-        }
+        let status = stepsStatus[step];
 
         if (status) status = status.status_display;
+        console.log('step ' + step + ' - ' + status)
 
         if (getFailed().includes(status)) {
             return {color: "red", icon: faTimes, label: "Rejeitado"};
@@ -302,8 +302,8 @@ const Details = () => {
                 <h1 className={styles.center_title}>Detalhes da Solicitação</h1>
                 {details ? (
                     <div>
-                        {details.status_display !== "Cancelado" ? (
-                            <Stepper stepArray={details.steps}/>
+                        {stepsStatus && details.status_display !== "Cancelado" ? (
+                            <Stepper stepsStatus={stepsStatus}/>
                         ) : (
                             <div className={styles.centered}>
                                 <div
@@ -320,7 +320,7 @@ const Details = () => {
                             <div className={styles.centered}>
                                 <Button label="Cancelar solicitação" icon="pi pi-times"
                                         onClick={() => createStep("CANCELED")}
-                                        className="p-button-danger"/>
+                                        className={styles.pButtonDanger}/>
                             </div>
                         )}
                         <div className={styles.analysis}>
@@ -450,10 +450,10 @@ const Details = () => {
                                             <div className={styles.actionButtons}>
                                                 <Button label="Aprovar" icon="pi pi-check"
                                                         onClick={() => openModal("Analisado pelo Ensino")}
-                                                        className="p-button-success"/>
+                                                        className={styles.pButtonSuccess}/>
                                                 <Button label="Rejeitar" icon="pi pi-times"
                                                         onClick={() => openModal("Cancelado pelo Ensino")}
-                                                        className="p-button-danger"/>
+                                                        className={styles.pButtonDanger}/>
                                             </div>
                                         )}
                                     </div>
@@ -485,10 +485,10 @@ const Details = () => {
                                             <div className={styles.actionButtons}>
                                                 <Button label="Aprovar" icon="pi pi-check"
                                                         onClick={() => openModal("Analisado pelo Coordenador")}
-                                                        className="p-button-success"/>
+                                                        className={styles.pButtonSuccess}/>
                                                 <Button label="Rejeitar" icon="pi pi-times"
                                                         onClick={() => openModal("Cancelado pelo Coordenador")}
-                                                        className="p-button-danger"/>
+                                                        className={styles.pButtonDanger}/>
                                             </div>
                                         )}
                                     </div>
@@ -568,8 +568,8 @@ const Details = () => {
                                             </p>
                                         )}
 
-                                        <p className={styles.info}><strong>Parecer do
-                                            professor: </strong>{professorFeedback || "Pendente"}
+                                        <p className={styles.info}>
+                                            <strong>Parecer: </strong>{professorFeedback || "Pendente"}
                                         </p>
                                     </div>
                                     <div className={styles.actionColumn}>
@@ -584,18 +584,95 @@ const Details = () => {
                                                 </div>
                                             </div>
                                         )}
-                                        {role === "Professor" && details.status_display === "Em análise do Professor"
-                                            && (type !== "knowledge-certifications" ||
-                                                (type === "knowledge-certifications" && details.test_score)) && (
+                                        {(details.status_display === "Em análise do Professor" || details.status_display === "Retornado pelo Coordenador")
+                                            && role === "Professor" && (type !== "knowledge-certifications" ||
+                                                (type === "knowledge-certifications" && details.test_score && details.scheduling_date)) && (
                                                 <div className={styles.actionButtons}>
                                                     <Button label="Aprovar" icon="pi pi-check"
                                                             onClick={() => openModal("Analisado pelo Professor")}
-                                                            className="p-button-success"/>
+                                                            className={styles.pButtonSuccess}/>
                                                     <Button label="Rejeitar" icon="pi pi-times"
                                                             onClick={() => openModal("Rejeitado pelo Professor")}
-                                                            className="p-button-danger"/>
+                                                            className={styles.pButtonDanger}/>
                                                 </div>
                                             )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {Object.values(details.steps).reverse().find(value => getStep4Status().includes(value.status_display)) && (
+                            <div className={styles.analysis}>
+                                <h1 className={styles.center_title}>Homologação do Coordenador</h1>
+                                <div className={styles.columns}>
+                                    <div className={styles.infoColumn}>
+                                        <p className={styles.info}>
+                                            <strong>Parecer: </strong>{coordinatorSecondFeedback || "Pendente"}
+                                        </p>
+                                    </div>
+                                    <div className={styles.actionColumn}>
+                                        {details.status_display !== 'Cancelado' && (
+                                            <div
+                                                className={`${styles.statusContainer} ${styles[getStatusProps(3).color]}`}>
+                                                <strong>Status: </strong>
+                                                <div className={styles.statusButton}>
+                                                    <FontAwesomeIcon
+                                                        icon={getStatusProps(3).icon}/>
+                                                    {getStatusProps(3).label}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {(details.status_display === "Em homologação do Coordenador" || details.status_display === "Retornado pelo Ensino") &&
+                                            role === "Coordenador" && (
+                                            <div className={styles.actionButtons}>
+                                                <Button label="Aprovar" icon="pi pi-check"
+                                                        onClick={() => openModal("Aprovado pelo Coordenador")}
+                                                        className={styles.pButtonSuccess}/>
+                                                <Button label="Retornar" icon="pi pi-arrow-left"
+                                                        onClick={() => openModal("Retornado pelo Coordenador")}
+                                                        className={styles.pButtonReturn}/>
+                                                <Button label="Rejeitar" icon="pi pi-times"
+                                                        onClick={() => openModal("Rejeitado pelo Coordenador")}
+                                                        className={styles.pButtonDanger}/>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {Object.values(details.steps).reverse().find(value => getStep5Status().includes(value.status_display)) && (
+                            <div className={styles.analysis}>
+                                <h1 className={styles.center_title}>Homologação do Ensino</h1>
+                                <div className={styles.columns}>
+                                    <div className={styles.infoColumn}>
+                                        <p className={styles.info}>
+                                            <strong>Parecer: </strong>{creFeedback || "Pendente"}
+                                        </p>
+                                    </div>
+                                    <div className={styles.actionColumn}>
+                                        {details.status_display !== 'Cancelado' && (
+                                            <div
+                                                className={`${styles.statusContainer} ${styles[getStatusProps(4).color]}`}>
+                                                <strong>Status: </strong>
+                                                <div className={styles.statusButton}>
+                                                    <FontAwesomeIcon
+                                                        icon={getStatusProps(4).icon}/>
+                                                    {getStatusProps(4).label}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {role === "Ensino" && details.status_display === "Em homologação do Ensino" && (
+                                            <div className={styles.actionButtons}>
+                                                <Button label="Aprovar" icon="pi pi-check"
+                                                        onClick={() => openModal("Aprovado pelo Ensino")}
+                                                        className={styles.pButtonSuccess}/>
+                                                <Button label="Retornar" icon="pi pi-arrow-left"
+                                                        onClick={() => openModal("Retornado pelo Ensino")}
+                                                        className={styles.pButtonReturn}/>
+                                                <Button label="Rejeitar" icon="pi pi-times"
+                                                        onClick={() => openModal("Rejeitado pelo Ensino")}
+                                                        className={styles.pButtonDanger}/>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -604,7 +681,7 @@ const Details = () => {
                 ) : (
                     <div>Nenhum detalhe disponível</div>
                 )}
-                <Button label="Voltar" onClick={handleBack} className={styles.backButton}/>
+                <Button label="Voltar" icon="pi pi-arrow-left" onClick={handleBack} className={styles.backButton}/>
             </div>
             {isModalOpen && <Modal
                 status={status}
