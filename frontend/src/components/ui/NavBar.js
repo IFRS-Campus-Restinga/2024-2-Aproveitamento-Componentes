@@ -16,6 +16,13 @@ const NavBar = ({ data = false }) => {
   const isUserAuth = !!user || false;
   const [dropdownMenu, setDropdownMenu] = useState(false);
   const [theme, setTheme] = useState("light"); // Estado para controlar o tema
+  const [path, setPath] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setPath(window.location.pathname); // Obtém o caminho da URL
+    }
+  }, []);
 
   const handleDropdown = () => {
     setDropdownMenu(!dropdownMenu);
@@ -72,28 +79,29 @@ const NavBar = ({ data = false }) => {
     </>
   );
 
-  const menuAuthDev = () => (
-    <>
-      <div className="px-3">
-        Bem vindo, <b>{user?.name || "Usuário"}</b>
-      </div>
-      <div className="px-2">
-        <MenuIcon
-          onClick={handleDropdown}
-          style={{ cursor: "pointer" }}
-        ></MenuIcon>
-        {dropdownMenu ? (
-          <Menu
-            model={items}
-            className="absolute z-50 right-10"
-            popupAlignment="right"
-          />
-        ) : (
-          ""
-        )}
-      </div>
-    </>
-  );
+  //função para ambiente de dev
+  // const menuAuthDev = () => (
+  //   <>
+  //     <div className="px-3">
+  //       Bem vindo, <b>{user?.name || "Usuário"}</b>
+  //     </div>
+  //     <div className="px-2">
+  //       <MenuIcon
+  //         onClick={handleDropdown}
+  //         style={{ cursor: "pointer" }}
+  //       ></MenuIcon>
+  //       {dropdownMenu ? (
+  //         <Menu
+  //           model={items}
+  //           className="absolute z-50 right-10"
+  //           popupAlignment="right"
+  //         />
+  //       ) : (
+  //         ""
+  //       )}
+  //     </div>
+  //   </>
+  // );
 
   const menuNotAuth = () => (
     <>
@@ -113,15 +121,31 @@ const NavBar = ({ data = false }) => {
   const navOptions = () => (
     <>
       <ul className={styles.navBarOptions} style={{ listStyle: "none" }}>
-        <li onClick={() => (window.location.href = `/home`)}>Home</li>
-        <li onClick={() => (window.location.href = `/requests`)}>
+        <li
+          onClick={() => (window.location.href = `/home`)}
+          className={path === "/home" ? styles.active : ""}
+        >
+          Home
+        </li>
+        <li
+          onClick={() => (window.location.href = `/requests`)}
+          className={path === "/requests" ? styles.active : ""}
+        >
           Solicitações
         </li>
-        <li onClick={() => (window.location.href = `/notice`)}>Editais</li>
+        <li
+          onClick={() => (window.location.href = `/notice`)}
+          className={path === "/notice" ? styles.active : ""}
+        >
+          Editais
+        </li>
       </ul>
       {user.type === "Estudante" && user?.is_verified && (
         <ul className={styles.navBarOptions} style={{ listStyle: "none" }}>
-          <li onClick={() => (window.location.href = `/requests/requestForm`)}>
+          <li
+            onClick={() => (window.location.href = `/requests/requestForm`)}
+            className={path === "/requests/requestForm" ? styles.active : ""}
+          >
             Realizar Solicitação
           </li>
         </ul>
@@ -129,10 +153,13 @@ const NavBar = ({ data = false }) => {
       {(user?.type === "Coordenador" || user?.type === "Ensino") &&
         user?.is_verified && (
           <ul className={styles.navBarOptions} style={{ listStyle: "none" }}>
-            <li onClick={() => (window.location.href = `/usersList`)}>
+            <li
+              onClick={() => (window.location.href = `/usersList`)}
+              className={path === "/usersList" ? styles.active : ""}
+            >
               Usuários
             </li>
-            {/* esperando integração com a tela de disciplina */}
+            esperando integração com a tela de disciplina
             <li>Cadastrar Disciplina</li>
           </ul>
         )}
@@ -164,10 +191,9 @@ const NavBar = ({ data = false }) => {
             width={151}
           />
         </Link>
-        {isUserAuth ? navOptions() : ""}
+        {!isUserAuth ? navOptions() : ""}
         <div className="flex items-center justify-around text-white">
-          {/*troquei menuNotAuth por menuAuthDev temporariamente para ambiente de dev*/}
-          {isUserAuth ? menuAuth() : menuAuthDev()}
+          {isUserAuth ? menuAuth() : menuNotAuth()}
           {theme === "light" ? (
             <DarkModeIcon cursor="pointer" onClick={toggleTheme} />
           ) : (

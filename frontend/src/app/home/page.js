@@ -32,7 +32,7 @@ const Home = () => {
     const fetchKnowledgeCertifications = async () => {
       try {
         const response = await fetch(
-          `${baseURL}/forms/knowledge-certifications/`
+          `${baseURL}/forms/knowledge-certifications/?student=${user.id}`
         );
         if (!response.ok)
           throw new Error("Erro ao buscar Certificados de Conhecimento");
@@ -49,7 +49,9 @@ const Home = () => {
 
     const fetchRecognitionOfPriorLearning = async () => {
       try {
-        const response = await fetch(`${baseURL}/forms/recognition-forms/`);
+        const response = await fetch(
+          `${baseURL}/forms/recognition-forms/?student=${user.id}`
+        );
         if (!response.ok)
           throw new Error("Erro ao buscar Aproveitamento de Estudos");
         const data = await response.json();
@@ -72,14 +74,6 @@ const Home = () => {
 
     fetchData();
   }, []);
-
-  useEffect(() => {
-    if (knowledgeCertifications && recognitionOfPriorLearning) {
-      console.log(recognitionOfPriorLearning);
-      console.log(knowledgeCertifications);
-      console.log(user);
-    }
-  }, [recognitionOfPriorLearning, knowledgeCertifications]);
 
   useEffect(() => {
     const fetchNotices = async () => {
@@ -115,15 +109,43 @@ const Home = () => {
 
   return (
     <div className={styles.homeContainer}>
-      {knowledgeCertifications || recognitionOfPriorLearning ? (
+      {knowledgeCertifications.length !== 0 ||
+      recognitionOfPriorLearning.length !== 0 ? (
         <div className={styles.requestInfoContainer}>
           <h2 style={{ whiteSpace: "nowrap" }}>Solicitações</h2>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <h3 style={{ opacity: "0.5" }}>Você não tem solicitações</h3>
-          </div>
+          {knowledgeCertifications !== 0 ? (
+            <div>
+              <strong>Disciplinas:</strong>
+              {knowledgeCertifications.map((certification) => (
+                <span>{certification.discipline_name} </span>
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <h3 style={{ opacity: "0.5" }}>
+                Você não tem solicitações de Certificação de Conhecimento
+              </h3>
+            </div>
+          )}
+          {recognitionOfPriorLearning !== 0 ? (
+            <div>
+              <strong>Disciplinas:</strong>
+              {recognitionOfPriorLearning.map((certification) => (
+                <span>{certification.discipline_name} </span>
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <h3 style={{ opacity: "0.5" }}>
+                Você não tem solicitações de Aproveitamento de Estudo
+              </h3>
+            </div>
+          )}
         </div>
       ) : (
-        <LoadingSpinner />
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <h3 style={{ opacity: "0.5" }}>Você não tem solicitações</h3>
+        </div>
       )}
       {lastNotice ? (
         <div className={styles.noticeInfoContainer}>
