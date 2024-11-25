@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 import styles from "./notice.module.css";
 import ModalNotice from "@/components/Modal/ModalNotice/page";
 import { noticeList } from "@/services/NoticeService";
@@ -13,7 +13,7 @@ import Toast from "@/utils/toast";
 const Notice = () => {
   const [notices, setNotices] = useState([]);
   const [filteredNotices, setFilteredNotices] = useState([]);
-  const [searchFilter, setSearchFilter] = useState("");
+  const [filter, setFilter] = useState("");
   const [modal, setModal] = useState(false);
   const [editData, setEditData] = useState(null);
 
@@ -46,23 +46,21 @@ const Notice = () => {
   }, [modal]);
 
   useEffect(() => {
-    const applyFilter = () => {
-      if (!searchFilter) {
-        setFilteredNotices(notices);
-        return;
-      }
+    const applyFilters = () => {
+      let filtered = notices;
 
-      const lowerSearch = searchFilter.toLowerCase();
-      const filtered = notices.filter((notice) =>
-        Object.values(notice).some((value) =>
-          value?.toString().toLowerCase().includes(lowerSearch)
-        )
-      );
+      if (filter) {
+        filtered = filtered.filter((notice) =>
+          notice.number?.toLowerCase().includes(filter.toLowerCase()) ||
+          notice.publication_date.includes(filter) ||
+          notice.link?.toLowerCase().includes(filter.toLowerCase())
+        );
+      }
       setFilteredNotices(filtered);
     };
 
-    applyFilter();
-  }, [searchFilter, notices]);
+    applyFilters();
+  }, [filter, notices]);
 
   const openModalForEdit = (notice) => {
     setEditData(notice);
@@ -75,7 +73,7 @@ const Notice = () => {
   };
 
   const clearFilters = () => {
-    setSearchFilter("");
+    setFilter("");
     setFilteredNotices(notices);
   };
 
@@ -85,7 +83,7 @@ const Notice = () => {
       create: "Edital criado com sucesso!",
       error: "Erro ao enviar os dados. Tente novamente.",
     };
-  
+
     setToast(true);
     setToastMessage({
       type: responseModal === "error" ? "error" : "success",
@@ -104,16 +102,21 @@ const Notice = () => {
 
   return (
     <div className={styles.contentWrapper}>
-      <h2 style={{ alignItems: "left" }}>Editais</h2>
+      <div className={styles.titleWrapper}>
+        <h1 className={styles.title}>Editais</h1>
+      </div>
       <div className={styles.filters}>
-        <input
-          type="text"
-          placeholder="Pesquisar..."
-          value={searchFilter}
-          onChange={(e) => setSearchFilter(e.target.value)}
-          className={styles.filterInput}
-        />
-        <Button onClick={clearFilters} color={"#46b5ff"}>
+        <div className={styles.filterInputWrapper}>
+          <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="Filtrar..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className={styles.filterInput}
+          />
+        </div>
+        <Button onClick={clearFilters} className={styles.clearButton}>
           Limpar
         </Button>
       </div>
