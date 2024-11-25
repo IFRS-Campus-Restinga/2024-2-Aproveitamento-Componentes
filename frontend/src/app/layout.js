@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import NavBar from "@/components/ui/NavBar";
 import { PrimeReactProvider } from "primereact/api";
 import { Footer } from "@/components/layout/Footer/footer";
+import "./layout.css";
 
 export const metadata = {
   title: "Create Next App",

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ptBR from "date-fns/locale/pt-BR";
@@ -8,11 +8,14 @@ import { Button } from "@mui/material";
 import { Menu } from "primereact/menu";
 import styles from "./navBar.module.css";
 import MenuIcon from "@mui/icons-material/Menu";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 
 const NavBar = ({ data = false }) => {
   const { user } = useAuth();
   const isUserAuth = !!user || false;
   const [dropdownMenu, setDropdownMenu] = useState(false);
+  const [theme, setTheme] = useState("light"); // Estado para controlar o tema
 
   const handleDropdown = () => {
     setDropdownMenu(!dropdownMenu);
@@ -136,6 +139,19 @@ const NavBar = ({ data = false }) => {
     </>
   );
 
+  // Função para alternar entre temas
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.body.classList.remove(theme);
+    document.body.classList.add(newTheme);
+  };
+
+  useEffect(() => {
+    // Adiciona o tema inicial com base na preferência do usuário ou no estado
+    document.body.classList.add(theme);
+  }, []);
+
   return (
     <div style={{ backgroundColor: "#2f9e41" }}>
       <div className="flex items-center justify-between max-w-screen-xlg pl-20 pt-8 pb-8 pr-20 mx-auto">
@@ -148,10 +164,15 @@ const NavBar = ({ data = false }) => {
             width={151}
           />
         </Link>
-        {navOptions()}
+        {isUserAuth ? navOptions() : ""}
         <div className="flex items-center justify-around text-white">
           {/*troquei menuNotAuth por menuAuthDev temporariamente para ambiente de dev*/}
           {isUserAuth ? menuAuth() : menuAuthDev()}
+          {theme === "light" ? (
+            <DarkModeIcon cursor="pointer" onClick={toggleTheme} />
+          ) : (
+            <LightModeIcon cursor="pointer" onClick={toggleTheme} />
+          )}
         </div>
       </div>
     </div>

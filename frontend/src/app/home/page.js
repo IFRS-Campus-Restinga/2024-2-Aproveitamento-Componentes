@@ -12,7 +12,9 @@ const Home = () => {
   const { user } = useAuth();
   const [lastNotice, setLastNotice] = useState(null);
   const [knowledgeCertifications, setKnowledgeCertifications] = useState([]);
-  const [recognitionOfPriorLearning, setRecognitionOfPriorLearning] = useState([]);
+  const [recognitionOfPriorLearning, setRecognitionOfPriorLearning] = useState(
+    []
+  );
   const [toast, setToast] = useState(false);
   const [toastMessage, setToastMessage] = useState({});
 
@@ -115,7 +117,10 @@ const Home = () => {
     <div className={styles.homeContainer}>
       {knowledgeCertifications || recognitionOfPriorLearning ? (
         <div className={styles.requestInfoContainer}>
-          
+          <h2 style={{ whiteSpace: "nowrap" }}>Solicitações</h2>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <h3 style={{ opacity: "0.5" }}>Você não tem solicitações</h3>
+          </div>
         </div>
       ) : (
         <LoadingSpinner />

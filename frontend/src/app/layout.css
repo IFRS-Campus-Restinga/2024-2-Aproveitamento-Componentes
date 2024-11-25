@@ -1,0 +1,25 @@
+/* body {
+    background-color: #ffffff;
+    color: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1d1d25;
+        color: #ffffff;
+    }
+} */
+
+body {
+    max-height: 100vh;
+}
+
+.light {
+    background-color: #fff;
+    color: #000;
+}
+
+.dark {
+    background-color: #1d1d25;
+    color: #ffffff;
+}

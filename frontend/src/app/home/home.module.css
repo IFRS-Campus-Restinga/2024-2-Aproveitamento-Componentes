@@ -8,14 +8,22 @@
   width: 50%;
   display: flex;
   flex-direction: column;
+  padding: 8px 8px 8px 15px;
   gap: 32px;
+  border: 1px solid rgb(131, 131, 131);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
 }
 
 .noticeInfoContainer {
   width: 50%;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  padding: 8px 8px 8px 15px;
+  gap: 25px;
+  border: 1px solid rgb(122, 122, 122);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
 }
 
 .infoTitle {

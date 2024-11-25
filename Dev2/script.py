@@ -94,7 +94,8 @@ notice = Notice.objects.create(
     result_publication_start="2023-10-21T09:00:00Z",
     result_publication_end="2023-10-22T17:00:00Z",
     result_homologation_start="2023-10-23T09:00:00Z",
-    result_homologation_end="2023-10-25T17:00:00Z"
+    result_homologation_end="2023-10-25T17:00:00Z",
+    link="https://dev2.com"
 )
 
 discipline = Disciplines.objects.create(
