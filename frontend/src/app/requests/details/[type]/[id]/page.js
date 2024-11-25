@@ -76,10 +76,17 @@ const Details = () => {
             setEditedCourseWorkload((prev) => (prev ? prev : data.course_workload || ""));
             setEditedCourseStudiedWorkload((prev) => (prev ? prev : data.course_studied_workload || ""));
             setEditedTestScore((prev) => (prev !== "" ? prev : data.test_score || ""));
-            const coordinator = getStepStatus(data.steps, getStep2Status);
-            const professor = getStepStatus(data.steps, getStep3Status);
-            if (coordinator) setCoordinatorFeedback(coordinator.feedback)
-            if (professor) setProfessorFeedback(professor.feedback)
+
+            const step2Feedback = getStepStatus(data.steps, getStep2Status);
+            const step3Feedback = getStepStatus(data.steps, getStep3Status);
+            const step4Feedback = getStepStatus(data.steps, getStep4Status);
+            const step5Feedback = getStepStatus(data.steps, getStep5Status);
+
+            if (step2Feedback) setCoordinatorFeedback(step2Feedback.feedback);
+            if (step3Feedback) setProfessorFeedback(step3Feedback.feedback);
+            if (step4Feedback) setCoordinatorSecondFeedback(step4Feedback.feedback);
+            if (step5Feedback) setCreFeedback(step5Feedback.feedback);
+
         } catch (error) {
             setError(error.message);
         } finally {
@@ -623,18 +630,18 @@ const Details = () => {
                                         )}
                                         {(details.status_display === "Em homologação do Coordenador" || details.status_display === "Retornado pelo Ensino") &&
                                             role === "Coordenador" && (
-                                            <div className={styles.actionButtons}>
-                                                <Button label="Aprovar" icon="pi pi-check"
-                                                        onClick={() => openModal("Aprovado pelo Coordenador")}
-                                                        className={styles.pButtonSuccess}/>
-                                                <Button label="Retornar" icon="pi pi-arrow-left"
-                                                        onClick={() => openModal("Retornado pelo Coordenador")}
-                                                        className={styles.pButtonReturn}/>
-                                                <Button label="Rejeitar" icon="pi pi-times"
-                                                        onClick={() => openModal("Rejeitado pelo Coordenador")}
-                                                        className={styles.pButtonDanger}/>
-                                            </div>
-                                        )}
+                                                <div className={styles.actionButtons}>
+                                                    <Button label="Aprovar" icon="pi pi-check"
+                                                            onClick={() => openModal("Aprovado pelo Coordenador")}
+                                                            className={styles.pButtonSuccess}/>
+                                                    <Button label="Retornar" icon="pi pi-arrow-left"
+                                                            onClick={() => openModal("Retornado pelo Coordenador")}
+                                                            className={styles.pButtonReturn}/>
+                                                    <Button label="Rejeitar" icon="pi pi-times"
+                                                            onClick={() => openModal("Rejeitado pelo Coordenador")}
+                                                            className={styles.pButtonDanger}/>
+                                                </div>
+                                            )}
                                     </div>
                                 </div>
                             </div>
