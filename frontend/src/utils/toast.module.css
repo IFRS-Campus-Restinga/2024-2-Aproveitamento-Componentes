@@ -1,7 +1,7 @@
 .toastContainer {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  bottom: 40px;
+  right: 40px;
   padding: 16px;
   border-radius: 8px;
   color: #fff;
