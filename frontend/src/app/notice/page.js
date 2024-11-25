@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 import styles from "./notice.module.css";
 import ModalNotice from "@/components/Modal/ModalNotice/page";
 import { noticeList } from "@/services/NoticeService";
@@ -12,9 +12,7 @@ import { Button } from "@/components/Button/button";
 const Notice = () => {
   const [notices, setNotices] = useState([]);
   const [filteredNotices, setFilteredNotices] = useState([]);
-  const [numberFilter, setNumberFilter] = useState("");
-  const [yearFilter, setYearFilter] = useState("");
-  const [linkFilter, setLinkFilter] = useState("");
+  const [filter, setFilter] = useState("");
   const [modal, setModal] = useState(false);
   const [editData, setEditData] = useState(null);
 
@@ -47,26 +45,18 @@ const Notice = () => {
     const applyFilters = () => {
       let filtered = notices;
 
-      if (numberFilter) {
+      if (filter) {
         filtered = filtered.filter((notice) =>
-          notice.number?.toLowerCase().includes(numberFilter.toLowerCase())
-        );
-      }
-      if (yearFilter) {
-        filtered = filtered.filter((notice) =>
-          notice.publication_date.includes(yearFilter)
-        );
-      }
-      if (linkFilter) {
-        filtered = filtered.filter((notice) =>
-          notice.link?.toLowerCase().includes(linkFilter.toLowerCase())
+          notice.number?.toLowerCase().includes(filter.toLowerCase()) ||
+          notice.publication_date.includes(filter) ||
+          notice.link?.toLowerCase().includes(filter.toLowerCase())
         );
       }
       setFilteredNotices(filtered);
     };
 
     applyFilters();
-  }, [numberFilter, yearFilter, linkFilter, notices]);
+  }, [filter, notices]);
 
   const openModalForEdit = (notice) => {
     setEditData(notice);
@@ -79,37 +69,27 @@ const Notice = () => {
   };
 
   const clearFilters = () => {
-    setNumberFilter("");
-    setYearFilter("");
-    setLinkFilter("");
+    setFilter("");
     setFilteredNotices(notices);
   };
 
   return (
     <div className={styles.contentWrapper}>
+      <div className={styles.titleWrapper}>
+        <h1 className={styles.title}>Editais</h1>
+      </div>
       <div className={styles.filters}>
-        <input
-          type="text"
-          placeholder="Filtrar por edital..."
-          value={numberFilter}
-          onChange={(e) => setNumberFilter(e.target.value)}
-          className={styles.filterInput}
-        />
-        <input
-          type="text"
-          placeholder="Filtrar por ano..."
-          value={yearFilter}
-          onChange={(e) => setYearFilter(e.target.value)}
-          className={styles.filterInput}
-        />
-        <input
-          type="text"
-          placeholder="Filtrar por link..."
-          value={linkFilter}
-          onChange={(e) => setLinkFilter(e.target.value)}
-          className={styles.filterInput}
-        />
-        <Button onClick={clearFilters} color={"#46b5ff"}>
+        <div className={styles.filterInputWrapper}>
+          <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="Filtrar..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className={styles.filterInput}
+          />
+        </div>
+        <Button onClick={clearFilters} className={styles.clearButton}>
           Limpar
         </Button>
       </div>
