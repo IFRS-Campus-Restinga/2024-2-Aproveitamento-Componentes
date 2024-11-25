@@ -9,15 +9,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CircleIcon from '@mui/icons-material/Circle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import {
-    getFailed,
-    getStep1Status,
-    getStep2Status,
-    getStep3Status,
-    getStep4Status,
-    getStep5Status,
-    getSucceeded
-} from "@/app/requests/status";
+import {getFailed, getSucceeded} from "@/app/requests/status";
 
 const steps = [
     'Análise do Ensino',
