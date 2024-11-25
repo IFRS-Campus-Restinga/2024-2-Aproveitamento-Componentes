@@ -9,7 +9,7 @@ import styles from "./details.module.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faClock, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Button} from 'primereact/button';
-import {getEnumIndexByValue, getStatus} from "@/app/requests/status";
+import {getEnumIndexByValue, getStatus, getSucceeded, StatusEnum} from "@/app/requests/status";
 import RequestService from "@/services/RequestService";
 import {TextField} from "@mui/material";
 import Modal from "@/components/Modal/ModalRequest/modal"
@@ -51,12 +51,9 @@ const Details = () => {
             if (response.status !== 200) throw new Error("Erro ao buscar detalhes");
             const data = await response.data;
             setDetails(data);
-            // setEditedSchedulingDate((prev) => (prev ? prev : data.scheduling_date || ""));
             setEditedKnowledge((prev) => (prev ? prev : data.previous_knowledge || ""));
             setEditedCourseWorkload((prev) => (prev ? prev : data.course_workload || ""));
             setEditedCourseStudiedWorkload((prev) => (prev ? prev : data.course_studied_workload || ""));
-            // setEditedCoordinatorFeedback((prev) => (prev ? prev : data.coordinator_feedback || ""));
-            // setEditedProfessorFeedback((prev) => (prev ? prev : data.professor_feedback || ""));
             setEditedTestScore((prev) => (prev !== "" ? prev : data.test_score || ""));
         } catch (error) {
             setError(error.message);
@@ -106,7 +103,12 @@ const Details = () => {
         if (feedback) {
             fb = feedback.toString();
         }
-        createStep(getStatus(status), fb);
+        createStep(getStatus(status), fb).then(value => {
+            if (getSucceeded().includes(status) && status !== "Aprovado pelo Ensino") {
+                const index = getEnumIndexByValue(status) + 1;
+                createStep(getStatus(StatusEnum[index]), fb);
+            }
+        })
         console.log("Feedback enviado:", feedback);
         closeModal();
     };
@@ -261,7 +263,7 @@ const Details = () => {
                 {details ? (
                     <div>
                         {details.status_display !== "Cancelado" ? (
-                            <Stepper currentStep={details.status_display}/>
+                            <Stepper stepArray={details.steps}/>
                         ) : (
                             <div className={styles.centered}>
                                 <div

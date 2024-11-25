@@ -38,6 +38,26 @@ export function getPending() {
         "Retornado pelo Coordenador", "Em homologação do Ensino", "Retornado pelo Ensino"]
 }
 
+export function getStep1Status() {
+    return ["Em análise do Ensino", "Cancelado pelo Aluno", "Cancelado pelo Ensino", "Analisado pelo Ensino"];
+}
+
+export function getStep2Status() {
+    return ["Em análise do Coordenador", "Cancelado pelo Coordenador", "Analisado pelo Coordenador"]
+}
+
+export function getStep3Status() {
+    return ["Em análise do Professor", "Rejeitado pelo Professor", "Analisado pelo Professor"]
+}
+
+export function getStep4Status() {
+    return ["Em homologação do Coordenador", "Retornado pelo Coordenador", "Rejeitado pelo Coordenador", "Aprovado pelo Coordenador"]
+}
+
+export function getStep5Status() {
+    return ["Em homologação do Ensino", "Retornado pelo Ensino", "Rejeitado pelo Ensino", "Aprovado pelo Ensino"]
+}
+
 export function getStatus(status) {
     switch (status) {
         case "Em análise do Ensino":

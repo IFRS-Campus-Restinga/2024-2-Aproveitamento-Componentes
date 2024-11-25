@@ -55,8 +55,6 @@ class StepSerializer(serializers.ModelSerializer):
         servant = Servant.objects.filter(id=responsible_id).first()
         student = Student.objects.filter(id=responsible_id).first()
         user_role = servant.servant_type if servant else 'Aluno'
-        print(responsible_id)
-        print(user_role)
 
         if not servant and not student:
             raise serializers.ValidationError("Erro ao identificar o tipo de usuário")

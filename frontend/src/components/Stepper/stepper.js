@@ -9,21 +9,28 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CircleIcon from '@mui/icons-material/Circle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import {
+    getFailed,
+    getStep1Status,
+    getStep2Status,
+    getStep3Status,
+    getStep4Status,
+    getStep5Status,
+    getSucceeded
+} from "@/app/requests/status";
+
+let step1;
+let step2;
+let step3;
+let step4;
+let step5;
 
 const steps = [
-    'Em análise do Ensino',
-    'Em análise do Coordenador',
-    'Em análise do Professor',
-    'Deferido',
-    'Concluído',
-];
-
-const failedSteps = [
-    'Rejeitado pelo Ensino',
-    'Rejeitado pelo Coordenador',
-    'Rejeitado pelo Professor',
-    'Indeferido',
-    'Cancelado'
+    'Análise do Ensino',
+    'Análise do Coordenador',
+    'Análise do Professor',
+    'Homologação do Coordenador',
+    'Homologação do Ensino',
 ];
 
 const CustomConnector = styled(StepConnector)(({theme}) => ({
@@ -32,26 +39,97 @@ const CustomConnector = styled(StepConnector)(({theme}) => ({
     },
 }));
 
-const CustomStepIcon = ({index, activeStep, stepName}) => {
-    const failedStep = failedSteps.indexOf(stepName);
-    if (index < activeStep || index < failedStep) {
-        return <CheckCircleIcon sx={{color: 'green', fontSize: '1.5rem'}}/>;
-    } else if (index === activeStep) {
-        return <AccessTimeIcon sx={{color: 'orange', fontSize: '1.5rem'}}/>;
-    } else if (stepName === failedSteps[index]) {
-        return <CancelIcon sx={{color: 'red', fontSize: '1.5rem'}}/>;
-    } else {
-        return <CircleIcon color="disabled" sx={{fontSize: '1.5rem'}}/>;
+const CustomStepIcon = ({index}) => {
+    switch (index) {
+        case 0:
+            if (step1) {
+                if (getSucceeded().includes(step1.status_display)) {
+                    return <CheckCircleIcon sx={{color: 'green', fontSize: '1.5rem'}}/>;
+                } else if (getFailed().includes(step1.status_display)) {
+                    return <CancelIcon sx={{color: 'red', fontSize: '1.5rem'}}/>;
+                } else {
+                    return <AccessTimeIcon sx={{color: 'orange', fontSize: '1.5rem'}}/>;
+                }
+            } else {
+                return <CircleIcon color="disabled" sx={{fontSize: '1.5rem'}}/>;
+            }
+        case 1:
+            if (step2) {
+                if (getSucceeded().includes(step2.status_display)) {
+                    return <CheckCircleIcon sx={{color: 'green', fontSize: '1.5rem'}}/>;
+                } else if (getFailed().includes(step2.status_display)) {
+                    return <CancelIcon sx={{color: 'red', fontSize: '1.5rem'}}/>;
+                } else {
+                    return <AccessTimeIcon sx={{color: 'orange', fontSize: '1.5rem'}}/>;
+                }
+            } else {
+                return <CircleIcon color="disabled" sx={{fontSize: '1.5rem'}}/>;
+            }
+        case 2:
+            if (step3) {
+                if (getSucceeded().includes(step3.status_display)) {
+                    return <CheckCircleIcon sx={{color: 'green', fontSize: '1.5rem'}}/>;
+                } else if (getFailed().includes(step3.status_display)) {
+                    return <CancelIcon sx={{color: 'red', fontSize: '1.5rem'}}/>;
+                } else {
+                    return <AccessTimeIcon sx={{color: 'orange', fontSize: '1.5rem'}}/>;
+                }
+            } else {
+                return <CircleIcon color="disabled" sx={{fontSize: '1.5rem'}}/>;
+            }
+        case 3:
+            if (step4) {
+                if (getSucceeded().includes(step4.status_display)) {
+                    return <CheckCircleIcon sx={{color: 'green', fontSize: '1.5rem'}}/>;
+                } else if (getFailed().includes(step4.status_display)) {
+                    return <CancelIcon sx={{color: 'red', fontSize: '1.5rem'}}/>;
+                } else {
+                    return <AccessTimeIcon sx={{color: 'orange', fontSize: '1.5rem'}}/>;
+                }
+            } else {
+                return <CircleIcon color="disabled" sx={{fontSize: '1.5rem'}}/>;
+            }
+        case 4:
+            if (step5) {
+                if (getSucceeded().includes(step5.status_display)) {
+                    return <CheckCircleIcon sx={{color: 'green', fontSize: '1.5rem'}}/>;
+                } else if (getFailed().includes(step5.status_display)) {
+                    return <CancelIcon sx={{color: 'red', fontSize: '1.5rem'}}/>;
+                } else {
+                    return <AccessTimeIcon sx={{color: 'orange', fontSize: '1.5rem'}}/>;
+                }
+            } else {
+                return <CircleIcon color="disabled" sx={{fontSize: '1.5rem'}}/>;
+            }
     }
 };
 
-export default function HorizontalLinearAlternativeLabelStepper({currentStep}) {
-    const activeStep = steps.indexOf(currentStep);
+const getLabel = (index) => {
+    switch (index) {
+        case 0:
+            return step1 ? step1.status_display : steps[0]
+        case 1:
+            return step2 ? step2.status_display : steps[1]
+        case 2:
+            return step3 ? step3.status_display : steps[2]
+        case 3:
+            return step4 ? step4.status_display : steps[3]
+        case 4:
+            return step5 ? step5.status_display : steps[4]
+    }
+}
+
+export default function HorizontalLinearAlternativeLabelStepper(stepArray) {
+    step1 = Object.values(stepArray)[0].reverse().find(value => getStep1Status().includes(value.status_display));
+    step2 = Object.values(stepArray)[0].reverse().find(value => getStep2Status().includes(value.status_display));
+    step3 = Object.values(stepArray)[0].reverse().find(value => getStep3Status().includes(value.status_display));
+    step4 = Object.values(stepArray)[0].reverse().find(value => getStep4Status().includes(value.status_display));
+    step5 = Object.values(stepArray)[0].reverse().find(value => getStep5Status().includes(value.status_display));
 
     return (
         <Box sx={{width: '100%', p: 4}}>
             <Stepper
-                activeStep={activeStep}
+                // activeStep={activeStep}
                 alternativeLabel
                 connector={<CustomConnector/>}
             >
@@ -61,12 +139,10 @@ export default function HorizontalLinearAlternativeLabelStepper({currentStep}) {
                             StepIconComponent={() => (
                                 <CustomStepIcon
                                     index={index}
-                                    activeStep={activeStep}
-                                    stepName={currentStep}
                                 />
                             )}
                         >
-                            {label}
+                            {getLabel(index)}
                         </StepLabel>
                     </Step>
                 ))}

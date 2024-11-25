@@ -27,6 +27,10 @@ class RequestStatus(models.TextChoices):
     REJECTED_BY_CRE = "RJ_CRE", "Rejeitado pelo Ensino"
     APPROVED_BY_CRE = "AP_CRE", "Aprovado pelo Ensino"
 
+    def get_request_status_by_string(value):
+        for status in RequestStatus.values:
+            if status == value:
+                return getattr(RequestStatus, status)
 
 STUDENT_STATUS = [
     RequestStatus.IN_ANALYSIS_BY_CRE,
