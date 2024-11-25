@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import styles from "./requests.module.css";
 import RequestService from "@/services/RequestService";
 import { useAuth } from "@/context/AuthContext";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Requests = () => {
   const [mergedRequests, setMergedRequests] = useState([]);
@@ -154,6 +156,11 @@ const Requests = () => {
             )}
           </tbody>
         </table>
+      </div>
+      <div>
+        <button onClick={() => window.location.href = `/requests/requestForm`} className={styles.addButton}>
+          <FontAwesomeIcon icon={faPlus} size="2x" />
+        </button>
       </div>
     </div>
   );

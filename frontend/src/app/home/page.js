@@ -143,7 +143,7 @@ const Home = () => {
           )}
         </div>
       ) : (
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className={styles.requestInfoContainer}>
           <h3 style={{ opacity: "0.5" }}>Você não tem solicitações</h3>
         </div>
       )}

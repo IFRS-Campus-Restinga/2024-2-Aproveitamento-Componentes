@@ -104,6 +104,7 @@ const Notice = () => {
 
   return (
     <div className={styles.contentWrapper}>
+      <h2 style={{ alignItems: "left" }}>Editais</h2>
       <div className={styles.filters}>
         <input
           type="text"

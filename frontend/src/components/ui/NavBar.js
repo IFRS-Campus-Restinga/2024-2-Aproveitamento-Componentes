@@ -139,30 +139,27 @@ const NavBar = ({ data = false }) => {
         >
           Editais
         </li>
-      </ul>
-      {user.type === "Estudante" && user?.is_verified && (
-        <ul className={styles.navBarOptions} style={{ listStyle: "none" }}>
+        {user.type === "Estudante"  && (
           <li
             onClick={() => (window.location.href = `/requests/requestForm`)}
             className={path === "/requests/requestForm" ? styles.active : ""}
           >
             Realizar Solicitação
           </li>
-        </ul>
-      )}
-      {(user?.type === "Coordenador" || user?.type === "Ensino") &&
-        user?.is_verified && (
-          <ul className={styles.navBarOptions} style={{ listStyle: "none" }}>
-            <li
-              onClick={() => (window.location.href = `/usersList`)}
-              className={path === "/usersList" ? styles.active : ""}
-            >
-              Usuários
-            </li>
-            esperando integração com a tela de disciplina
-            <li>Cadastrar Disciplina</li>
-          </ul>
         )}
+        {(user?.type === "Coordenador" || user?.type === "Ensino") &&
+          user?.is_verified && (
+            <>
+              <li
+                onClick={() => (window.location.href = `/usersList`)}
+                className={path === "/usersList" ? styles.active : ""}
+              >
+                Usuários
+              </li>
+              <li>Cadastrar Disciplina</li>
+            </>
+          )}
+      </ul>
     </>
   );
 
