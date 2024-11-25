@@ -59,6 +59,11 @@ class StepSerializer(serializers.ModelSerializer):
         if not servant and not student:
             raise serializers.ValidationError("Erro ao identificar o tipo de usuário")
 
+        if user_role != 'Professor' and data.get('test_score'):
+            raise serializers.ValidationError("Apenas o professor pode alterar a nota")
+
+        if user_role != 'Professor' and data.get('scheduling_date'):
+            raise serializers.ValidationError("Apenas o professor pode agendar a prova")
 
         if current_status in FAILED_STATUS or current_status == RequestStatus.APPROVED_BY_CRE:
             if status != current_status:

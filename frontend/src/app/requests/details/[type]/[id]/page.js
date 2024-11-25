@@ -9,7 +9,18 @@ import styles from "./details.module.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faClock, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Button} from 'primereact/button';
-import {getEnumIndexByValue, getStatus, getSucceeded, StatusEnum} from "@/app/requests/status";
+import {
+    getEnumIndexByValue,
+    getFailed,
+    getStatus,
+    getStep1Status,
+    getStep2Status,
+    getStep3Status,
+    getStep4Status,
+    getStep5Status,
+    getSucceeded,
+    StatusEnum
+} from "@/app/requests/status";
 import RequestService from "@/services/RequestService";
 import {TextField} from "@mui/material";
 import Modal from "@/components/Modal/ModalRequest/modal"
@@ -26,8 +37,8 @@ const Details = () => {
     const [editedCourseWorkload, setEditedCourseWorkload] = useState("");
     const [editedSchedulingDate, setEditedSchedulingDate] = useState("");
     const [editedCourseStudiedWorkload, setEditedCourseStudiedWorkload] = useState("");
-    const [editedCoordinatorFeedback, setEditedCoordinatorFeedback] = useState("")
-    const [editedProfessorFeedback, setEditedProfessorFeedback] = useState("")
+    const [coordinatorFeedback, setCoordinatorFeedback] = useState("")
+    const [professorFeedback, setProfessorFeedback] = useState("")
     const [editedTestScore, setEditedTestScore] = useState("")
     const [hasChangesKnowledge, setHasChangesKnowledge] = useState(false);
     const [hasChangesWorkload, setHasChangesWorkload] = useState(false);
@@ -55,6 +66,11 @@ const Details = () => {
             setEditedCourseWorkload((prev) => (prev ? prev : data.course_workload || ""));
             setEditedCourseStudiedWorkload((prev) => (prev ? prev : data.course_studied_workload || ""));
             setEditedTestScore((prev) => (prev !== "" ? prev : data.test_score || ""));
+            console.log(data.steps);
+            const coordinator = data.steps.reverse().find(value => getStep2Status().includes(value.status_display));
+            const professor = data.steps.reverse().find(value => getStep3Status().includes(value.status_display));
+            if (coordinator) setCoordinatorFeedback(coordinator.feedback)
+            if (professor) setProfessorFeedback(professor.feedback)
         } catch (error) {
             setError(error.message);
         } finally {
@@ -98,7 +114,6 @@ const Details = () => {
     };
 
     const handleConfirm = (feedback) => {
-        // Aqui você pode enviar a request com o feedback
         let fb;
         if (feedback) {
             fb = feedback.toString();
@@ -106,7 +121,7 @@ const Details = () => {
         createStep(getStatus(status), fb).then(value => {
             if (getSucceeded().includes(status) && status !== "Aprovado pelo Ensino") {
                 const index = getEnumIndexByValue(status) + 1;
-                createStep(getStatus(StatusEnum[index]), fb);
+                createStep(getStatus(StatusEnum[index]), "Pendente");
             }
         })
         console.log("Feedback enviado:", feedback);
@@ -187,6 +202,9 @@ const Details = () => {
                 case 'test_score':
                     updatedData = {test_score: editedTestScore};
                     break;
+                case 'scheduling_date':
+                    updatedData = {scheduling_date: editedSchedulingDate}
+                    break;
             }
 
             const body = JSON.stringify(updatedData);
@@ -236,11 +254,33 @@ const Details = () => {
         router.push("/requests");
     };
 
-    const getStatusProps = (status, stepIndex) => {
-        const index = getEnumIndexByValue(status);
-        if (index === stepIndex + 1) {
+    const getStatusProps = (step) => {
+        let status;
+        switch (step) {
+            case 0:
+                status = Object.values(details.steps).reverse().find(value => getStep1Status().includes(value.status_display));
+                break;
+            case 1:
+                status = Object.values(details.steps).reverse().find(value => getStep2Status().includes(value.status_display));
+                break;
+            case 2:
+                status = Object.values(details.steps).reverse().find(value => getStep3Status().includes(value.status_display));
+                break;
+            case 3:
+                status = Object.values(details.steps).reverse().find(value => getStep4Status().includes(value.status_display));
+                break;
+            case 4:
+                status = Object.values(details.steps).reverse().find(value => getStep5Status().includes(value.status_display));
+                break;
+            default:
+                return {color: "gray", icon: faClock, label: "Desconhecido"};
+        }
+
+        if (status) status = status.status_display;
+
+        if (getFailed().includes(status)) {
             return {color: "red", icon: faTimes, label: "Rejeitado"};
-        } else if (stepIndex < index) {
+        } else if (getSucceeded().includes(status)) {
             return {color: "green", icon: faCheck, label: "Aprovado"};
         } else {
             return {color: "yellow", icon: faClock, label: "Pendente"};
@@ -398,15 +438,15 @@ const Details = () => {
                                 {details.status_display !== 'Cancelado' && (
                                     <div className={styles.actionColumn}>
                                         <div
-                                            className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 0).color]}`}>
+                                            className={`${styles.statusContainer} ${styles[getStatusProps(0).color]}`}>
                                             <strong>Status: </strong>
                                             <div className={styles.statusButton}>
-                                                <FontAwesomeIcon icon={getStatusProps(details.status_display, 0).icon}/>
-                                                {getStatusProps(details.status_display, 0).label}
+                                                <FontAwesomeIcon icon={getStatusProps(0).icon}/>
+                                                {getStatusProps(0).label}
                                             </div>
                                         </div>
 
-                                        {/*role === "Ensino" && */details.status_display === "Em análise do Ensino" && (
+                                        {role === "Ensino" && details.status_display === "Em análise do Ensino" && (
                                             <div className={styles.actionButtons}>
                                                 <Button label="Aprovar" icon="pi pi-check"
                                                         onClick={() => openModal("Analisado pelo Ensino")}
@@ -420,46 +460,47 @@ const Details = () => {
                                 )}
                             </div>
                         </div>
-                        {getEnumIndexByValue(details.status_display) >= 2 && (<div className={styles.analysis}>
+                        {Object.values(details.steps).reverse().find(value => getStep2Status().includes(value.status_display)) && (
+                            <div className={styles.analysis}>
                                 <h1 className={styles.center_title}>Análise do Coordenador</h1>
                                 <div className={styles.columns}>
                                     <div className={styles.infoColumn}>
                                         <p className={styles.info}><strong>Parecer do
-                                            coordenador: </strong>{details.coordinator_feedback || "Pendente"}
+                                            coordenador: </strong>{coordinatorFeedback || "Pendente"}
                                         </p>
                                     </div>
                                     <div className={styles.actionColumn}>
                                         {details.status_display !== 'Cancelado' && (
                                             <div
-                                                className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 2).color]}`}>
+                                                className={`${styles.statusContainer} ${styles[getStatusProps(1).color]}`}>
                                                 <strong>Status: </strong>
                                                 <div className={styles.statusButton}>
                                                     <FontAwesomeIcon
-                                                        icon={getStatusProps(details.status_display, 2).icon}/>
-                                                    {getStatusProps(details.status_display, 2).label}
+                                                        icon={getStatusProps(1).icon}/>
+                                                    {getStatusProps(1).label}
                                                 </div>
                                             </div>
                                         )}
-                                        {/*role === "Coordenador" && */details.status_display === "Em análise do Coordenador"
-                                            && details.coordinator_feedback && (
-                                                <div className={styles.actionButtons}>
-                                                    <Button label="Aprovar" icon="pi pi-check"
-                                                            onClick={() => createStep("PROF")}
-                                                            className="p-button-success"/>
-                                                    <Button label="Rejeitar" icon="pi pi-times"
-                                                            onClick={() => createStep("RJ_COORD")}
-                                                            className="p-button-danger"/>
-                                                </div>
-                                            )}
+                                        {role === "Coordenador" && details.status_display === "Em análise do Coordenador" && (
+                                            <div className={styles.actionButtons}>
+                                                <Button label="Aprovar" icon="pi pi-check"
+                                                        onClick={() => openModal("Analisado pelo Coordenador")}
+                                                        className="p-button-success"/>
+                                                <Button label="Rejeitar" icon="pi pi-times"
+                                                        onClick={() => openModal("Cancelado pelo Coordenador")}
+                                                        className="p-button-danger"/>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         )}
-                        {getEnumIndexByValue(details.status_display) >= 4 && (<div className={styles.analysis}>
+                        {Object.values(details.steps).reverse().find(value => getStep3Status().includes(value.status_display)) && (
+                            <div className={styles.analysis}>
                                 <h1 className={styles.center_title}>Análise do Professor</h1>
                                 <div className={styles.columns}>
                                     <div className={styles.infoColumn}>
-                                        {type === "knowledge-certifications" && !details.scheduling_date /* && role === "Professor"*/ && (
+                                        {type === "knowledge-certifications" && !details.scheduling_date && role === "Professor" && (
                                             <div className={styles.date_time_container}>
                                                 <p className={styles.info}><strong>Agendar
                                                     prova: </strong>
@@ -479,16 +520,17 @@ const Details = () => {
                                                 />
                                                 {editedSchedulingDate !== "" && (
                                                     <div className={styles.iconSpacing}>
-                                                        <FontAwesomeIcon icon={faSave} onClick={handleSave}
+                                                        <FontAwesomeIcon icon={faSave}
+                                                                         onClick={() => handleSave('scheduling_date')}
                                                                          className={`${styles.iconSpacing} ${styles.saveIcon}`}/>
                                                         <span className={styles.saveIcon}
-                                                              onClick={handleSave}>Agendar</span>
+                                                              onClick={() => handleSave('scheduling_date')}>Agendar</span>
                                                     </div>
                                                 )}
                                             </div>
                                         )}
 
-                                        {type === "knowledge-certifications" && details.scheduling_date && (
+                                        {type === "knowledge-certifications" && (
                                             <p className={styles.info}><strong>Data da
                                                 prova: </strong>{details.scheduling_date
                                                 ? new Date(details.scheduling_date).toLocaleString("pt-BR")
@@ -507,7 +549,7 @@ const Details = () => {
                                                     onInput={(e) => handleInput(e, 'test_score')}>
             {details.test_score || "Pendente"}
         </span>
-                                                {/*role === "Professor" && */details.status_display === "Em análise do Professor" && (
+                                                {role === "Professor" && details.status_display === "Em análise do Professor" && (
                                                     <>
                                                         <FontAwesomeIcon
                                                             icon={faEdit}
@@ -527,29 +569,30 @@ const Details = () => {
                                         )}
 
                                         <p className={styles.info}><strong>Parecer do
-                                            professor: </strong>{details.professor_feedback || "Pendente"}
+                                            professor: </strong>{professorFeedback || "Pendente"}
                                         </p>
                                     </div>
                                     <div className={styles.actionColumn}>
                                         {details.status_display !== 'Cancelado' && (
                                             <div
-                                                className={`${styles.statusContainer} ${styles[getStatusProps(details.status_display, 4).color]}`}>
+                                                className={`${styles.statusContainer} ${styles[getStatusProps(2).color]}`}>
                                                 <strong>Status: </strong>
                                                 <div className={styles.statusButton}>
                                                     <FontAwesomeIcon
-                                                        icon={getStatusProps(details.status_display, 4).icon}/>
-                                                    {getStatusProps(details.status_display, 4).label}
+                                                        icon={getStatusProps(2).icon}/>
+                                                    {getStatusProps(2).label}
                                                 </div>
                                             </div>
                                         )}
-                                        {/*role === "Professor" && */details.status_display === "Em análise do Professor"
-                                            && details.professor_feedback && (
+                                        {role === "Professor" && details.status_display === "Em análise do Professor"
+                                            && (type !== "knowledge-certifications" ||
+                                                (type === "knowledge-certifications" && details.test_score)) && (
                                                 <div className={styles.actionButtons}>
                                                     <Button label="Aprovar" icon="pi pi-check"
-                                                            onClick={() => createStep("GRANTED")}
+                                                            onClick={() => openModal("Analisado pelo Professor")}
                                                             className="p-button-success"/>
                                                     <Button label="Rejeitar" icon="pi pi-times"
-                                                            onClick={() => createStep("RJ_PROF")}
+                                                            onClick={() => openModal("Rejeitado pelo Professor")}
                                                             className="p-button-danger"/>
                                                 </div>
                                             )}

@@ -36,6 +36,7 @@ const CustomConnector = styled(StepConnector)(({theme}) => ({
 // Função que retorna o ícone baseado no status de cada passo
 const getStepIcon = (step, status) => {
     if (status) {
+        console.log(status);
         if (getSucceeded().includes(status)) return <CheckCircleIcon sx={{color: 'green', fontSize: '1.5rem'}}/>;
         if (getFailed().includes(status)) return <CancelIcon sx={{color: 'red', fontSize: '1.5rem'}}/>;
         return <AccessTimeIcon sx={{color: 'orange', fontSize: '1.5rem'}}/>;
