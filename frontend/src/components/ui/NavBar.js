@@ -191,7 +191,7 @@ const NavBar = ({ data = false }) => {
             width={151}
           />
         </Link>
-        {!isUserAuth ? navOptions() : ""}
+        {isUserAuth ? navOptions() : ""}
         <div className="flex items-center justify-around text-white">
           {isUserAuth ? menuAuth() : menuNotAuth()}
           {theme === "light" ? (
