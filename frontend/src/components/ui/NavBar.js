@@ -80,28 +80,28 @@ const NavBar = ({ data = false }) => {
   );
 
   //função para ambiente de dev
-  // const menuAuthDev = () => (
-  //   <>
-  //     <div className="px-3">
-  //       Bem vindo, <b>{user?.name || "Usuário"}</b>
-  //     </div>
-  //     <div className="px-2">
-  //       <MenuIcon
-  //         onClick={handleDropdown}
-  //         style={{ cursor: "pointer" }}
-  //       ></MenuIcon>
-  //       {dropdownMenu ? (
-  //         <Menu
-  //           model={items}
-  //           className="absolute z-50 right-10"
-  //           popupAlignment="right"
-  //         />
-  //       ) : (
-  //         ""
-  //       )}
-  //     </div>
-  //   </>
-  // );
+  const menuAuthDev = () => (
+    <>
+      <div className="px-3">
+        Bem vindo, <b>{user?.name || "Usuário"}</b>
+      </div>
+      <div className="px-2">
+        <MenuIcon
+          onClick={handleDropdown}
+          style={{ cursor: "pointer" }}
+        ></MenuIcon>
+        {dropdownMenu ? (
+          <Menu
+            model={items}
+            className="absolute z-50 right-10"
+            popupAlignment="right"
+          />
+        ) : (
+          ""
+        )}
+      </div>
+    </>
+  );
 
   const menuNotAuth = () => (
     <>
@@ -193,7 +193,7 @@ const NavBar = ({ data = false }) => {
         </Link>
         {isUserAuth ? navOptions() : ""}
         <div className="flex items-center justify-around text-white">
-          {isUserAuth ? menuAuth() : menuNotAuth()}
+          {isUserAuth ? menuAuthDev() : menuNotAuth()}
           {theme === "light" ? (
             <DarkModeIcon cursor="pointer" onClick={toggleTheme} />
           ) : (
