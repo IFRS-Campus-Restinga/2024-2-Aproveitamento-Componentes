@@ -7,6 +7,8 @@ import { noticeList } from "@/services/NoticeService";
 import { useDateFormatter } from "@/hooks/useDateFormatter";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { baseURL } from "@/libs/api";
+import Requests from "../requests/page";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
   const { user } = useAuth();
@@ -17,6 +19,8 @@ const Home = () => {
   );
   const [toast, setToast] = useState(false);
   const [toastMessage, setToastMessage] = useState({});
+  const router = useRouter();
+  const [mergedRequests, setMergedRequests] = useState([]);
 
   const isNoticeOpen = () => {
     if (!lastNotice) return false;
@@ -26,6 +30,16 @@ const Home = () => {
     const endDate = new Date(lastNotice.documentation_submission_end);
 
     return now >= startDate && now <= endDate;
+  };
+
+  const handleDetailsClick = (item) => {
+    if (router) {
+      const path =
+        item.type === "recognition"
+          ? `/requests/details/recognition-forms/${item.id}/`
+          : `/requests/details/knowledge-certifications/${item.id}/`;
+      router.push(path);
+    }
   };
 
   useEffect(() => {
@@ -64,6 +78,12 @@ const Home = () => {
         });
       }
     };
+
+    const merged = [...knowledgeCertifications, ...recognitionOfPriorLearning];
+
+    merged.sort((a, b) => new Date(b.create_date) - new Date(a.create_date));
+
+    setMergedRequests(merged);
 
     const fetchData = async () => {
       await Promise.all([
@@ -107,83 +127,91 @@ const Home = () => {
     }
   }, [toast]);
 
+
   return (
     <div className={styles.homeContainer}>
-      {knowledgeCertifications.length !== 0 ||
-      recognitionOfPriorLearning.length !== 0 ? (
-        <div className={styles.requestInfoContainer}>
-          <h2 style={{ whiteSpace: "nowrap" }}>Solicitações</h2>
-          {knowledgeCertifications !== 0 ? (
-            <div>
-              <strong>Disciplinas:</strong>
-              {knowledgeCertifications.map((certification) => (
-                <span>{certification.discipline_name} </span>
-              ))}
+      {user.type === "Estudante" ?
+        <>
+          {mergedRequests.length !== 0 ? (
+            <div className={styles.requestInfoContainer}>
+              <h2 style={{ whiteSpace: "nowrap" }}>Solicitações</h2>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Disciplina</th>
+                    <th>Status</th>
+                    <th>Data de Criação</th>
+                    <th>Tipo</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mergedRequests.map((item) => (
+                    <tr key={item.id}>
+                      <td>{item.discipline_name || "-"}</td>
+                      <td>{item.status_display || "-"}</td>
+                      <td>{new Date(item.create_date).toLocaleDateString("pt-BR")}</td>
+                      <td>
+                        {item.type === "knowledge"
+                          ? "Certificação de Conhecimento"
+                          : "Aproveitamento de Estudos"}
+                      </td>
+                      <td>
+                        <button className={styles.button} onClick={() => handleDetailsClick(item)}>
+                          Detalhes
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <h3 style={{ opacity: "0.5" }}>
-                Você não tem solicitações de Certificação de Conhecimento
-              </h3>
+            <div className={styles.requestInfoContainer}>
+              <h3 style={{ opacity: "0.5" }}>Você não tem solicitações</h3>
             </div>
           )}
-          {recognitionOfPriorLearning !== 0 ? (
-            <div>
-              <strong>Disciplinas:</strong>
-              {recognitionOfPriorLearning.map((certification) => (
-                <span>{certification.discipline_name} </span>
-              ))}
+          {lastNotice ? (
+            <div className={styles.noticeInfoContainer}>
+              <div className={styles.infoTitle}>
+                <h2 style={{ whiteSpace: "nowrap" }}>Último Edital</h2>-
+                <p>{useDateFormatter(lastNotice.publication_date)}</p>
+                {isNoticeOpen() ? (
+                  <span style={{ backgroundColor: "#69d95e" }}>Aberto</span>
+                ) : (
+                  <span style={{ backgroundColor: "#f95858" }}>Fechado</span>
+                )}
+              </div>
+              <div className={styles.info}>
+                <div>
+                  <strong>Edital:</strong>
+                  <span>{lastNotice.number}</span>
+                </div>
+                <div>
+                  <strong>Inicio:</strong>
+                  <span>
+                    {useDateFormatter(lastNotice.documentation_submission_start)}
+                  </span>
+                </div>
+                <div>
+                  <strong>Fim:</strong>
+                  <span>
+                    {useDateFormatter(lastNotice.documentation_submission_end)}
+                  </span>
+                </div>
+                <div>
+                  <strong>Link:</strong>
+                  <span>{lastNotice.link}</span>
+                </div>
+              </div>
             </div>
           ) : (
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <h3 style={{ opacity: "0.5" }}>
-                Você não tem solicitações de Aproveitamento de Estudo
-              </h3>
-            </div>
+            <LoadingSpinner />
           )}
-        </div>
-      ) : (
-        <div className={styles.requestInfoContainer}>
-          <h3 style={{ opacity: "0.5" }}>Você não tem solicitações</h3>
-        </div>
-      )}
-      {lastNotice ? (
-        <div className={styles.noticeInfoContainer}>
-          <div className={styles.infoTitle}>
-            <h2 style={{ whiteSpace: "nowrap" }}>Último Edital</h2>-
-            <p>{useDateFormatter(lastNotice.publication_date)}</p>
-            {isNoticeOpen() ? (
-              <span style={{ backgroundColor: "#69d95e" }}>Aberto</span>
-            ) : (
-              <span style={{ backgroundColor: "#f95858" }}>Fechado</span>
-            )}
-          </div>
-          <div className={styles.info}>
-            <div>
-              <strong>Edital:</strong>
-              <span>{lastNotice.number}</span>
-            </div>
-            <div>
-              <strong>Inicio:</strong>
-              <span>
-                {useDateFormatter(lastNotice.documentation_submission_start)}
-              </span>
-            </div>
-            <div>
-              <strong>Fim:</strong>
-              <span>
-                {useDateFormatter(lastNotice.documentation_submission_end)}
-              </span>
-            </div>
-            <div>
-              <strong>Link:</strong>
-              <span>{lastNotice.link}</span>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <LoadingSpinner />
-      )}
+        </>
+        :
+        <Requests />
+      }
       {toast ? <Toast type={toastMessage.type}>{toastMessage.text}</Toast> : ""}
     </div>
   );

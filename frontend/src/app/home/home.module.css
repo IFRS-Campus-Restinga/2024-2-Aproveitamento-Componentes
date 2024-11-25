@@ -57,3 +57,26 @@
     }
   }
 }
+
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid black;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+  background-color: #28a745;
+  color: white;
+  padding: 10px;
+  border: 1px solid black;
+  text-align: left;
+}
+
+.table td {
+  padding: 10px;
+  border: 1px solid black;
+}
