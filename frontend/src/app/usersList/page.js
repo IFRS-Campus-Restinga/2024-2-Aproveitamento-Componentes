@@ -3,19 +3,21 @@ import React, { useState, useEffect } from "react";
 import styles from "./usersList.module.css";
 import { Button as Btn } from "@/components/Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faTrash, faEye, faSearch, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 import Filter from "@/components/FilterField/filterField";
 import FilterCheckbox from "@/components/FilterCheckbox/filterCheckbox";
 import { useUserFilters } from "@/hooks/useUserFilters";
 import AuthService from "@/services/AuthService";
 import FormProfile from "@/components/Forms/Profile/ProfileForm";
 import { handleApiResponse } from "@/libs/apiResponseHandler";
+
 const UsersList = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [visibility, setVisibility] = useState({}); // Tracks visibility state for each user
 
   // Move the useUserFilters hook above any conditional returns
   const {
@@ -40,6 +42,11 @@ const UsersList = () => {
         handleApiResponse(data);
         setUsers(data);
         setFilteredUsers(data);
+        const initialVisibility = data.reduce((acc, user) => {
+          acc[user.id] = false;
+          return acc;
+        }, {});
+        setVisibility(initialVisibility);
       } catch (err) {
         console.log(err);
         setError(err.message || "An error occurred while fetching users.");
@@ -50,6 +57,21 @@ const UsersList = () => {
 
     fetchUsers();
   }, []);
+
+  const toggleVisibility = (id) => {
+    setVisibility((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleEdit = (user) => setEditingUser(user);
+
+  const saveEdit = (updatedUser) => {
+    const updatedUsers = users.map((user) =>
+      user.id === updatedUser.id ? updatedUser : user
+    );
+    setUsers(updatedUsers);
+    setFilteredUsers(updatedUsers);
+    setEditingUser(null);
+  };
 
   if (loading) {
     return <p>Loading...</p>;
@@ -85,70 +107,67 @@ const UsersList = () => {
     window.location.reload();
   };
 
-  const handleEdit = (user) => setEditingUser(user);
-
-  const saveEdit = (updatedUser) => {
-    const updatedUsers = users.map((user) =>
-      user.id === updatedUser.id ? updatedUser : user
-    );
-    setUsers(updatedUsers);
-    setFilteredUsers(updatedUsers);
-    setEditingUser(null);
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.content}>
         <h1 className={styles.title}>Usuários</h1>
+
         <div className={styles.filters}>
-          <input
-            className={styles.nameFilter}
-            type="text"
-            value={search}
-            placeholder="Buscar nome..."
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Filter
-            optionList={coursesArray}
-            label="Cursos"
-            onChange={(event, value) => setSelectedCourse(value)}
-          />
-          <Filter
-            optionList={rolesArray}
-            label="Tipo"
-            onChange={(event, value) => setSelectedRole(value)}
-          />
-          <Filter
-            optionList={[
-              { id: true, title: 'Ativo' },
-              { id: false, title: 'Inativo' },
-            ]}
-            label="Estado"
-            onChange={(event, value) => setSelectedStatus(value)}
-          />
-          <Filter
-            optionList={[
-              { id: true, title: 'Sim' },
-              { id: false, title: 'Não' },
-            ]}
-            label="Verificado"
-            onChange={(event, value) => setSelectedVerifieds(value)}
-          />
-          <Btn color="#46b5ff" onClick={applyFilters}>
-            Filtrar
-          </Btn>
+          {/* Barra de busca acima dos filtros */}
+          <div className={styles.searchWrapper}>
+            <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
+            <input
+              className={styles.nameFilter}
+              type="text"
+              value={search}
+              placeholder="Buscar nome..."
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          {/* Filtros abaixo da barra de busca, alinhados horizontalmente */}
+          <div className={styles.filtersContainer}>
+            <Filter
+              optionList={coursesArray}
+              label="Cursos"
+              onChange={(event, value) => setSelectedCourse(value)}
+            />
+            <Filter
+              optionList={rolesArray}
+              label="Tipo"
+              onChange={(event, value) => setSelectedRole(value)}
+            />
+            <Filter
+              optionList={[
+                { id: true, title: 'Ativo' },
+                { id: false, title: 'Inativo' },
+              ]}
+              label="Estado"
+              onChange={(event, value) => setSelectedStatus(value)}
+            />
+            <Filter
+              optionList={[
+                { id: true, title: 'Sim' },
+                { id: false, title: 'Não' },
+              ]}
+              label="Verificado"
+              onChange={(event, value) => setSelectedVerifieds(value)}
+            />
+            <Btn className="btnFiltrar" onClick={applyFilters}>
+              Filtrar
+            </Btn>
+          </div>
         </div>
         <div className={styles.scrollableTable}>
           <table className={styles.table}>
             <thead>
               <tr>
                 <th>Nome</th>
-                <th>Email</th>
                 <th>Tipo</th>
+                <th>Email</th>
                 <th>Curso</th>
                 <th>Matrícula</th>
                 <th>SIAPE</th>
-                <th>Servidor</th>
                 <th>Estado</th>
                 <th>Verificado</th>
                 <th>Ações</th>
@@ -158,17 +177,25 @@ const UsersList = () => {
               {filteredUsers.map((user) => (
                 <tr key={user.id}>
                   <td>{user.name ?? "N/A"}</td>
-                  <td>{user.email ?? "N/A"}</td>
                   <td>{user.type ?? "N/A"}</td>
-                  <td>{user.course ?? "N/A"}</td>
-                  <td>{user.matricula ?? "N/A"}</td>
-                  <td>{user.siape ?? "N/A"}</td>
-                  <td>{user.servant_type ?? "N/A"}</td>
+                  <td>{visibility[user.id] ? user.email : "-"}</td>
+                  <td>{visibility[user.id] ? user.course : "-"}</td>
+                  <td>{visibility[user.id] ? user.matricula : "-"}</td>
+                  <td>{visibility[user.id] ? user.siape : "-"}</td>
                   <td>{user.is_active ? "Ativo" : "Inativo"}</td>
-                  <td>{user.is_verified ? <span className="p-icon pi pi-fw pi-check-circle ms-9 text-2xl" style={{ color: "#2f9e41" }}></span>
-                    : <span className="p-icon pi pi-fw pi-exclamation-triangle ms-9 text-2xl" style={{ color: "#f1c40f" }}></span>}
+                  <td className="ver-column">
+                    {user.is_verified ? (
+                      <span className="p-icon pi pi-fw pi-check-circle ms-9 text-2xl" style={{ color: "#2f9e41" }}></span>
+                    ) : (
+                      <span className="p-icon pi pi-fw pi-exclamation-triangle ms-9 text-2xl" style={{ color: "#f1c40f" }}></span>
+                    )}
                   </td>
                   <td>
+                    <FontAwesomeIcon
+                      icon={faEye}
+                      style={{ marginRight: "10px", cursor: "pointer" }}
+                      onClick={() => toggleVisibility(user.id)}
+                    />
                     <FontAwesomeIcon
                       icon={faPenToSquare}
                       style={{ marginRight: "10px", cursor: "pointer" }}
