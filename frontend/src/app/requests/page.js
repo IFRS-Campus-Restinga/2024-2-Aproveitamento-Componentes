@@ -1,136 +1,162 @@
 "use client";
-import {useCallback, useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./requests.module.css";
-import {baseURL} from "@/libs/api";
+import RequestService from "@/services/RequestService";
+import { useAuth } from "@/context/AuthContext";
 
 const Requests = () => {
-    const [knowledgeCertifications, setKnowledgeCertifications] = useState([]);
-    const [recognitionOfPriorLearning, setRecognitionOfPriorLearning] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const router = useRouter();
+  const [mergedRequests, setMergedRequests] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const user = useAuth();
+  const router = useRouter();
 
-    useEffect(() => {
-        const fetchKnowledgeCertifications = async () => {
-            try {
-                const response = await fetch(`${baseURL}/forms/knowledge-certifications/`);
-                if (!response.ok) throw new Error('Erro ao buscar Certificados de Conhecimento');
-                const data = await response.json();
-                setKnowledgeCertifications(data);
-            } catch (error) {
-                setError(error.message);
-            }
-        };
+  const statusOptions = [
+    { value: 'Em análise do Ensino', label: 'Em análise do Ensino' },
+    { value: 'Rejeitado pelo Ensino', label: 'Rejeitado pelo Ensino' },
+    { value: 'Em análise do Coordenador', label: 'Em análise do Coordenador' },
+    { value: 'Rejeitado pelo Coordenador', label: 'Rejeitado pelo Coordenador' },
+    { value: 'Em análise do Professor', label: 'Em análise do Professor' },
+    { value: 'Rejeitado pelo Professor', label: 'Rejeitado pelo Professor' },
+    { value: 'Deferido', label: 'Deferido' },
+    { value: 'Indeferido', label: 'Indeferido' },
+    { value: 'Cancelado', label: 'Cancelado' },
+  ];
 
-        const fetchRecognitionOfPriorLearning = async () => {
-            try {
-                const response = await fetch(`${baseURL}/forms/recognition-forms/`);
-                if (!response.ok) throw new Error('Erro ao buscar Aproveitamento de Estudos');
-                const data = await response.json();
-                setRecognitionOfPriorLearning(data);
-            } catch (error) {
-                setError(error.message);
-            }
-        };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [kcResponse, rplResponse] = await Promise.all([
+          RequestService.GetKnowledgeCertifications(),
+          RequestService.GetRecognitionOfPriorLearning(),
+        ]);
 
-        const fetchData = async () => {
-            await Promise.all([fetchKnowledgeCertifications(), fetchRecognitionOfPriorLearning()]);
-            setLoading(false);
-        };
+        const knowledgeCertifications = kcResponse.data.map((item) => ({
+          ...item,
+          type: "knowledge",
+        }));
+        const recognitionOfPriorLearning = rplResponse.data.map((item) => ({
+          ...item,
+          type: "recognition",
+        }));
 
-        fetchData();
-    }, []);
+        const merged = [...knowledgeCertifications, ...recognitionOfPriorLearning];
 
-    const handleDetailsClick = useCallback((item) => {
-        if (router) {
-            const path = item.type === 'recognition'
-                ? `/requests/details/recognition-forms/${item.id}/`
-                : `/requests/details/knowledge-certifications/${item.id}/`;
-            router.push(path);
-        }
-    }, [router]);
+        merged.sort((a, b) => new Date(b.create_date) - new Date(a.create_date));
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+        setMergedRequests(merged);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
 
-    return (
-        <div className={styles.contentWrapper}>
-            <div className={styles.scrollableTable}>
-                <h2 className={styles.title}>Certificações de conhecimento</h2>
-                <table className={styles.table}>
-                    <thead>
-                    <tr>
-                        <th>Estudante</th>
-                        <th>Disciplina</th>
-                        <th>Status</th>
-                        <th>Data de Criação</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {knowledgeCertifications.length === 0 ? (
-                        <tr>
-                            <td colSpan="4" style={{textAlign: 'center', color: 'gray'}}>
-                                Sem resultados para Certificado de Conhecimento
-                            </td>
-                        </tr>
-                    ) : (
-                        knowledgeCertifications.map((certification) => (
-                            <tr key={certification.id}>
-                                <td>{certification.student_name || "-"}</td>
-                                <td>{certification.discipline_name || "-"}</td>
-                                <td>{certification.status_display || "-"}</td>
-                                <td style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    {new Date(certification.create_date).toLocaleDateString("pt-BR")}
-                                    <button onClick={() => handleDetailsClick({...certification, type: 'knowledge'})}
-                                            style={{marginLeft: 'auto'}}>
-                                        Detalhes
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
+    fetchData();
 
-                <h2 className={styles.title}>Aproveitamento de estudos</h2>
-                <table className={styles.table}>
-                    <thead>
-                    <tr>
-                        <th>Estudante</th>
-                        <th>Disciplina</th>
-                        <th>Status</th>
-                        <th>Data de Criação</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {recognitionOfPriorLearning.length === 0 ? (
-                        <tr>
-                            <td colSpan="4" style={{textAlign: 'center', color: 'gray'}}>
-                                Sem resultados para Aproveitamento de Estudos
-                            </td>
-                        </tr>
-                    ) : (
-                        recognitionOfPriorLearning.map((learning) => (
-                            <tr key={learning.id}>
-                                <td>{learning.student_name || "-"}</td>
-                                <td>{learning.discipline_name || "N/A"}</td>
-                                <td>{learning.status_display || "N/A"}</td>
-                                <td style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    {new Date(learning.create_date).toLocaleDateString("pt-BR")}
-                                    <button onClick={() => handleDetailsClick({...learning, type: 'recognition'})}
-                                            style={{marginLeft: 'auto'}}>
-                                        Detalhes
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
-            </div>
+    // Verificar o tipo de usuário
+    if (user.user.type === "Estudante") {
+      setSearchQuery(user.user.name);
+      setIsReadOnly(true);
+    }
+  }, []);
+
+  const handleDetailsClick = (item) => {
+    if (router) {
+      const path =
+        item.type === "recognition"
+          ? `/requests/details/recognition-forms/${item.id}/`
+          : `/requests/details/knowledge-certifications/${item.id}/`;
+      router.push(path);
+    }
+  };
+
+  const filteredRequests = mergedRequests.filter((item) => {
+    const matchesSearch = item.student_name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = selectedStatus === '' || item.status_display === selectedStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  if (loading) return <div>Carregando...</div>;
+  if (error) return <div>Erro: {error}</div>;
+
+  return (
+    <div className={styles.contentWrapper}>
+      <div className={styles.topSection}>
+        <div className={styles.searchContainer}>
+          <input
+            type="text"
+            placeholder="Buscar por nome do estudante..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchInput}
+            readOnly={isReadOnly}
+          />
         </div>
-    );
+        <div className={styles.filterContainer}>
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className={styles.filterSelect}
+          >
+            <option value="">Todos os Status</option>
+            {statusOptions.map((status) => (
+              <option key={status.value} value={status.value}>
+                {status.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className={styles.tableSection}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Estudante</th>
+              <th>Disciplina</th>
+              <th>Status</th>
+              <th>Data de Criação</th>
+              <th>Tipo</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRequests.length === 0 ? (
+              <tr>
+                <td colSpan="6" style={{ textAlign: "center", color: "gray" }}>
+                  Sem resultados
+                </td>
+              </tr>
+            ) : (
+              filteredRequests.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.student_name || "-"}</td>
+                  <td>{item.discipline_name || "-"}</td>
+                  <td>{item.status_display || "-"}</td>
+                  <td>{new Date(item.create_date).toLocaleDateString("pt-BR")}</td>
+                  <td>
+                    {item.type === "knowledge"
+                      ? "Certificação de Conhecimento"
+                      : "Aproveitamento de Estudos"}
+                  </td>
+                  <td>
+                    <button className={styles.button} onClick={() => handleDetailsClick(item)}>
+                      Detalhes
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 };
 
 export default Requests;

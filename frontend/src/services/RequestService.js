@@ -14,8 +14,18 @@ function DownloadAttachment(attachmentId) {
     window.open(url, '_blank');
 }
 
+async function GetKnowledgeCertifications() {
+    return apiClient.get('/forms/knowledge-certifications/');
+}
+
+async function GetRecognitionOfPriorLearning() {
+    return apiClient.get('/forms/recognition-forms/');
+}
+
 export default {
     CreateKnowledgeCertification,
     CreateRecognitionForm,
-    DownloadAttachment
+    DownloadAttachment,
+    GetRecognitionOfPriorLearning,
+    GetKnowledgeCertifications
 }
