@@ -9,6 +9,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { baseURL } from "@/libs/api";
 import Requests from "../requests/page";
 import { useRouter } from "next/navigation";
+import RequestService from "@/services/RequestService";
 
 const Home = () => {
   const { user } = useAuth();
@@ -43,57 +44,46 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const fetchKnowledgeCertifications = async () => {
-      try {
-        const response = await fetch(
-          `${baseURL}/forms/knowledge-certifications/?student=${user.id}`
-        );
-        if (!response.ok)
-          throw new Error("Erro ao buscar Certificados de Conhecimento");
-        const data = await response.json();
-        setKnowledgeCertifications(data);
-      } catch (error) {
-        setToast(true);
-        setToastMessage({
-          type: "error",
-          text: "Não fui possivel buscar as solicitações de certificação",
-        });
-      }
-    };
-
-    const fetchRecognitionOfPriorLearning = async () => {
-      try {
-        const response = await fetch(
-          `${baseURL}/forms/recognition-forms/?student=${user.id}`
-        );
-        if (!response.ok)
-          throw new Error("Erro ao buscar Aproveitamento de Estudos");
-        const data = await response.json();
-        setRecognitionOfPriorLearning(data);
-      } catch (error) {
-        setToast(true);
-        setToastMessage({
-          type: "error",
-          text: "Não fui possivel buscar as solicitações de aproveitamento",
-        });
-      }
-    };
-
-    const merged = [...knowledgeCertifications, ...recognitionOfPriorLearning];
-
-    merged.sort((a, b) => new Date(b.create_date) - new Date(a.create_date));
-
-    setMergedRequests(merged);
-
     const fetchData = async () => {
-      await Promise.all([
-        fetchKnowledgeCertifications(),
-        fetchRecognitionOfPriorLearning(),
-      ]);
+      try {
+        const [kcResponse, rplResponse] = await Promise.all([
+          RequestService.GetKnowledgeCertifications(),
+          RequestService.GetRecognitionOfPriorLearning(),
+        ]);
+
+        const knowledgeCertifications = kcResponse.data.map((item) => ({
+          ...item,
+          type: "knowledge",
+        }));
+        const recognitionOfPriorLearning = rplResponse.data.map((item) => ({
+          ...item,
+          type: "recognition",
+        }));
+
+        const merged = [...knowledgeCertifications, ...recognitionOfPriorLearning];
+
+        merged.sort((a, b) => new Date(b.create_date) - new Date(a.create_date));
+
+        setMergedRequests(merged);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
     };
 
     fetchData();
+
+    // Verificar o tipo de usuário
+    if (user.user.type === "Estudante") {
+      setSearchQuery(user.user.name);
+      setIsReadOnly(true);
+    }
   }, []);
+
+  useEffect(() => {
+    console.log(mergedRequests);
+  }, [mergedRequests])
 
   useEffect(() => {
     const fetchNotices = async () => {
