@@ -10,14 +10,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CircleIcon from '@mui/icons-material/Circle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import {getFailed, getSucceeded} from "@/app/requests/status";
-
-const steps = [
-    'Análise do Ensino',
-    'Análise do Coordenador',
-    'Análise do Professor',
-    'Homologação do Coordenador',
-    'Homologação do Ensino',
-];
+import {steps} from "@/app/requests/status"
 
 const CustomConnector = styled(StepConnector)(({theme}) => ({
     '& .MuiStepConnector-line': {
@@ -45,15 +38,15 @@ const getStepStatus = (stepArray, stepStatusFunc) => {
 export default function HorizontalLinearAlternativeLabelStepper({stepsStatus}) {
     console.log(stepsStatus);
     // Função para pegar o label
-    const getLabel = (index) => stepsStatus[index] ? stepsStatus[index].status_display : steps[index];
+    const getLabel = (index) => stepsStatus[index] ? stepsStatus[index].status_display : steps[index].label;
 
     return (
         <Box sx={{width: '100%', p: 4}}>
             <Stepper alternativeLabel connector={<CustomConnector/>}>
-                {steps.map((label, index) => (
-                    <Step key={label}>
-                        <StepLabel StepIconComponent={() => getStepIcon(index, stepsStatus[index]?.status_display)}>
-                            {getLabel(index)}
+                {steps.map((step) => (
+                    <Step key={step.label}>
+                        <StepLabel StepIconComponent={() => getStepIcon(step.index, stepsStatus[step.index]?.status_display)}>
+                            {getLabel(step.index)}
                         </StepLabel>
                     </Step>
                 ))}

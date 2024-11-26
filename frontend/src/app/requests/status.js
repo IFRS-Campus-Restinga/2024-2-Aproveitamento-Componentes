@@ -19,6 +19,21 @@ export const StatusEnum = Object.freeze([
     "Aprovado pelo Ensino",
 ]);
 
+export const steps = [
+    {index: 0, label: 'Análise do Ensino'},
+    {index: 1, label: 'Análise do Coordenador'},
+    {index: 2, label: 'Análise do Professor'},
+    {index: 3, label: 'Homologação do Coordenador'},
+    {index: 4, label: 'Homologação do Ensino'}
+]
+
+
+export const filterStatus = [
+    "Sucesso",
+    "Pendente",
+    "Falha"
+]
+
 export function getEnumIndexByValue(value) {
     return StatusEnum.indexOf(value);
 }
@@ -36,6 +51,14 @@ export function getFailed() {
 export function getPending() {
     return ["Em análise do Ensino", "Em análise do Coordenador", "Em análise do Professor", "Em homologação do Coordenador",
         "Retornado pelo Coordenador", "Em homologação do Ensino", "Retornado pelo Ensino"]
+}
+
+export function getStatusStepIndex(status) {
+    if (getStep1Status().includes(status)) return 0;
+    if (getStep2Status().includes(status)) return 1;
+    if (getStep3Status().includes(status)) return 2;
+    if (getStep4Status().includes(status)) return 3;
+    if (getStep5Status().includes(status)) return 4;
 }
 
 export function getStep1Status() {
