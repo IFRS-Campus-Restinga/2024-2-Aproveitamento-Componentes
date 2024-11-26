@@ -22,10 +22,20 @@ async function GetRecognitionOfPriorLearning() {
     return apiClient.get('/forms/recognition-forms/');
 }
 
+async function GetKnowledgeCertificationsById(id) {
+    return apiClient.get(`/forms/knowledge-certifications/?student=${id}`)
+}
+
+async function GetRecognitionOfPriorLearningById(id) {
+    return apiClient.get(`/forms/recognition-forms/?student=${id}`)
+}
+
 export default {
     CreateKnowledgeCertification,
     CreateRecognitionForm,
     DownloadAttachment,
     GetRecognitionOfPriorLearning,
-    GetKnowledgeCertifications
+    GetKnowledgeCertifications,
+    GetKnowledgeCertificationsById,
+    GetRecognitionOfPriorLearningById
 }

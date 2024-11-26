@@ -43,8 +43,8 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const [kcResponse, rplResponse] = await Promise.all([
-          RequestService.GetKnowledgeCertifications(),
-          RequestService.GetRecognitionOfPriorLearning(),
+          RequestService.GetKnowledgeCertificationsById(user.id),
+          RequestService.GetRecognitionOfPriorLearningById(user.id),
         ]);
 
         const knowledgeCertifications = kcResponse.data.map((item) => ({
