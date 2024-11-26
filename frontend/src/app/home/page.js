@@ -160,7 +160,7 @@ const Home = () => {
             </div>
           )}
           {lastNotice ? (
-            <div className={styles.noticeInfoContainer}>
+            <div className={styles.noticeInfoContainer} style={{ height: "fitcontent" }}>
               <div className={styles.infoTitle}>
                 <h2 style={{ whiteSpace: "nowrap" }}>Último Edital</h2>-
                 <p>{useDateFormatter(lastNotice.publication_date)}</p>
