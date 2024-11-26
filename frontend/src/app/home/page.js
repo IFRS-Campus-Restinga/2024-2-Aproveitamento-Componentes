@@ -198,7 +198,9 @@ const Home = () => {
           )}
         </>
         :
-        <Requests />
+        <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+          <Requests />
+        </div>
       }
       {toast ? <Toast type={toastMessage.type}>{toastMessage.text}</Toast> : ""}
     </div>
