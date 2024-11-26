@@ -14,10 +14,6 @@ import RequestService from "@/services/RequestService";
 const Home = () => {
   const { user } = useAuth();
   const [lastNotice, setLastNotice] = useState(null);
-  const [knowledgeCertifications, setKnowledgeCertifications] = useState([]);
-  const [recognitionOfPriorLearning, setRecognitionOfPriorLearning] = useState(
-    []
-  );
   const [toast, setToast] = useState(false);
   const [toastMessage, setToastMessage] = useState({});
   const router = useRouter();
@@ -65,10 +61,12 @@ const Home = () => {
         merged.sort((a, b) => new Date(b.create_date) - new Date(a.create_date));
 
         setMergedRequests(merged);
-        setLoading(false);
       } catch (error) {
-        setError(error.message);
-        setLoading(false);
+        setToast(true);
+        setToastMessage({
+          type: "error" ? "error" : "success",
+          text: "Erro",
+        });
       }
     };
 
