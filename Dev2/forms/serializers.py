@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers
 
+from courses.models import Course
 from users.models import Servant, AbstractUser
 from users.models import Student
 from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification, \
@@ -19,6 +20,7 @@ class StepSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
+        print(data.get('recognition_form'))
         recognition_form = data.get('recognition_form')
         certification_form = data.get('certification_form')
 
@@ -55,6 +57,7 @@ class StepSerializer(serializers.ModelSerializer):
         servant = Servant.objects.filter(id=responsible_id).first()
         student = Student.objects.filter(id=responsible_id).first()
         user_role = servant.servant_type if servant else 'Aluno'
+        print("Cargo do usuário: " + user_role)
 
         if not servant and not student:
             raise serializers.ValidationError("Erro ao identificar o tipo de usuário")
@@ -88,6 +91,23 @@ class StepSerializer(serializers.ModelSerializer):
         if status not in [ANALYSIS_STATUS] and status != RequestStatus.CANCELED:
             if not data.get('feedback'):
                 raise serializers.ValidationError("É necessário informar um feedback")
+
+        if status == RequestStatus.IN_ANALYSIS_BY_COORDINATOR or status == RequestStatus.IN_APPROVAL_BY_COORDINATOR:
+            if certification_form:
+                form = KnowledgeCertification.objects.get(id=certification_form.id)
+            else:
+                form = RecognitionOfPriorLearning.objects.get(id=recognition_form.id)
+            print(form)
+            discipline_id = form.discipline_id
+            print(discipline_id)
+            course = Course.objects.filter(disciplines__id=discipline_id).first()
+            print(course)
+            print(course.coordinator_id)
+            if course and course.coordinator_id:
+                data['responsible_id'] = course.coordinator_id
+            else:
+                data['responsible_id'] = None
+
 
         if latest_step:
             latest_step.final_step_date = timezone.now()
