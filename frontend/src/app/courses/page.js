@@ -4,9 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import styles from "./course.module.css";
 import ModalCourse from "@/components/Modal/ModalCourse/modal";
-import ModalDisciplineList from '@/components/Modal/ModalCourse/disciplineList/modal'
+import ModalDisciplineList from "@/components/Modal/ModalCourse/disciplineList/modal";
 import { courseList } from "@/services/CourseService";
-
 
 const Course = () => {
   const [courses, setCourses] = useState([]);
@@ -53,14 +52,20 @@ const Course = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Cursos</th>
-              <th>Disciplinas</th>
+              <th>Curso</th>
+              <th>Coordenador</th>
+              <th>Disciplina</th>
             </tr>
           </thead>
           <tbody>
             {courses.map((course) => (
               <tr key={course.id} onClick={() => openModalForEdit(course)}>
                 <td>{course.name ?? "N/A"}</td>
+                <td>
+                  {course.coordinator
+                    ? course.coordinator.name
+                    : "Coordenador não cadastrado"}
+                </td>
                 <td>
                   <button
                     className={styles.linkButton}
