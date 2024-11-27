@@ -131,10 +131,6 @@ const Details = () => {
     }
   };
 
-  // useEffect(() => {
-  //     console.log(stepsStatus);
-  // }, [stepsStatus])
-
   useEffect(() => {
     if (!disableReactivity && id && type) {
       fetchDetails();
@@ -156,12 +152,18 @@ const Details = () => {
         type === "knowledge-certifications"
           ? "certification_form"
           : "recognition_form";
-      const body = JSON.stringify({
+
+      const body = {
         status: status,
         feedback: [feedback].toString(),
         [formType]: details.id,
-      });
-      const response = await apiClient.post(`${baseURL}/forms/steps/`, body);
+      };
+
+      if (status === "PROF") {
+        body.responsible_id = selectedProfessor;
+      }
+
+      const response = await apiClient.post(`${baseURL}/forms/steps/`, JSON.stringify(body));
 
       if (response.status !== 201)
         throw new Error("Erro ao alterar solicitação");

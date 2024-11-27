@@ -32,6 +32,7 @@ class RequestStatus(models.TextChoices):
             if status == value:
                 return getattr(RequestStatus, status)
 
+
 STUDENT_STATUS = [
     RequestStatus.IN_ANALYSIS_BY_CRE,
     RequestStatus.CANCELED,

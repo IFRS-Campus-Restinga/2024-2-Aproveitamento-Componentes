@@ -20,7 +20,6 @@ class StepSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        print(data.get('recognition_form'))
         recognition_form = data.get('recognition_form')
         certification_form = data.get('certification_form')
 
@@ -49,7 +48,8 @@ class StepSerializer(serializers.ModelSerializer):
         user = self.context.get('user')
         abstract_user = AbstractUser.objects.filter(user_id=user.id).first()
         responsible_id = abstract_user.id
-        data['responsible_id'] = responsible_id
+        if status != RequestStatus.IN_ANALYSIS_BY_PROFESSOR:
+            data['responsible_id'] = responsible_id
 
         if not user:
             raise serializers.ValidationError("Usuário não autenticado")
@@ -74,19 +74,19 @@ class StepSerializer(serializers.ModelSerializer):
 
         if user_role == 'Aluno':
             if status not in STUDENT_STATUS:
-                raise serializers.ValidationError(f"Aluno não pode definir o status como '{status}'.")
+                raise serializers.ValidationError(f"Aluno não pode definir o status como '{status}'")
 
         elif user_role == 'Ensino':
             if status not in CRE_STATUS:
-                raise serializers.ValidationError(f"CRE não pode definir o status como '{status}'.")
+                raise serializers.ValidationError(f"CRE não pode definir o status como '{status}'")
 
         elif user_role == 'Coordenador':
             if status not in COORD_STATUS:
-                raise serializers.ValidationError(f"Coordenador não pode definir o status como '{status}'.")
+                raise serializers.ValidationError(f"Coordenador não pode definir o status como '{status}'")
 
         elif user_role == 'Professor':
             if status not in PROF_STATUS:
-                raise serializers.ValidationError(f"Professor não pode definir o status como '{status}'.")
+                raise serializers.ValidationError(f"Professor não pode definir o status como '{status}'")
 
         if status not in [ANALYSIS_STATUS] and status != RequestStatus.CANCELED:
             if not data.get('feedback'):
@@ -107,7 +107,8 @@ class StepSerializer(serializers.ModelSerializer):
                 data['responsible_id'] = course.coordinator_id
             else:
                 data['responsible_id'] = None
-
+        elif status == RequestStatus.IN_ANALYSIS_BY_PROFESSOR and not data.get('responsible_id'):
+            raise serializers.ValidationError("É necessário informar um professor responsável")
 
         if latest_step:
             latest_step.final_step_date = timezone.now()
