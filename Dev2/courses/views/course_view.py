@@ -1,7 +1,11 @@
+from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
+
+from users.serializers import ServantSerializer
 from ..models import Course
 from ..serializers.CourseSerializer import CourseSerializer
 from disciplines.models import Disciplines
@@ -147,3 +151,18 @@ class DeleteCourseAPIView(APIView):
         except Course.DoesNotExist:
             # Retorna erro caso o curso não seja encontrado
             return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class CourseProfessorsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, coordinator_id, *args, **kwargs):
+        coordinator = get_object_or_404(Servant, id=coordinator_id)
+        course = get_object_or_404(Course, coordinator=coordinator)
+
+        if course.coordinator.id != coordinator.id:
+            return Response({'detail': 'Você não tem permissão para acessar este curso.'}, status=403)
+
+        professors = course.professors.all()
+        serializer = ServantSerializer(professors, many=True)
+
+        return Response(serializer.data)

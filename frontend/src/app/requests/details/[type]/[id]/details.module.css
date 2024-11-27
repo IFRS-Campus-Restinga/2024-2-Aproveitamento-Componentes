@@ -1,3 +1,23 @@
+.selector {
+    font-size: 12pt;
+    border-radius: 10px;
+    border-color: #28a745;
+    max-width: 80%;
+    padding: 5px;
+}
+
+.selector_container {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: center;
+}
+
+.asterisk {
+    color: red;
+    margin-left: 4px;
+    font-size: 10px;
+}
+
 .date_time_container {
     justify-content: center;
     align-items: center;
