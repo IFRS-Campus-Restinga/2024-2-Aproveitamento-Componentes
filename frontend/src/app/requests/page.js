@@ -99,7 +99,7 @@ const Requests = () => {
                         onChange={(e) => setSelectedStep(Number(e.target.value))}
                         className={styles.filterSelect}
                     >
-                        <option value="-1">Todos as Etapas</option>
+                        <option value="-1">Todas as Etapas</option>
                         {steps.map((step) => (
                             <option key={step.label} value={step.index}>
                                 {step.label}
