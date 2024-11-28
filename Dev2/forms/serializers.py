@@ -26,11 +26,13 @@ class StepSerializer(serializers.ModelSerializer):
         recognition_form = data.get('recognition_form')
         certification_form = data.get('certification_form')
 
+        # Verifica se alguma requisição foi passada para a criação do Step
         if (recognition_form and certification_form) or (not recognition_form and not certification_form):
             raise serializers.ValidationError(
                 "Deve ser fornecida uma requisição"
             )
 
+        # Localiza o step anterior se existir
         latest_step = None
         if recognition_form:
             latest_step = Step.objects.filter(recognition_form=recognition_form).order_by('-initial_step_date').first()
@@ -38,82 +40,103 @@ class StepSerializer(serializers.ModelSerializer):
             latest_step = Step.objects.filter(certification_form=certification_form).order_by(
                 '-initial_step_date').first()
 
+        # Verifica se foi informado um status
         status = data.get('status')
-
         if not status:
             raise serializers.ValidationError("Status é obrigatório para a criação")
 
+        # Verifica o status do último step
         current_status = None
-
         if latest_step:
             current_status = latest_step.status
 
+        # Identifica quem fez a requisição e o torna responsável pelo step
         user = self.context.get('user')
         abstract_user = AbstractUser.objects.filter(user_id=user.id).first()
-        responsible_id = abstract_user.id
-        if status == RequestStatus.IN_ANALYSIS_BY_PROFESSOR:
-            responsible = data.get('responsible_id')
-            data['responsible_id'] = responsible.id
-        else:
-            data['responsible_id'] = responsible_id
+        user_id = abstract_user.id
 
+        # Valida se o usuário que fez a requisição existe no sistema
         if not user:
             raise serializers.ValidationError("Usuário não autenticado")
 
-        servant = Servant.objects.filter(id=responsible_id).first()
-        student = Student.objects.filter(id=responsible_id).first()
-        user_role = servant.servant_type if servant else 'Aluno'
-        print("Cargo do usuário: " + user_role)
+        # O coordenador informa o professor que deve ficar responsável pelo Status
+        if status == RequestStatus.IN_ANALYSIS_BY_PROFESSOR:
+            responsible = data.get('responsible_id')
+            data['responsible_id'] = responsible.id
 
-        if not servant and not student:
-            raise serializers.ValidationError("Erro ao identificar o tipo de usuário")
-
-        if user_role != 'Professor' and data.get('test_score'):
-            raise serializers.ValidationError("Apenas o professor pode alterar a nota")
-
-        if user_role != 'Professor' and data.get('scheduling_date'):
-            raise serializers.ValidationError("Apenas o professor pode agendar a prova")
-
-        if current_status in FAILED_STATUS or current_status == RequestStatus.APPROVED_BY_CRE:
-            if status != current_status:
-                raise serializers.ValidationError("Não é permitido alterar o status após finalização")
-
-        if user_role == 'Aluno':
-            if status not in STUDENT_STATUS:
-                raise serializers.ValidationError(f"Aluno não pode definir o status como '{status}'")
-
-        elif user_role == 'Ensino':
-            if status not in CRE_STATUS:
-                raise serializers.ValidationError(f"CRE não pode definir o status como '{status}'")
-
-        elif user_role == 'Coordenador':
-            if status not in COORD_STATUS:
-                raise serializers.ValidationError(f"Coordenador não pode definir o status como '{status}'")
-
-        elif user_role == 'Professor':
-            if status not in PROF_STATUS:
-                raise serializers.ValidationError(f"Professor não pode definir o status como '{status}'")
-
-        if status not in [ANALYSIS_STATUS] and status != RequestStatus.CANCELED:
-            if not data.get('feedback'):
-                raise serializers.ValidationError("É necessário informar um feedback")
-
-        if status == RequestStatus.IN_ANALYSIS_BY_COORDINATOR or status == RequestStatus.IN_APPROVAL_BY_COORDINATOR:
+        # Caso o coordenador retorne o step, o professor que aprovou ficará como responsável
+        elif status == RequestStatus.RETURNED_BY_COORDINATOR:
             if certification_form:
                 form = KnowledgeCertification.objects.get(id=certification_form.id)
             else:
                 form = RecognitionOfPriorLearning.objects.get(id=recognition_form.id)
-            print(form)
+            responsible = form.steps.filter(status=RequestStatus.ANALYZED_BY_PROFESSOR).last().responsible
+            data['responsible_id'] = responsible.id if responsible else None
+
+        # Sem condições especiais, quem fez a requisição ficará responsável pelo step
+        else:
+            data['responsible_id'] = user_id
+
+        # Verifica se o usuário que fez a requisição é servidor ou aluno
+        servant = Servant.objects.filter(id=user_id).first()
+        student = Student.objects.filter(id=user_id).first()
+        user_role = servant.servant_type if servant else 'Aluno'
+        print("Cargo do usuário: " + user_role)
+
+        # Valida o tipo do usuário
+        if not servant and not student:
+            raise serializers.ValidationError("Erro ao identificar o tipo de usuário")
+
+        # TODO Mover validações para o patch de forms
+        # if user_role != 'Professor' and data.get('test_score'):
+        #     raise serializers.ValidationError("Apenas o professor pode alterar a nota")
+        # if user_role != 'Professor' and data.get('scheduling_date'):
+        #     raise serializers.ValidationError("Apenas o professor pode agendar a prova")
+
+        # Valida se a solicitação foi finalizada, não podendo mais ser alterada
+        if current_status in FAILED_STATUS or current_status == RequestStatus.APPROVED_BY_CRE:
+            if status != current_status:
+                raise serializers.ValidationError("Não é permitido alterar o status após finalização")
+
+        # Verifica se o step criado possui um status que pode ser criado pelo aluno
+        if user_role == 'Aluno':
+            if status not in STUDENT_STATUS:
+                raise serializers.ValidationError(f"Aluno não pode definir o status como '{status}'")
+
+        # Verifica se o step criado possui um status que pode ser criado pelo ensino
+        elif user_role == 'Ensino':
+            if status not in CRE_STATUS:
+                raise serializers.ValidationError(f"CRE não pode definir o status como '{status}'")
+
+        # Verifica se o step criado possui um status que pode ser criado pelo coordenador
+        elif user_role == 'Coordenador':
+            if status not in COORD_STATUS:
+                raise serializers.ValidationError(f"Coordenador não pode definir o status como '{status}'")
+
+        # Verifica se o step criado possui um status que pode ser criado pelo professor
+        elif user_role == 'Professor':
+            if status not in PROF_STATUS:
+                raise serializers.ValidationError(f"Professor não pode definir o status como '{status}'")
+
+        # Verifica se o step possui um feedback caso precise
+        if status not in [ANALYSIS_STATUS] and status != RequestStatus.CANCELED:
+            if not data.get('feedback'):
+                raise serializers.ValidationError("É necessário informar um feedback")
+
+        # Verifica quem é o coordenador do curso da disciplina da solicitação e o atribui como responsável pelos steps da coordenação
+        if status == RequestStatus.IN_ANALYSIS_BY_COORDINATOR or status == RequestStatus.IN_APPROVAL_BY_COORDINATOR or status == RequestStatus.RETURNED_BY_CRE:
+            if certification_form:
+                form = KnowledgeCertification.objects.get(id=certification_form.id)
+            else:
+                form = RecognitionOfPriorLearning.objects.get(id=recognition_form.id)
             discipline_id = form.discipline_id
-            print(discipline_id)
             course = Course.objects.filter(disciplines__id=discipline_id).first()
-            print(course)
-            print(course.coordinator_id)
             if course and course.coordinator_id:
                 data['responsible_id'] = course.coordinator_id
             else:
                 data['responsible_id'] = None
 
+        # Se existe um step anterior, atribui uma data de finalização e define sua flag de 'atual' como false
         if latest_step:
             latest_step.final_step_date = timezone.now()
             latest_step.current = False

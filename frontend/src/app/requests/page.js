@@ -128,10 +128,11 @@ const Requests = () => {
                     <thead>
                     <tr>
                         <th>Estudante</th>
-                        <th>Disciplina</th>
-                        <th>Status</th>
-                        <th>Data de Criação</th>
                         <th>Tipo</th>
+                        <th>Disciplina</th>
+                        <th>Data de Criação</th>
+                        <th>Responsável</th>
+                        <th>Status</th>
                         <th>Ações</th>
                     </tr>
                     </thead>
@@ -146,14 +147,15 @@ const Requests = () => {
                         filteredRequests.map((item) => (
                             <tr key={item.id}>
                                 <td>{item.student_name || "-"}</td>
-                                <td>{item.discipline_name || "-"}</td>
-                                <td>{item.status_display || "-"}</td>
-                                <td>{new Date(item.create_date).toLocaleDateString("pt-BR")}</td>
                                 <td>
                                     {item.type === "knowledge"
                                         ? "Certificação de Conhecimento"
                                         : "Aproveitamento de Estudos"}
                                 </td>
+                                <td>{item.discipline_name || "-"}</td>
+                                <td>{new Date(item.create_date).toLocaleDateString("pt-BR")}</td>
+                                <td>{Array.from(item.steps).pop()?.responsible?.name || "-"}</td>
+                                <td>{item.status_display || "-"}</td>
                                 <td>
                                     <button className={styles.button} onClick={() => handleDetailsClick(item)}>
                                         Detalhes
