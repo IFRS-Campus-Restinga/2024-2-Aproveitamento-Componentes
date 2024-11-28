@@ -737,8 +737,8 @@ const Details = () => {
                           {details.test_score || "Pendente"}
                         </span>
                         {role === "Professor" &&
-                          details.status_display ===
-                            "Em análise do Professor" && (
+                            (details.status_display ===
+                            "Em análise do Professor" || details.status_display === "Retornado pelo Coordenador") && (
                             <>
                               <FontAwesomeIcon
                                 icon={faEdit}
