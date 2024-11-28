@@ -160,7 +160,7 @@ const Details = () => {
       };
 
       if (status === "PROF") {
-        body.responsible_id = selectedProfessor;
+        body.responsible_id = Number(selectedProfessor);
       }
 
       const response = await apiClient.post(`${baseURL}/forms/steps/`, JSON.stringify(body));

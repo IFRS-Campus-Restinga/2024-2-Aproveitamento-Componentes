@@ -5,18 +5,21 @@ from rest_framework import serializers
 from courses.models import Course
 from users.models import Servant, AbstractUser
 from users.models import Student
+from users.serializers import ServantSerializer
 from .models import Step, Attachment, RecognitionOfPriorLearning, KnowledgeCertification, \
     RequestStatus, FAILED_STATUS, ANALYSIS_STATUS, STUDENT_STATUS, CRE_STATUS, COORD_STATUS, PROF_STATUS
 
 
 class StepSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    responsible = ServantSerializer(read_only=True)
+    responsible_id = serializers.PrimaryKeyRelatedField(queryset=Servant.objects.all(), required=False, write_only=True)
 
     class Meta:
         model = Step
         fields = [
-            'id', 'status', 'status_display', 'responsible_id', 'feedback', 'initial_step_date', 'final_step_date',
-            'current', 'recognition_form', 'certification_form'
+            'id', 'status', 'status_display', 'feedback', 'initial_step_date', 'final_step_date',
+            'current', 'recognition_form', 'certification_form', 'responsible', 'responsible_id'
         ]
 
     def validate(self, data):
@@ -48,7 +51,10 @@ class StepSerializer(serializers.ModelSerializer):
         user = self.context.get('user')
         abstract_user = AbstractUser.objects.filter(user_id=user.id).first()
         responsible_id = abstract_user.id
-        if status != RequestStatus.IN_ANALYSIS_BY_PROFESSOR:
+        if status == RequestStatus.IN_ANALYSIS_BY_PROFESSOR:
+            responsible = data.get('responsible_id')
+            data['responsible_id'] = responsible.id
+        else:
             data['responsible_id'] = responsible_id
 
         if not user:
@@ -107,8 +113,6 @@ class StepSerializer(serializers.ModelSerializer):
                 data['responsible_id'] = course.coordinator_id
             else:
                 data['responsible_id'] = None
-        elif status == RequestStatus.IN_ANALYSIS_BY_PROFESSOR and not data.get('responsible_id'):
-            raise serializers.ValidationError("É necessário informar um professor responsável")
 
         if latest_step:
             latest_step.final_step_date = timezone.now()

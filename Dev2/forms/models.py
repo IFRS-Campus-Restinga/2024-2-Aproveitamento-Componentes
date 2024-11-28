@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 
 from notices.models import Notice
+from users.models.servant import Servant
 
 
 # Enum para status da requisição
@@ -168,7 +169,7 @@ class KnowledgeCertification(RequisitionForm):
 class Step(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=20, choices=RequestStatus.choices)
-    responsible_id = models.IntegerField(blank=True, null=True)
+    responsible = models.ForeignKey(Servant, on_delete=models.SET_NULL, null=True)
     feedback = models.TextField(blank=True, null=True)
     initial_step_date = models.DateTimeField(default=timezone.now)
     final_step_date = models.DateTimeField(null=True, blank=True)
