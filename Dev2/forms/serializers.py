@@ -32,6 +32,8 @@ class StepSerializer(serializers.ModelSerializer):
                 "Deve ser fornecida uma requisição"
             )
 
+        form = recognition_form if recognition_form else certification_form
+
         # Localiza o step anterior se existir
         latest_step = None
         if recognition_form:
@@ -64,13 +66,23 @@ class StepSerializer(serializers.ModelSerializer):
             responsible = data.get('responsible_id')
             data['responsible_id'] = responsible.id
 
+        # Verifica quem é o coordenador do curso da disciplina da solicitação e o atribui como responsável pelos steps da coordenação
+        elif status == RequestStatus.IN_ANALYSIS_BY_COORDINATOR or status == RequestStatus.IN_APPROVAL_BY_COORDINATOR or status == RequestStatus.RETURNED_BY_CRE:
+            discipline_id = form.discipline_id
+            course = Course.objects.filter(disciplines__id=discipline_id).first()
+            if course and course.coordinator_id:
+                data['responsible_id'] = course.coordinator_id
+            else:
+                data['responsible_id'] = None
+
         # Caso o coordenador retorne o step, o professor que aprovou ficará como responsável
         elif status == RequestStatus.RETURNED_BY_COORDINATOR:
-            if certification_form:
-                form = KnowledgeCertification.objects.get(id=certification_form.id)
-            else:
-                form = RecognitionOfPriorLearning.objects.get(id=recognition_form.id)
             responsible = form.steps.filter(status=RequestStatus.ANALYZED_BY_PROFESSOR).last().responsible
+            data['responsible_id'] = responsible.id if responsible else None
+
+        # Define como responsável pela homologação do ensino o mesmo servidor que analisou a solicitação
+        elif status == RequestStatus.IN_APPROVAL_BY_CRE:
+            responsible = form.steps.filter(status=RequestStatus.ANALYZED_BY_CRE).last().responsible
             data['responsible_id'] = responsible.id if responsible else None
 
         # Sem condições especiais, quem fez a requisição ficará responsável pelo step
@@ -122,19 +134,6 @@ class StepSerializer(serializers.ModelSerializer):
         if status not in [ANALYSIS_STATUS] and status != RequestStatus.CANCELED:
             if not data.get('feedback'):
                 raise serializers.ValidationError("É necessário informar um feedback")
-
-        # Verifica quem é o coordenador do curso da disciplina da solicitação e o atribui como responsável pelos steps da coordenação
-        if status == RequestStatus.IN_ANALYSIS_BY_COORDINATOR or status == RequestStatus.IN_APPROVAL_BY_COORDINATOR or status == RequestStatus.RETURNED_BY_CRE:
-            if certification_form:
-                form = KnowledgeCertification.objects.get(id=certification_form.id)
-            else:
-                form = RecognitionOfPriorLearning.objects.get(id=recognition_form.id)
-            discipline_id = form.discipline_id
-            course = Course.objects.filter(disciplines__id=discipline_id).first()
-            if course and course.coordinator_id:
-                data['responsible_id'] = course.coordinator_id
-            else:
-                data['responsible_id'] = None
 
         # Se existe um step anterior, atribui uma data de finalização e define sua flag de 'atual' como false
         if latest_step:
