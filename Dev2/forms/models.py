@@ -147,7 +147,6 @@ class RequisitionForm(models.Model):
 class RecognitionOfPriorLearning(RequisitionForm):
     notice = models.ForeignKey(Notice, on_delete=models.CASCADE, related_name="recognition_notices")
     course_workload = models.IntegerField()
-    test_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     course_studied_workload = models.IntegerField()
 
     def __str__(self):

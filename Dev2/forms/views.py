@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.http import HttpResponse, Http404
 from rest_framework import generics, status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -9,8 +10,6 @@ from .models import RecognitionOfPriorLearning, KnowledgeCertification, RequestS
 from .serializers import (
     RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer, StepSerializer
 )
-from django.http import HttpResponse, Http404
-from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class StepCreateView(generics.CreateAPIView):
@@ -40,6 +39,11 @@ class RecognitionOfPriorLearningListCreateView(generics.ListCreateAPIView):
     queryset = RecognitionOfPriorLearning.objects.all()
     serializer_class = RecognitionOfPriorLearningSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['user'] = self.request.user
+        return context
+
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset
@@ -61,30 +65,32 @@ class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = RecognitionOfPriorLearningSerializer
     lookup_field = 'id'
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['user'] = self.request.user
+        return context
+
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
         data = request.data
+        serializer = self.get_serializer(instance, data=data, partial=True)
 
-        allowed_fields = ['status', 'course_workload', 'course_studied_workload', 'coordinator_feedback',
-                          'professor_feedback']
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-        for field in allowed_fields:
-            if field in data:
-                if field == 'status' and data[field] not in dict(RequestStatus.choices):
-                    return Response({"detail": "Status inválido"}, status=status.HTTP_400_BAD_REQUEST)
-
-                setattr(instance, field, data[field])
-
-        instance.save()
-
-        serializer = self.get_serializer(instance)
-        return Response(status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # View para listar e criar KnowledgeCertification
 class KnowledgeCertificationListCreateView(generics.ListCreateAPIView):
     queryset = KnowledgeCertification.objects.all()
     serializer_class = KnowledgeCertificationSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['user'] = self.request.user
+        return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -106,33 +112,21 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = KnowledgeCertificationSerializer
     lookup_field = 'id'
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['user'] = self.request.user
+        return context
+
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
         data = request.data
+        serializer = self.get_serializer(instance, data=data, partial=True)
 
-        allowed_fields = ['status', 'previous_knowledge', 'scheduling_date', 'coordinator_feedback',
-                          'professor_feedback', 'test_score']
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-        for field in allowed_fields:
-            if field in data:
-                if field == 'status' and data[field] not in dict(RequestStatus.choices):
-                    return Response({"detail": "Status inválido"}, status=status.HTTP_400_BAD_REQUEST)
-
-                if field == 'scheduling_date':
-                    try:
-                        scheduling_date = datetime.strptime(data[field], "%Y-%m-%dT%H:%M")
-                        setattr(instance, field,
-                                scheduling_date)
-                    except ValueError:
-                        return Response({"detail": "Formato de data e hora inválido"},
-                                        status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    setattr(instance, field, data[field])
-
-        instance.save()
-
-        serializer = self.get_serializer(instance)
-        return Response(status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AttachmentDownloadView(APIView):

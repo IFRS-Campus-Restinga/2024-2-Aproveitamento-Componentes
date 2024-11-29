@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers
@@ -23,15 +25,13 @@ class StepSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
+        # Verifica se alguma requisição foi passada para a criação do Step
         recognition_form = data.get('recognition_form')
         certification_form = data.get('certification_form')
-
-        # Verifica se alguma requisição foi passada para a criação do Step
         if (recognition_form and certification_form) or (not recognition_form and not certification_form):
             raise serializers.ValidationError(
                 "Deve ser fornecida uma requisição"
             )
-
         form = recognition_form if recognition_form else certification_form
 
         # Localiza o step anterior se existir
@@ -52,10 +52,14 @@ class StepSerializer(serializers.ModelSerializer):
         if latest_step:
             current_status = latest_step.status
 
-        # Identifica quem fez a requisição e o torna responsável pelo step
+        # Identifica quem fez a requisição, sua role e o torna responsável pelo step
         user = self.context.get('user')
         abstract_user = AbstractUser.objects.filter(user_id=user.id).first()
-        user_id = abstract_user.id
+        user_role = abstract_user.type.value
+
+        # Valida o tipo do usuário
+        if not user_role:
+            raise serializers.ValidationError("Erro ao identificar o tipo de usuário")
 
         # Valida se o usuário que fez a requisição existe no sistema
         if not user:
@@ -87,23 +91,7 @@ class StepSerializer(serializers.ModelSerializer):
 
         # Sem condições especiais, quem fez a requisição ficará responsável pelo step
         else:
-            data['responsible_id'] = user_id
-
-        # Verifica se o usuário que fez a requisição é servidor ou aluno
-        servant = Servant.objects.filter(id=user_id).first()
-        student = Student.objects.filter(id=user_id).first()
-        user_role = servant.servant_type if servant else 'Aluno'
-        print("Cargo do usuário: " + user_role)
-
-        # Valida o tipo do usuário
-        if not servant and not student:
-            raise serializers.ValidationError("Erro ao identificar o tipo de usuário")
-
-        # TODO Mover validações para o patch de forms
-        # if user_role != 'Professor' and data.get('test_score'):
-        #     raise serializers.ValidationError("Apenas o professor pode alterar a nota")
-        # if user_role != 'Professor' and data.get('scheduling_date'):
-        #     raise serializers.ValidationError("Apenas o professor pode agendar a prova")
+            data['responsible_id'] = abstract_user.id
 
         # Valida se a solicitação foi finalizada, não podendo mais ser alterada
         if current_status in FAILED_STATUS or current_status == RequestStatus.APPROVED_BY_CRE:
@@ -180,10 +168,17 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecognitionOfPriorLearning
         fields = [
-            'id', 'course_workload', 'course_studied_workload', 'test_score', 'notice', 'discipline',
+            'id', 'course_workload', 'course_studied_workload', 'notice', 'discipline',
             'discipline_name', 'create_date', 'status_display', 'attachments', 'student_id', 'student', 'student',
             'student_name', 'student_email', 'student_matricula', 'student_course', 'steps'
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        user = self.context.get('user')
+        self.abstract_user = AbstractUser.objects.filter(user_id=user.id).first()
+        if self.abstract_user is None:
+            raise serializers.ValidationError("Usuário inválido")
 
     def get_student_name(self, obj):
         return obj.student.name if obj.student else None
@@ -196,6 +191,25 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
         if latest_step:
             return latest_step.get_status_display()
         return "Status não disponível"
+
+    def validate_course_workload(self, value):
+        if not isinstance(value, int):
+            raise serializers.ValidationError("course_workload deve ser um número inteiro válido.")
+        if self.abstract_user.id != self.instance.student_id:
+            raise serializers.ValidationError("Apenas o aluno que fez a requisição pode alterar esse campo")
+        return value
+
+    def validate_course_studied_workload(self, value):
+        if not isinstance(value, int):
+            raise serializers.ValidationError("course_studied_workload deve ser um número inteiro válido.")
+        if self.abstract_user.id != self.instance.student_id:
+            raise serializers.ValidationError("Apenas o aluno que fez a requisição pode alterar esse campo")
+        return value
+
+    def validate_status(self, value):
+        if value not in dict(RequestStatus.choices):
+            raise serializers.ValidationError("Status inválido")
+        return value
 
     def create(self, validated_data):
         attachments_files = self.context['request'].FILES.getlist('attachment')
@@ -221,6 +235,12 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
 
         return requisition
 
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+        return instance
+
 
 class KnowledgeCertificationSerializer(serializers.ModelSerializer):
     status_display = serializers.SerializerMethodField(read_only=True)
@@ -242,6 +262,13 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
             'student_name', 'student_email', 'student_matricula', 'student_course', 'steps'
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        user = self.context.get('user')
+        self.abstract_user = AbstractUser.objects.filter(user_id=user.id).first()
+        if self.abstract_user is None:
+            raise serializers.ValidationError("Usuário inválido")
+
     def get_student_name(self, obj):
         return obj.student.name if obj.student else None
 
@@ -253,6 +280,40 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
         if latest_step:
             return latest_step.get_status_display()
         return "Status não disponível"
+
+    def validate_status(self, value):
+        if value not in dict(RequestStatus.choices):
+            raise serializers.ValidationError("Status inválido")
+        return value
+
+    def validate_previous_knowledge(self, value):
+        if self.abstract_user.id != self.instance.student_id:
+            raise serializers.ValidationError("Apenas o aluno que fez a requisição pode alterar esse campo")
+        return value
+
+    def validate_scheduling_date(self, value):
+        try:
+            user_role = self.abstract_user.type.value
+            if user_role != 'Professor':
+                raise serializers.ValidationError("Apenas o professor pode agendar a prova")
+            if isinstance(value, str):
+                value = datetime.strptime(value, "%Y-%m-%dT%H:%M")
+            now_plus_24_hours = datetime.now() + timedelta(hours=24)
+            if value < now_plus_24_hours:
+                raise serializers.ValidationError("A data e hora devem ser no mínimo 24 horas após o momento atual.")
+        except ValueError:
+            raise serializers.ValidationError("Formato de data e hora inválido")
+        return value
+
+    def validate_test_score(self, value):
+        user_role = self.abstract_user.type.value
+        if user_role != 'Professor':
+            raise serializers.ValidationError("Apenas o professor pode alterar a nota")
+        if not isinstance(value, (float, int)):
+            raise serializers.ValidationError("test_score deve ser um número válido.")
+        if not (0 <= value <= 10):
+            raise serializers.ValidationError("test_score deve estar entre 0 e 10.")
+        return value
 
     def create(self, validated_data):
         attachments_files = self.context['request'].FILES.getlist('attachment')
@@ -277,3 +338,9 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
             )
 
         return certification
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+        return instance
