@@ -236,6 +236,10 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
         return requisition
 
     def update(self, instance, validated_data):
+        if (self.abstract_user.type != "Ensino" and
+                self.abstract_user.id != instance.student_id and
+                not instance.steps.filter(responsible_id=self.abstract_user.id).exists()):
+            raise serializers.ValidationError("Usuário não está relacionado com a solicitação")
         for field, value in validated_data.items():
             setattr(instance, field, value)
         instance.save()
@@ -340,6 +344,10 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
         return certification
 
     def update(self, instance, validated_data):
+        if (self.abstract_user.type != "Ensino" and
+                self.abstract_user.id != instance.student_id and
+                not instance.steps.filter(responsible_id=self.abstract_user.id).exists()):
+            raise serializers.ValidationError("Usuário não está relacionado com a solicitação")
         for field, value in validated_data.items():
             setattr(instance, field, value)
         instance.save()

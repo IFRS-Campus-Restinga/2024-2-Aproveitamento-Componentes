@@ -33,8 +33,6 @@ class StepCreateView(generics.CreateAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# View para listar e criar RecognitionOfPriorLearning
 class RecognitionOfPriorLearningListCreateView(generics.ListCreateAPIView):
     queryset = RecognitionOfPriorLearning.objects.all()
     serializer_class = RecognitionOfPriorLearningSerializer
@@ -56,8 +54,6 @@ class RecognitionOfPriorLearningListCreateView(generics.ListCreateAPIView):
         else:
             print("Dados inválidos:", serializer.errors)
         return super().create(request, *args, **kwargs)
-
-        # View para detalhes de uma RecognitionOfPriorLearning específica
 
 
 class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateAPIView):
@@ -81,8 +77,6 @@ class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# View para listar e criar KnowledgeCertification
 class KnowledgeCertificationListCreateView(generics.ListCreateAPIView):
     queryset = KnowledgeCertification.objects.all()
     serializer_class = KnowledgeCertificationSerializer
@@ -105,8 +99,6 @@ class KnowledgeCertificationListCreateView(generics.ListCreateAPIView):
             print("Dados inválidos:", serializer.errors)
         return super().create(request, *args, **kwargs)
 
-
-# View para detalhes de uma KnowledgeCertification específica
 class KnowledgeCertificationDetailView(generics.RetrieveUpdateAPIView):
     queryset = KnowledgeCertification.objects.all()
     serializer_class = KnowledgeCertificationSerializer
