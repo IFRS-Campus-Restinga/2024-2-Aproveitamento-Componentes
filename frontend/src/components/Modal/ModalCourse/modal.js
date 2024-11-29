@@ -73,7 +73,7 @@ const ModalCourse = ({ onClose, editData = null }) => {
       try {
         const users = await UserList();
         const professors = users.filter(
-          (user) => user.servant_type === "Professor",
+          (user) => user.servant_type === "Professor" || user.servant_type === "Coordenador",
         );
         setAvailableProfessors(professors);
       } catch (error) {
