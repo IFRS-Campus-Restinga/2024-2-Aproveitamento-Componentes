@@ -6,6 +6,7 @@ import styles from "./course.module.css";
 import ModalCourse from "@/components/Modal/ModalCourse/modal";
 import ModalDisciplineList from "@/components/Modal/ModalCourse/disciplineList/modal";
 import { courseList } from "@/services/CourseService";
+import {useAuth} from "@/context/AuthContext";
 
 const Course = () => {
   const [courses, setCourses] = useState([]);
@@ -13,6 +14,7 @@ const Course = () => {
   const [editData, setEditData] = useState(null);
   const [disciplineModal, setDisciplineModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const user = useAuth();
 
   useEffect(() => {
     const fetchCourses = async () => {
