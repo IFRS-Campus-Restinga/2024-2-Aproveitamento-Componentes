@@ -91,6 +91,16 @@ const Notice = () => {
     return now >= startDate && now <= endDate;
   };
 
+  const isOtherNoticeOpen = (notice) => {
+    if (!notice) return false;
+
+    const now = new Date();
+    const startDate = new Date(notice.documentation_submission_start);
+    const endDate = new Date(notice.documentation_submission_end);
+
+    return now >= startDate && now <= endDate;
+  };
+
   // Fetch inicial
   useEffect(() => {
     fetchNotices(currentPage);
@@ -318,7 +328,7 @@ const Notice = () => {
                   <div className={styles.infoTitle}>
                     <h2 style={{ whiteSpace: "nowrap" }}>Edital</h2>-
                     <p>{useDateFormatter(notice.publication_date)}</p>
-                    {isNoticeOpen() ? (
+                    {isOtherNoticeOpen(notice) ? (
                       <span style={{ backgroundColor: "#69d95e" }}>Aberto</span>
                     ) : (
                       <span style={{ backgroundColor: "#f95858" }}>

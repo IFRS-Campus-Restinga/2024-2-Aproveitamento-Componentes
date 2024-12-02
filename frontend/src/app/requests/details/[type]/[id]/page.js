@@ -31,6 +31,7 @@ import {
 import RequestService from "@/services/RequestService";
 import { TextField } from "@mui/material";
 import Modal from "@/components/Modal/ModalRequest/modal";
+import { FileUpload } from "primereact/fileupload";
 
 const Details = () => {
   const [details, setDetails] = useState(null);
@@ -72,12 +73,15 @@ const Details = () => {
   const type = segments.at(-2);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState("pending");
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
 
   const fetchDetails = async () => {
     try {
       const response = await apiClient.get(`${baseURL}/forms/${type}/${id}/`);
       if (response.status !== 200) throw new Error("Erro ao buscar detalhes");
       const data = await response.data;
+      console.log(data);
       setDetails(data);
       setStepsStatus([
         getStepStatus(data.steps, getStep1Status),
@@ -174,6 +178,10 @@ const Details = () => {
     }
   };
 
+  const openCancelModal = () => setShowCancelModal(true);
+  const closeCancelModal = () => setShowCancelModal(false);
+
+
   const handleSelectedProfessor = async (prof) => {
     setSelectedProfessor(prof);
   };
@@ -265,36 +273,46 @@ const Details = () => {
     }
   };
 
-  const handleSave = async (field) => {
+  const handleSave = async (field, file) => {
     try {
+      let response;
       let updatedData;
+  
+      if (field === "test_attachment") {
+        const formData = new FormData();
+        formData.append('test_attachment', file);
+  
+        response = await apiClient.patch(
+          `${baseURL}/forms/${type}/${id}/`,
+          formData
+        );
+      } else {
 
-      switch (field) {
-        case "previous_knowledge":
-          updatedData = { previous_knowledge: editedKnowledge };
-          break;
-        case "course_workload":
-          updatedData = { course_workload: editedCourseWorkload };
-          break;
-        case "course_studied_workload":
-          updatedData = {
-            course_studied_workload: editedCourseStudiedWorkload,
-          };
-          break;
-        case "test_score":
-          updatedData = { test_score: editedTestScore };
-          break;
-        case "scheduling_date":
-          updatedData = { scheduling_date: editedSchedulingDate };
-          break;
+        switch (field) {
+          case "previous_knowledge":
+            updatedData = { previous_knowledge: editedKnowledge };
+            break;
+          case "course_workload":
+            updatedData = { course_workload: editedCourseWorkload };
+            break;
+          case "course_studied_workload":
+            updatedData = {
+              course_studied_workload: editedCourseStudiedWorkload,
+            };
+            break;
+          case "test_score":
+            updatedData = { test_score: editedTestScore };
+            break;
+          case "scheduling_date":
+            updatedData = { scheduling_date: editedSchedulingDate };
+            break;
+        }
+        response = await apiClient.patch(
+          `${baseURL}/forms/${type}/${id}/`,
+          updatedData,
+        );
       }
 
-      const body = JSON.stringify(updatedData);
-
-      const response = await apiClient.patch(
-        `${baseURL}/forms/${type}/${id}/`,
-        body,
-      );
 
       if (response.status !== 200) throw new Error("Erro ao salvar alterações");
 
@@ -361,6 +379,10 @@ const Details = () => {
     setEditedSchedulingDate(value);
   };
 
+  const onFileSelect = (e) => {
+    handleSave("test_attachment", e.files[0]);
+  };
+
   return (
     <div>
       <div className={styles.container}>
@@ -386,11 +408,33 @@ const Details = () => {
                   <Button
                     label="Cancelar solicitação"
                     icon="pi pi-times"
-                    onClick={() => createStep("CANCELED")}
+                    onClick={openCancelModal}
                     className={styles.pButtonDanger}
                   />
                 </div>
-              )}
+            )}
+            {showCancelModal && (
+              <div className={styles.modalBackdrop}>
+                <div className={styles.modalContent}>
+                  <h3>Confirmar Cancelamento</h3>
+                  <p>Você tem certeza que deseja cancelar sua solicitação?</p>
+                  <div className={styles.modalButtons}>
+                    <button
+                      className={styles.confirmButton}
+                      onClick={() => {
+                        createStep("CANCELED");
+                        closeCancelModal();
+                      }}
+                    >
+                      Sim
+                    </button>
+                    <button className={styles.cancelButton} onClick={closeCancelModal}>
+                      Não
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className={styles.analysis}>
               <h1 className={styles.center_title}>Análise do Ensino</h1>
               <div className={styles.columns}>
@@ -419,24 +463,21 @@ const Details = () => {
                     <div className={styles.attachmentsSection}>
                       <h3>Anexos</h3>
                       <ul className={styles.attachmentsList}>
-                        {details.attachments.map((attachment) => (
-                          <li
-                            key={attachment.id}
-                            className={styles.attachmentItem}
-                          >
-                            <div className={styles.attachmentItemContent}>
-                              <span>{attachment.file_name}</span>
-                              <Button
-                                icon="pi pi-download"
-                                className="p-button-text p-button-rounded"
-                                onClick={() =>
-                                  handleDownloadAttachment(attachment.id)
-                                }
-                                tooltip="Baixar Anexo"
-                              />
-                            </div>
-                          </li>
-                        ))}
+                        {details.attachments
+                          .filter((attachment) => !attachment.is_test_attachment)
+                          .map((attachment) => (
+                            <li key={attachment.id} className={styles.attachmentItem}>
+                              <div className={styles.attachmentItemContent}>
+                                <strong>{attachment.file_name}</strong>
+                                <Button
+                                  icon="pi pi-download"
+                                  className="p-button-sm p-button-outlined"
+                                  onClick={() => handleDownloadAttachment(attachment.id)}
+                                  tooltip="Visualizar Anexo"
+                                />
+                              </div>
+                            </li>
+                          ))}
                       </ul>
                     </div>
                   )}
@@ -757,6 +798,48 @@ const Details = () => {
                       </p>
                     )}
 
+                      {type === "knowledge-certifications" && (
+                        <div className={styles.info}>
+                          <strong>Prova: </strong>
+                          {details.status_display === "Em análise do Professor" && role === "Professor" ? (
+                              <>
+                                <FileUpload
+                                  name="prova"
+                                  mode="basic"
+                                  auto={false}
+                                  accept="application/pdf,image/png,image/jpeg"
+                                  maxFileSize={5000000}
+                                  label="Upload da prova"
+                                  className="p-button-sm p-button-outlined"
+                                  style={{
+                                    marginBottom: "10px",
+                                    marginTop: "5px",
+                                    border: "1px solid #ccc",
+                                    padding: "10px",
+                                    borderRadius: "10px",
+                                  }}
+                                  onSelect={(e) => onFileSelect(e)}
+                                />
+                              </>
+                          ) : (
+                            details.attachments
+                              .filter((attachment) => attachment.is_test_attachment)
+                              .map((attachment) => (
+                                <div key={attachment.id} className={styles.attachmentItem}>
+                                  <div className={styles.attachmentItemContent}>
+                                    <span>{attachment.file_name}</span>
+                                    <Button
+                                      icon="pi pi-download"
+                                      className="p-button-sm p-button-outlined"
+                                      onClick={() => handleDownloadAttachment(attachment.id)}
+                                      tooltip="Visualizar Prova"
+                                    />
+                                  </div>
+                                </div>
+                              ))
+                          )}
+                        </div>
+                      )}
                     <p className={styles.info}>
                       <strong>Parecer: </strong>
                       {professorFeedback || "Pendente"}
