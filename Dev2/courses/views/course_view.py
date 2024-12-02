@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
-from rest_framework.parsers import MultiPartParser, FormParser
 
 from users.serializers import ServantSerializer
 from ..models import Course
