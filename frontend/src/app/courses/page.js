@@ -6,7 +6,7 @@ import styles from "./course.module.css";
 import ModalCourse from "@/components/Modal/ModalCourse/modal";
 import ModalDisciplineList from "@/components/Modal/ModalCourse/disciplineList/modal";
 import { courseList } from "@/services/CourseService";
-import {useAuth} from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 const Course = () => {
   const [courses, setCourses] = useState([]);
@@ -62,10 +62,16 @@ const Course = () => {
           <tbody>
             {courses.map((course) => (
               <tr key={course.id} onClick={() => {
-                  if (user.user.type === "Ensino" || user.user.type === "Coordenador") {
-                    openModalForEdit(course);
+                  if (user.user.type === "Ensino") {
+                      openModalForEdit(course); // Ensino pode editar todos os cursos
+                    } else if (
+                      user.user.type === "Coordenador" &&
+                      course.coordinator?.id === user.user.id
+                    ) {
+                      openModalForEdit(course);
+                    }
                   }
-                }}>
+              }>
                 <td>{course.name ?? "N/A"}</td>
                 <td>
                   {course.coordinator
@@ -88,7 +94,7 @@ const Course = () => {
           </tbody>
         </table>
       </div>
-      {(user.user.type === "Ensino" || user.user.type === "Coordenador") && (
+      {(user.user.type === "Ensino") && (
         <button onClick={() => setModal(true)} className={styles.addButton}>
           <FontAwesomeIcon icon={faPlus} size="2x" />
         </button>
