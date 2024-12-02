@@ -117,7 +117,21 @@ class RetrieveCourseByIdAPIView(APIView):
 
 
 class UpdateCourseAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+    user_service = UserService()
+
+
+
     def put(self, request, course_id, *args, **kwargs):
+        usuario = request.user
+
+        if not self.user_service.userAutorized(usuario):
+            return Response(
+                {"detail": "Usuário não autorizado"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         try:
             # Busca o curso pelo ID
             course = Course.objects.get(id=course_id)
@@ -169,11 +183,9 @@ class UpdateCourseAPIView(APIView):
                 return Response(updated_course.data, status=status.HTTP_200_OK)
 
             print(serializer.errors)
-            # Retorna erro de validação
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Course.DoesNotExist:
-            # Retorna erro se o curso não for encontrado
             return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
