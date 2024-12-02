@@ -259,7 +259,7 @@ const CertificationRequestForm = () => {
         <Button type={"button"} color={"#af0a0a"} onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button type={"submit"} style={{ marginLeft: 'auto' }}>Enviar</Button>
+        <Button onClick={() => (window.location.href = `/requests`)} type={"submit"} style={{ marginLeft: 'auto' }}>Enviar</Button>
       </div>
     </form>
   );
