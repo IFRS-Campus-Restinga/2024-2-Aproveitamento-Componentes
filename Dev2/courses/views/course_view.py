@@ -71,8 +71,19 @@ class CreateCourseAPIView(APIView):
         if serializer.is_valid():
             course_data = serializer.validated_data
 
+            # Verificar coordenador
+            coordinator_id = course_data.get('coordinator_id', None).id
+            print(coordinator_id)
+            coordinator = None
+            if coordinator_id:
+                coordinator = Servant.objects.get(id=coordinator_id)
+                print(coordinator)
+
             # Cria o objeto Course e salva as relações ManyToMany de forma simplificada
-            course = Course.objects.create(name=course_data['name'])
+            course = Course.objects.create(
+                name=course_data['name'],
+                coordinator=coordinator,
+            )
 
             # Relacionamentos ManyToMany
             if 'professors' in course_data:
@@ -111,7 +122,9 @@ class UpdateCourseAPIView(APIView):
             course = Course.objects.get(id=course_id)
 
             # Serializa os dados recebidos
-            serializer = CourseSerializer(course, data=request.data, partial=True)
+            # serializer = CourseSerializer(course, data=request.data, partial=True)
+            serializer = CourseSerializer(data=request.data)
+            print(serializer.is_valid())
 
             # Verifica a validade dos dados
             if serializer.is_valid():

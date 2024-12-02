@@ -55,7 +55,7 @@ const ModalCourse = ({onClose, editData = null}) => {
             apiClient
                 .get("/users/list", {
                     params: {
-                        user_type: "Coordenador",
+                        user_type: "Coordenador" || "Professor",
                     },
                 })
                 .then((response) => {
@@ -208,13 +208,13 @@ const ModalCourse = ({onClose, editData = null}) => {
                     <div className={styles.selectedItems}>
                         {selectedProfessors.map((prof, index) => (
                             <span key={index} className={styles.selectedItem}>
-                {prof.name}
+                                {prof.name}
                                 <FontAwesomeIcon
                                     icon={faTrash}
                                     onClick={() => handleRemoveProfessor(prof)}
                                     style={{cursor: "pointer", marginLeft: "5px"}}
                                 />
-              </span>
+                            </span>
                         ))}
                     </div>
                     <select onChange={(e) => handleAddProfessors(e.target.value)}>
