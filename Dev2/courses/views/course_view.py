@@ -118,18 +118,30 @@ class RetrieveCourseByIdAPIView(APIView):
 class UpdateCourseAPIView(APIView):
     def put(self, request, course_id, *args, **kwargs):
         try:
-            # Busca o curso pelo id
+            # Busca o curso pelo ID
             course = Course.objects.get(id=course_id)
-
             # Serializa os dados recebidos
-            # serializer = CourseSerializer(course, data=request.data, partial=True)
-            serializer = CourseSerializer(data=request.data)
-            print(serializer.is_valid())
+            serializer = CourseSerializer(course, data=request.data, partial=True)
 
+            print(request.data)
             # Verifica a validade dos dados
             if serializer.is_valid():
+                # Verifica o coordenador se fornecido
+                coordinator_id = serializer.validated_data.get('coordinator_id', None)
+                if coordinator_id:
+                    # Verifica se o coordenador já está associado a outro curso
+                    if Course.objects.filter(coordinator_id=coordinator_id).exclude(id=course.id).exists():
+                        print('errooooo')
+                        return Response(
+                            {"detail": "Este coordenador já está associado a outro curso."},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                    # Atualiza o coordenador no objeto `course`
+                    course.coordinator_id = coordinator_id
+
                 # Salva o curso sem atualizar ManyToMany ainda
-                serializer.save()
+                course.name = serializer.validated_data.get('name', course.name)
+                course.save()
 
                 # Atualiza relações ManyToMany se passadas na requisição
                 professors_data = request.data.get('professors')
@@ -137,31 +149,34 @@ class UpdateCourseAPIView(APIView):
 
                 if professors_data:
                     if isinstance(professors_data, list):
-                        # Verifica se é uma lista de IDs (não objetos com campo 'id')
+                        # Verifica se é uma lista de IDs (ou objetos com campo 'id')
                         if isinstance(professors_data[0], dict):
                             professor_ids = [prof['id'] for prof in professors_data]
                         else:
-                            professor_ids = professors_data  # Caso seja uma lista de IDs
+                            professor_ids = professors_data  # Lista direta de IDs
                         course.professors.set(Servant.objects.filter(id__in=professor_ids))
 
                 if disciplines_data:
                     if isinstance(disciplines_data, list):
-                        # Verifica se é uma lista de IDs (não objetos com campo 'id')
+                        # Verifica se é uma lista de IDs (ou objetos com campo 'id')
                         if isinstance(disciplines_data[0], dict):
                             discipline_ids = [disc['id'] for disc in disciplines_data]
                         else:
-                            discipline_ids = disciplines_data  # Caso seja uma lista de IDs
+                            discipline_ids = disciplines_data  # Lista direta de IDs
                         course.disciplines.set(Disciplines.objects.filter(id__in=discipline_ids))
 
                 # Retorna o curso atualizado
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                updated_course = CourseSerializer(course)
+                return Response(updated_course.data, status=status.HTTP_200_OK)
 
+            print(serializer.errors)
             # Retorna erro de validação
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Course.DoesNotExist:
             # Retorna erro se o curso não for encontrado
             return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class DeleteCourseAPIView(APIView):

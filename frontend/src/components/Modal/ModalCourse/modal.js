@@ -12,7 +12,7 @@ const ModalCourse = ({onClose, editData = null}) => {
     const [courseName, setCourseName] = useState(editData ? editData.name : "");
     const [selectedProfessors, setSelectedProfessors] = useState(editData ? editData.professors : [],);
     const [selectedDisciplines, setSelectedDisciplines] = useState(editData ? editData.disciplines : [],);
-    const [selectedCoordinator, setSelectedCoordinator] = useState(null);
+    const [selectedCoordinator, setSelectedCoordinator] = useState(editData ? editData.coordinator_id :null);
     const [availableDisciplines, setAvailableDisciplines] = useState([]);
     const [availableProfessors, setAvailableProfessors] = useState([]);
     const [availableCoordinators, setAvailableCoordinators] = useState([]);
@@ -135,10 +135,12 @@ const ModalCourse = ({onClose, editData = null}) => {
     const handleSelectCoordinator = (coordinator) => {
         setSelectedCoordinator(Number(coordinator));
         console.log(coordinator);
+
     };
 
     const handleSubmit = async () => {
         console.log("Handle submit foi chamado");
+        console.log(selectedCoordinator)
         const courseData = {
             name: courseName,
             professors: selectedProfessors.map((prof) => prof.id), // Apenas IDs
