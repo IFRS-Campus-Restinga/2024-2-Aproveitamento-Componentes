@@ -4,6 +4,7 @@ from django.http import HttpResponse, Http404
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import RecognitionOfPriorLearning, KnowledgeCertification, RequestStatus, Attachment, Step
 from .serializers import (
@@ -128,6 +129,22 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateAPIView):
                                         status=status.HTTP_400_BAD_REQUEST)
                 else:
                     setattr(instance, field, data[field])
+        attachment_file = request.FILES.get('test_attachment')
+        if attachment_file:
+            existing_test_attachment = instance.attachments.filter(is_test_attachment=True).first()
+            if existing_test_attachment:
+                existing_test_attachment.file_name = attachment_file.name
+                existing_test_attachment.file_data = attachment_file.read()
+                existing_test_attachment.content_type = attachment_file.content_type
+                existing_test_attachment.save()
+            else:
+                Attachment.objects.create(
+                    file_name=attachment_file.name,
+                    file_data=attachment_file.read(),
+                    content_type=attachment_file.content_type,
+                    certification_form=instance,
+                    is_test_attachment=True
+                )
 
         instance.save()
 

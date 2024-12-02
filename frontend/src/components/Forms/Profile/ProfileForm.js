@@ -6,8 +6,11 @@ import { useState, useEffect } from 'react';
 import styles from './ProfileForm.module.css';
 import AuthService from '@/services/AuthService';
 import { handleApiResponse } from '@/libs/apiResponseHandler';
+import { courseList } from '@/services/CourseService';
 
 const FormProfile = ({ user = false, onCancel, admEditing = false }) => {
+    const [courses, setCourses] = useState([]);
+    const [errors, setErrors] = useState({});
     const [userData, setUserData] = useState({
         id: '',
         name: '',
@@ -35,7 +38,14 @@ const FormProfile = ({ user = false, onCancel, admEditing = false }) => {
         }
     }, []);
 
-    const submitForm = async () => {
+    const submitForm = async (e) => {
+        e.preventDefault();
+
+        // Verificar se há erros antes de enviar o formulário
+        if (errors.matricula) {
+            alert('Por favor, corrija os erros antes de enviar o formulário.');
+            return;
+        }
         let response;
         console.log('Dados enviados:', userData);
 
@@ -56,19 +66,41 @@ const FormProfile = ({ user = false, onCancel, admEditing = false }) => {
     }
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        // Validação para o campo matricula
+        if (name === 'matricula') {
+            // Verificar se contém exatamente 10 dígitos numéricos
+            const isValidMatricula = /^\d{10}$/.test(value);
+            setErrors({
+                ...errors,
+                matricula: isValidMatricula ? '' : 'A matrícula deve conter exatamente 10 números.',
+            });
+        }
+
         setUserData({
             ...userData,
             [name]: value,
         });
     };
 
-    // Options for the Dropdown components
-    const courseOptions = [
-        { label: 'ADS', value: 'ADS' },
-        { label: 'Lazer', value: 'Lazer' },
-        { label: 'Agricultura', value: 'Agricultura' },
-    ];
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+            const data = await courseList();
+            setCourses(data.courses);
+            } catch (err) {
+            console.log(err);
+            }
+        };
+        fetchCourses();
+        }, [userData.isStudent]);
+    
 
+        const courseOptions = courses.map(course => ({
+            label: course.name,
+            value: course.name,
+        }));
+    
     const servantTypeOptions = [
         { label: 'Professor', value: 'Professor' },
         { label: 'Coordenador', value: 'Coordenador' },
@@ -122,6 +154,7 @@ const filteredServantTypeOptions = shouldShowAllOptions
                             value={userData.matricula || ''}
                             onChange={handleInputChange}
                         />
+                        {errors.matricula && <small className="p-error">{errors.matricula}</small>}
                     </div>
 
                     <div className={styles.formField}>

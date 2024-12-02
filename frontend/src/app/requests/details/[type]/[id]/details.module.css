@@ -126,6 +126,7 @@
     text-align: left;
     font-size: 14pt;
     margin-bottom: 2px;
+    gap: 5px;
 }
 
 .stepper {
@@ -289,4 +290,10 @@
     transform: translateY(-50%);
     z-index: 1000;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.attachmentItemContent {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
