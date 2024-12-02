@@ -27,10 +27,8 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
     documentationDeadlineTo: formatDate(editData?.documentation_submission_end),
     proposalAnalysisFrom: formatDate(editData?.proposal_analysis_start),
     proposalAnalysisTo: formatDate(editData?.proposal_analysis_end),
-    resultPublicationFrom: formatDate(editData?.result_publication_start),
-    resultPublicationTo: formatDate(editData?.result_publication_end),
-    resultApprovalFrom: formatDate(editData?.result_homologation_start),
-    resultApprovalTo: formatDate(editData?.result_homologation_end),
+    resultPublication: formatDate(editData?.result_publication), // Único campo agora
+    resultApproval: formatDate(editData?.result_homologation), // Único campo agora
     link: editData?.link || "",
     rectifications: editData?.rectifications || [""],
   });
@@ -44,8 +42,6 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
       const dateFields = [
         ["documentationDeadlineFrom", "documentationDeadlineTo"],
         ["proposalAnalysisFrom", "proposalAnalysisTo"],
-        ["resultPublicationFrom", "resultPublicationTo"],
-        ["resultApprovalFrom", "resultApprovalTo"],
       ];
 
       dateFields.forEach(([startField, endField]) => {
@@ -64,6 +60,49 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
           }
         }
       });
+
+      if (name === "documentationDeadlineTo") {
+        const analysisTo = new Date(updatedData.proposalAnalysisTo);
+        const docTo = new Date(value);
+
+        if (analysisTo && docTo > analysisTo) {
+          updatedData.documentationDeadlineTo = updatedData.proposalAnalysisTo;
+        }
+      }
+
+      if (name === "proposalAnalysisTo") {
+        const docTo = new Date(updatedData.documentationDeadlineTo);
+        const analysisTo = new Date(value);
+
+        if (docTo && docTo > analysisTo) {
+          updatedData.documentationDeadlineTo = value;
+        }
+      }
+
+      if (name === "proposalAnalysisFrom") {
+        const docFrom = new Date(updatedData.documentationDeadlineFrom);
+        const docTo = new Date(updatedData.documentationDeadlineTo);
+        const analysisFrom = new Date(value);
+
+        if (docFrom && analysisFrom < docFrom) {
+          updatedData.proposalAnalysisFrom =
+            updatedData.documentationDeadlineFrom;
+        }
+
+        if (docTo && analysisFrom > docTo) {
+          updatedData.proposalAnalysisFrom =
+            updatedData.documentationDeadlineTo;
+        }
+      }
+
+      if (name === "documentationDeadlineFrom") {
+        const analysisFrom = new Date(updatedData.proposalAnalysisFrom);
+        const docFrom = new Date(value);
+
+        if (analysisFrom && docFrom > analysisFrom) {
+          updatedData.proposalAnalysisFrom = value;
+        }
+      }
 
       return updatedData;
     });
@@ -104,17 +143,11 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
       proposal_analysis_end: new Date(
         `${formData.proposalAnalysisTo}T17:00:00Z`
       ).toISOString(),
-      result_publication_start: new Date(
-        `${formData.resultPublicationFrom}T09:00:00Z`
+      result_publication: new Date(
+        `${formData.resultPublication}T09:00:00Z`
       ).toISOString(),
-      result_publication_end: new Date(
-        `${formData.resultPublicationTo}T17:00:00Z`
-      ).toISOString(),
-      result_homologation_start: new Date(
-        `${formData.resultApprovalFrom}T09:00:00Z`
-      ).toISOString(),
-      result_homologation_end: new Date(
-        `${formData.resultApprovalTo}T17:00:00Z`
+      result_homologation: new Date(
+        `${formData.resultApproval}T09:00:00Z`
       ).toISOString(),
       link: formData.link,
       rectifications: formData.rectifications.filter((link) => link !== ""),
@@ -142,10 +175,8 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
       "documentationDeadlineTo",
       "proposalAnalysisFrom",
       "proposalAnalysisTo",
-      "resultPublicationFrom",
-      "resultPublicationTo",
-      "resultApprovalFrom",
-      "resultApprovalTo",
+      "resultPublication",
+      "resultApproval",
       "link",
     ];
     const isValid = requiredFields.every(
@@ -169,10 +200,8 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
         "documentationDeadlineTo",
         "proposalAnalysisFrom",
         "proposalAnalysisTo",
-        "resultPublicationFrom",
-        "resultPublicationTo",
-        "resultApprovalFrom",
-        "resultApprovalTo",
+        "resultPublication",
+        "resultApproval",
         "link",
       ];
 
@@ -266,6 +295,9 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
                 fullWidth
                 error={!!fieldErrors.documentationDeadlineFrom}
                 helperText={fieldErrors.documentationDeadlineFrom}
+                inputProps={{
+                  max: formData.documentationDeadlineTo || undefined,
+                }}
               />
               <label>Até</label>
               <TextField
@@ -279,6 +311,7 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
                 helperText={fieldErrors.documentationDeadlineTo}
                 inputProps={{
                   min: formData.documentationDeadlineFrom || undefined,
+                  max: formData.proposalAnalysisTo || undefined,
                 }}
               />
             </div>
@@ -296,6 +329,10 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
                 fullWidth
                 error={!!fieldErrors.proposalAnalysisFrom}
                 helperText={fieldErrors.proposalAnalysisFrom}
+                inputProps={{
+                  max: formData.proposalAnalysisTo || undefined,
+                  min: formData.documentationDeadlineFrom || undefined
+                }}
               />
               <label>Até</label>
               <TextField
@@ -311,63 +348,33 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
               />
             </div>
             <label style={{ fontWeight: "700", fontSize: "20px" }}>
-              Publicação do Resultado *
-            </label>
-            <div className={styles.dateRange}>
-              <label>De</label>
-              <TextField
-                type="date"
-                name="resultPublicationFrom"
-                value={formData.resultPublicationFrom}
-                onChange={handleChange}
-                className={styles.textInput}
-                fullWidth
-                error={!!fieldErrors.resultPublicationFrom}
-                helperText={fieldErrors.resultPublicationFrom}
-              />
-              <label>Até</label>
-              <TextField
-                type="date"
-                name="resultPublicationTo"
-                value={formData.resultPublicationTo}
-                onChange={handleChange}
-                className={styles.textInput}
-                fullWidth
-                error={!!fieldErrors.resultPublicationTo}
-                helperText={fieldErrors.resultPublicationTo}
-                inputProps={{
-                  min: formData.resultPublicationFrom || undefined,
-                }}
-              />
-            </div>
-            <label style={{ fontWeight: "700", fontSize: "20px" }}>
               Homologação do Resultado *
             </label>
-            <div className={styles.dateRange}>
-              <label>De</label>
-              <TextField
-                type="date"
-                name="resultApprovalFrom"
-                value={formData.resultApprovalFrom}
-                onChange={handleChange}
-                className={styles.textInput}
-                fullWidth
-                error={!!fieldErrors.resultApprovalFrom}
-                helperText={fieldErrors.resultApprovalFrom}
-              />
-              <label>Até</label>
-              <TextField
-                type="date"
-                name="resultApprovalTo"
-                value={formData.resultApprovalTo}
-                onChange={handleChange}
-                className={styles.textInput}
-                fullWidth
-                error={!!fieldErrors.resultApprovalTo}
-                helperText={fieldErrors.resultApprovalTo}
-                inputProps={{ min: formData.resultApprovalFrom || undefined }}
-              />
-            </div>
+            <TextField
+              type="date"
+              name="resultApproval"
+              value={formData.resultApproval}
+              onChange={handleChange}
+              className={styles.textInput}
+              style={{ width: "50%" }}
+              fullWidth
+              error={!!fieldErrors.resultApproval}
+              helperText={fieldErrors.resultApproval}
+            />
+            <label style={{ fontWeight: "700", fontSize: "20px" }}>
+              Publicação do Resultado *
+            </label>
+            <TextField
+              type="date"
+              name="resultPublication"
+              value={formData.resultPublication}
+              onChange={handleChange}
+              className={styles.textInput}
+              style={{ width: "50%" }}
+              fullWidth
+              error={!!fieldErrors.resultPublication}
+              helperText={fieldErrors.resultPublication}
+            />
           </div>
           <div className={styles.modalSectionLinks}>
             <label style={{ fontWeight: "700", fontSize: "20px" }}>

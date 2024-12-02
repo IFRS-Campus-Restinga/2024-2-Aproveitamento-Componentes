@@ -82,8 +82,13 @@ const NavBar = ({ data = false }) => {
   //função para ambiente de dev
   const menuAuthDev = () => (
     <>
-      <div className="px-3">
-        Bem vindo, <b>{user?.name || "Usuário"}</b>
+      <div className="px-3" style={{ display: "flex", flexDirection: "column" }}>
+        <span>
+          Bem vindo, <b>{user?.name || "Usuário"}</b>
+        </span>
+        <strong style={{ textAlign: "center" }}>
+          {user?.type || "Tipo de Usuário"}
+        </strong>
       </div>
       <div className="px-2">
         <MenuIcon
@@ -139,7 +144,7 @@ const NavBar = ({ data = false }) => {
         >
           Editais
         </li>
-        {user.type === "Estudante"  && (
+        {user.type === "Estudante" && (
           <li
             onClick={() => (window.location.href = `/requests/requestForm`)}
             className={path === "/requests/requestForm" ? styles.active : ""}
