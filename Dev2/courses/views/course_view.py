@@ -32,6 +32,7 @@ class ListCoursesAPIView(APIView):
 
         return Response({'courses': courses_serialized.data})
 
+
 class SearchCourseByNameAPIView(APIView):
     def get(self, request, *args, **kwargs):
         name = request.GET.get('name')
@@ -198,7 +199,6 @@ class UpdateCourseAPIView(APIView):
             return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
-
 class DeleteCourseAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -222,6 +222,7 @@ class DeleteCourseAPIView(APIView):
         except Course.DoesNotExist:
             # Retorna erro caso o curso não seja encontrado
             return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
 class CourseProfessorsView(APIView):
     permission_classes = [IsAuthenticated]
