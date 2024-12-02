@@ -1,32 +1,29 @@
 .modalBackground {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: static; /* Permite que o conteúdo flua normalmente */
+  background-color: transparent; /* Remove o fundo escuro */
+  display: block; /* Garante que o conteúdo seja exibido */
+  justify-content: unset; /* Remove a centralização */
+  align-items: unset; /* Remove a centralização */
 }
 
 .modalContainer {
   background: #fff;
   padding: 30px;
-  width: 90%; /* Aumente a largura para 90% da tela */
-  max-width: 1400px; /* Aumente a largura máxima para 1400px */
-  min-width: 800px; /* Defina uma largura mínima maior, se necessário */
+  width: 100%; /* Faz com que ocupe a largura total */
+  max-width: 1400px;
+  min-width: 800px;
   border-radius: 12px;
-  max-height: 800px; /* Define uma altura máxima */
-  height: auto; /* Permite que o conteúdo defina a altura até o limite */
-  overflow-y: auto; /* Ativa a rolagem vertical se o conteúdo ultrapassar a altura */
+  max-height: none; /* Permite que a altura seja definida pelo conteúdo */
+  height: auto;
+  overflow-y: visible; /* Remove a rolagem vertical */
+  margin: 20px auto; /* Centraliza horizontalmente com espaçamento superior */
 }
 
 .topSection {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%; /* Para garantir que ocupe toda a largura disponível */
+  width: 100%;
   margin-bottom: 20px;
   gap: 10px;
 }
