@@ -61,7 +61,11 @@ const Course = () => {
           </thead>
           <tbody>
             {courses.map((course) => (
-              <tr key={course.id} onClick={() => openModalForEdit(course)}>
+              <tr key={course.id} onClick={() => {
+                  if (user.user.type === "Ensino" || user.user.type === "Coordenador") {
+                    openModalForEdit(course);
+                  }
+                }}>
                 <td>{course.name ?? "N/A"}</td>
                 <td>
                   {course.coordinator
@@ -84,9 +88,11 @@ const Course = () => {
           </tbody>
         </table>
       </div>
-      <button onClick={() => setModal(true)} className={styles.addButton}>
-        <FontAwesomeIcon icon={faPlus} size="2x" />
-      </button>
+      {(user.user.type === "Ensino" || user.user.type === "Coordenador") && (
+        <button onClick={() => setModal(true)} className={styles.addButton}>
+          <FontAwesomeIcon icon={faPlus} size="2x" />
+        </button>
+      )}
       {modal && <ModalCourse onClose={closeModal} editData={editData} />}
       {disciplineModal && (
         <ModalDisciplineList
