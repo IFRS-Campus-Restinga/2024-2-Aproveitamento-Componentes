@@ -38,10 +38,7 @@ const FormProfile = ({ user = false, onCancel, admEditing = false }) => {
         }
     }, []);
 
-    const submitForm = async (e) => {
-        e.preventDefault();
-
-        // Verificar se há erros antes de enviar o formulário
+    const submitForm = async () => {
         if (errors.matricula) {
             alert('Por favor, corrija os erros antes de enviar o formulário.');
             return;

@@ -47,11 +47,11 @@ const Home = () => {
           ]);
         }
 
-        const knowledgeCertifications = kcResponse.data.map((item) => ({
+        const knowledgeCertifications = kcResponse.data.results.map((item) => ({
           ...item,
           type: "knowledge",
         }));
-        const recognitionOfPriorLearning = rplResponse.data.map((item) => ({
+        const recognitionOfPriorLearning = rplResponse.data.results.map((item) => ({
           ...item,
           type: "recognition",
         }));
