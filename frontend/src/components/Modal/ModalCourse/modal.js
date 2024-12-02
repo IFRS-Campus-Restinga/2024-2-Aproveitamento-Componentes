@@ -140,7 +140,6 @@ const ModalCourse = ({onClose, editData = null}) => {
 
     const handleSubmit = async () => {
         console.log("Handle submit foi chamado");
-        console.log(selectedCoordinator)
         const courseData = {
             name: courseName,
             professors: selectedProfessors.map((prof) => prof.id), // Apenas IDs

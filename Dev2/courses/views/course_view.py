@@ -70,14 +70,14 @@ class CreateCourseAPIView(APIView):
 
         if serializer.is_valid():
             course_data = serializer.validated_data
-
-            # Verificar coordenador
-            coordinator_id = course_data.get('coordinator_id', None).id
-            print(coordinator_id)
             coordinator = None
-            if coordinator_id:
-                coordinator = Servant.objects.get(id=coordinator_id)
-                print(coordinator)
+
+            if course_data.get('coordinator_id', None) is not None:
+                # Verificar coordenador
+                coordinator_id = course_data.get('coordinator_id', None).id
+
+                if coordinator_id:
+                    coordinator = Servant.objects.get(id=coordinator_id)
 
             # Cria o objeto Course e salva as relações ManyToMany de forma simplificada
             course = Course.objects.create(
@@ -96,6 +96,7 @@ class CreateCourseAPIView(APIView):
             response_serializer = CourseSerializer(course)
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
+        print(serializer.errors)
         # Retorna erro de validação
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -123,7 +124,6 @@ class UpdateCourseAPIView(APIView):
             # Serializa os dados recebidos
             serializer = CourseSerializer(course, data=request.data, partial=True)
 
-            print(request.data)
             # Verifica a validade dos dados
             if serializer.is_valid():
                 # Verifica o coordenador se fornecido
@@ -131,7 +131,6 @@ class UpdateCourseAPIView(APIView):
                 if coordinator_id:
                     # Verifica se o coordenador já está associado a outro curso
                     if Course.objects.filter(coordinator_id=coordinator_id).exclude(id=course.id).exists():
-                        print('errooooo')
                         return Response(
                             {"detail": "Este coordenador já está associado a outro curso."},
                             status=status.HTTP_400_BAD_REQUEST,
