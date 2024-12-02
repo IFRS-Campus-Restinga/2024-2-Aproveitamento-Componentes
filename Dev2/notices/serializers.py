@@ -15,8 +15,7 @@ class NoticeSerializer(serializers.ModelSerializer):
             'id', 'number', 'publication_date',
             'documentation_submission_start', 'documentation_submission_end',
             'proposal_analysis_start', 'proposal_analysis_end',
-            'result_publication_start', 'result_publication_end',
-            'result_homologation_start', 'result_homologation_end',
+            'result_publication', 'result_homologation',
             'link', 'rectifications', 'extra_fields'
         ]
 

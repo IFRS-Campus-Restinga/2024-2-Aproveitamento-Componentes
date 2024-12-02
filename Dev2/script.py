@@ -100,10 +100,8 @@ notice = Notice.objects.create(
     documentation_submission_end="2023-10-10T17:00:00Z",
     proposal_analysis_start="2023-10-11T09:00:00Z",
     proposal_analysis_end="2023-10-20T17:00:00Z",
-    result_publication_start="2023-10-21T09:00:00Z",
-    result_publication_end="2023-10-22T17:00:00Z",
-    result_homologation_start="2023-10-23T09:00:00Z",
-    result_homologation_end="2023-10-25T17:00:00Z",
+    result_publication="2023-10-21T09:00:00Z",
+    result_homologation="2023-10-23T09:00:00Z",
     link="https://dev2.com"
 )
 
