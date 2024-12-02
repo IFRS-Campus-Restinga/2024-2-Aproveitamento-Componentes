@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import styles from "./requestForm.module.css";
 import { Button } from "@/components/Button/button";
 import { baseURL } from "@/libs/api";
-import { noticeList } from "@/services/NoticeService";
+import { noticeList, noticeListAll } from "@/services/NoticeService";
 import { FileUpload } from "primereact/fileupload";
 import RequestService from "@/services/RequestService";
 import { courseList } from "@/services/CourseService";
@@ -52,8 +52,9 @@ const CertificationRequestForm = () => {
   useEffect(() => {
     const fetchNotices = async () => {
       try {
-        const noticeData = await noticeList();
-        setNotices(noticeData);
+        const noticeData = await noticeListAll();
+        console.log(noticeData)
+        setNotices(noticeData.results);
       } catch (error) {
         console.error("Erro ao buscar notices:", error);
       }
