@@ -102,7 +102,19 @@ class CreateCourseAPIView(APIView):
 
 
 class RetrieveCourseByIdAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+    user_service = UserService()
+
     def get(self, request, course_id, *args, **kwargs):
+        usuario = request.user
+
+        if not self.user_service.userAutorized(usuario):
+            return Response(
+                {"detail": "Usuário não autorizado"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         try:
             # Busca o curso pelo id
             course = Course.objects.get(id=course_id)
