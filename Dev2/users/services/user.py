@@ -82,3 +82,14 @@ class UserService:
         except Servant.DoesNotExist:
             pass
         return user_autorized
+
+    def userAutorizedEnsino(self, user):
+
+        user_autorized = False
+        try:
+            staff = Servant.objects.get(user=user)
+            if staff.servant_type == "Ensino" and (staff.is_verified):
+                user_autorized = True
+        except Servant.DoesNotExist:
+            pass
+        return user_autorized
