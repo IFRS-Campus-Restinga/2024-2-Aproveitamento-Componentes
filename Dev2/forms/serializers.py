@@ -196,6 +196,22 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
         if latest_step:
             return latest_step.get_status_display()
         return "Status não disponível"
+    
+    
+    def validate(self, data):
+        # Verifica se existe um Notice (edital) aberto
+        current_date = timezone.now()
+        notice = Notice.objects.filter(documentation_submission_start__lte=current_date, 
+        documentation_submission_end__gte=current_date).first()
+
+        if not notice:
+            raise serializers.ValidationError("Não há edital aberto no momento.")
+
+        # Se o Notice existe, verifica se a data está dentro do período permitido
+        if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
+            raise serializers.ValidationError(f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
+
+        return data
 
     def create(self, validated_data):
         attachments_files = self.context['request'].FILES.getlist('attachment')
@@ -253,6 +269,21 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
         if latest_step:
             return latest_step.get_status_display()
         return "Status não disponível"
+    
+    def validate(self, data):
+        # Verifica se existe um Notice (edital) aberto
+        current_date = timezone.now()
+        notice = Notice.objects.filter(documentation_submission_start__lte=current_date, 
+        documentation_submission_end__gte=current_date).first()
+
+        if not notice:
+            raise serializers.ValidationError("Não há edital aberto no momento.")
+
+        # Se o Notice existe, verifica se a data está dentro do período permitido
+        if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
+            raise serializers.ValidationError(f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
+
+        return data
 
     def create(self, validated_data):
         attachments_files = self.context['request'].FILES.getlist('attachment')

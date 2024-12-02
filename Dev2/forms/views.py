@@ -11,7 +11,22 @@ from .serializers import (
 )
 from django.http import HttpResponse, Http404
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import Notice
 
+def check_notice_open(request):
+    # Obtém a data atual do servidor
+    current_date = timezone.now()
+
+    # Filtra o edital baseado nas datas de início e fim de submissão
+    notice = Notice.objects.filter(
+        documentation_submission_start__lte=current_date,  # A data de início é menor ou igual à data atual
+        documentation_submission_end__gte=current_date   # A data de fim é maior ou igual à data atual
+    ).first()
+
+    # Se encontrar um edital aberto, retorna True, caso contrário, False
+    return JsonResponse({'isNoticeOpen': bool(notice)})
 
 class StepCreateView(generics.CreateAPIView):
     queryset = Step.objects.all()

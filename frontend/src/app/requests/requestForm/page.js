@@ -147,26 +147,31 @@ const CertificationRequestForm = () => {
       </div>
       <div className={styles.typeContainer}>
         <label className={styles.textForm}>Edital</label>
-        <select
-          value={selectedNotice}
-          onChange={(e) => setSelectedNotice(e.target.value)}
-          className={styles.selectForm}
-          required
-        >
-          <option value="">Selecione um edital</option>
+        <div>
           {notices
+            .filter(
+              (notice) =>
+                new Date(notice.documentation_submission_start) <= new Date() && new Date(notice.documentation_submission_end) >= new Date()
+            )
             .sort(
               (a, b) =>
-                new Date(b.publication_date) - new Date(a.publication_date)
+                new Date(b.documentation_submission_start) - new Date(a.documentation_submission_start) // Ordenação com base na data de início
             )
-            .slice(0, 1)
+            .slice(0, 1) // Pega o edital vigente
             .map((notice) => (
-              <option key={notice.id} value={notice.id}>
-                {notice.number} -{" "}
-                {new Date(notice.publication_date).toLocaleDateString()}
-              </option>
+              <span key={notice.id}>
+                {notice.number} - {new Date(notice.documentation_submission_start).toLocaleDateString()} a {new Date(notice.documentation_submission_end).toLocaleDateString()}
+              </span>
             ))}
-        </select>
+          
+          {/* Mensagem quando não há edital vigente */}
+          {notices.filter(
+              (notice) =>
+                new Date(notice.documentation_submission_start) <= new Date() && new Date(notice.documentation_submission_end) >= new Date()
+            ).length === 0 && (
+              <span>Não há editais abertos</span>
+            )}
+        </div>
       </div>
       <div className={styles.typeContainer}>
         <label className={styles.textForm}>Curso</label>

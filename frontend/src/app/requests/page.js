@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import styles from "./requests.module.css";
 import RequestService from "@/services/RequestService";
+import { checkIfNoticeIsOpen } from "@/services/RequestService";
 import {useAuth} from "@/context/AuthContext";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -79,6 +80,18 @@ const Requests = () => {
 
     if (loading) return <div>Carregando...</div>;
     if (error) return <div>Erro: {error}</div>;
+
+    const handleRequestFormRedirect = async () => {
+        const isNoticeOpen = await checkIfNoticeIsOpen(); // Verifica se o edital está aberto
+    
+        if (isNoticeOpen) {
+            // Se o edital estiver aberto, redireciona para o formulário
+            window.location.href = "/requests/requestForm";
+        } else {
+            // Caso contrário, exibe uma mensagem informando que o edital está fechado
+            alert("Não há edital aberto no momento, aguarde.");
+        }
+    };
 
     return (
         <div className={styles.contentWrapper}>
@@ -168,7 +181,7 @@ const Requests = () => {
                 </table>
             </div>
             <div>
-                <button onClick={() => window.location.href = `/requests/requestForm`} className={styles.addButton}>
+                <button onClick={handleRequestFormRedirect} className={styles.addButton}>
                     <FontAwesomeIcon icon={faPlus} size="2x"/>
                 </button>
             </div>
