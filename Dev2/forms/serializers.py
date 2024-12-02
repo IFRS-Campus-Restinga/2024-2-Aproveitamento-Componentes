@@ -147,7 +147,7 @@ class StepSerializer(serializers.ModelSerializer):
 class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attachment
-        fields = ['id', 'file_name', 'content_type', 'certification_form', 'recognition_form']
+        fields = ['id', 'file_name', 'content_type', 'certification_form', 'recognition_form', 'is_test_attachment']
 
     def create(self, validated_data):
         file = validated_data.pop('file')

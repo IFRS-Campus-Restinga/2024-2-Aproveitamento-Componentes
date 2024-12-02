@@ -110,6 +110,7 @@ class Attachment(models.Model):
     file_name = models.CharField(max_length=255)
     file_data = models.BinaryField()
     content_type = models.CharField(max_length=50)
+    is_test_attachment = models.BooleanField(default=False)
     recognition_form = models.ForeignKey(
         'RecognitionOfPriorLearning',
         related_name='attachments',
