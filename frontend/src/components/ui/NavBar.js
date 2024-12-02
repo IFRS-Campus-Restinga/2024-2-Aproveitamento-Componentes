@@ -167,7 +167,12 @@ const NavBar = ({ data = false }) => {
                   >
                     Usuários
                   </li>
-                  <li>Cadastrar Disciplina</li>
+                  <li
+                      onClick={() => (window.location.href = `/discipline`)}
+                      className={path === "/discipline" ? styles.active : ""}
+                  >
+                    Cadastrar Disciplina
+                  </li>
                 </>
             )}
       </ul>
