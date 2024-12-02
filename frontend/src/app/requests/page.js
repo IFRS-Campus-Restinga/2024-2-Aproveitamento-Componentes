@@ -27,11 +27,11 @@ const Requests = () => {
                     RequestService.GetRecognitionOfPriorLearning(),
                 ]);
 
-                const knowledgeCertifications = kcResponse.data.map((item) => ({
+                const knowledgeCertifications = kcResponse.data.results.map((item) => ({
                     ...item,
                     type: "knowledge",
                 }));
-                const recognitionOfPriorLearning = rplResponse.data.map((item) => ({
+                const recognitionOfPriorLearning = rplResponse.data.results.map((item) => ({
                     ...item,
                     type: "recognition",
                 }));
@@ -39,7 +39,7 @@ const Requests = () => {
                 const merged = [...knowledgeCertifications, ...recognitionOfPriorLearning];
 
                 merged.sort((a, b) => new Date(b.create_date) - new Date(a.create_date));
-
+                console.log(merged)
                 setMergedRequests(merged);
                 setLoading(false);
             } catch (error) {

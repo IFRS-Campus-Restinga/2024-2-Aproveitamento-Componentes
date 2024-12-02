@@ -84,65 +84,53 @@ const Home = () => {
 
   return (
     <div className={styles.homeContainer}>
-      {(user.type === "Estudante" || user.type === "Professor") ? (
-        <>
-          {mergedRequests.length !== 0 ? (
-            <div className={styles.requestInfoContainer}>
-              <h2 style={{ whiteSpace: "nowrap" }}>Solicitações</h2>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Disciplina</th>
-                    <th>Status</th>
-                    <th>Data de Criação</th>
-                    <th>Tipo</th>
-                    <th>Ações</th>
+      <>
+        {mergedRequests.length !== 0 ? (
+          <div className={styles.requestInfoContainer}>
+            <h2 style={{ whiteSpace: "nowrap" }}>Solicitações</h2>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Disciplina</th>
+                  <th>Status</th>
+                  <th>Data de Criação</th>
+                  <th>Tipo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mergedRequests.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.discipline_name || "-"}</td>
+                    <td>{item.status_display || "-"}</td>
+                    <td>
+                      {new Date(item.create_date).toLocaleDateString("pt-BR")}
+                    </td>
+                    <td>
+                      {item.type === "knowledge"
+                        ? "Certificação de Conhecimento"
+                        : "Aproveitamento de Estudos"}
+                    </td>
+                    <td>
+                      <button
+                        className={styles.button}
+                        onClick={() => handleDetailsClick(item)}
+                      >
+                        Detalhes
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {mergedRequests.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.discipline_name || "-"}</td>
-                      <td>{item.status_display || "-"}</td>
-                      <td>
-                        {new Date(item.create_date).toLocaleDateString("pt-BR")}
-                      </td>
-                      <td>
-                        {item.type === "knowledge"
-                          ? "Certificação de Conhecimento"
-                          : "Aproveitamento de Estudos"}
-                      </td>
-                      <td>
-                        <button
-                          className={styles.button}
-                          onClick={() => handleDetailsClick(item)}
-                        >
-                          Detalhes
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className={styles.requestInfoContainer}>
-              <h3 style={{ opacity: "0.5" }}>Você não tem solicitações</h3>
-            </div>
-          )}
-        </>
-      ) : (
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Requests />
-        </div>
-      )}
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className={styles.requestInfoContainer}>
+            <h3 style={{ opacity: "0.5" }}>Você não tem solicitações</h3>
+          </div>
+        )}
+      </>
+
       {toast ? (
         <Toast type={toastMessage.type} close={closeToast}>
           {toastMessage.text}
