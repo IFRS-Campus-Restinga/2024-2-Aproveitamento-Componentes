@@ -4,17 +4,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from users.serializers import ServantSerializer
 from ..models import Course
 from ..serializers.CourseSerializer import CourseSerializer
 from disciplines.models import Disciplines
 from users.models import Servant
-
+from users.services.user import UserService
 
 class ListCoursesAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
+
         course_name = request.GET.get('course_name')
 
         courses_filter = Q()
@@ -30,7 +32,6 @@ class ListCoursesAPIView(APIView):
         courses_serialized = CourseSerializer(courses, many=True)
 
         return Response({'courses': courses_serialized.data})
-
 
 class SearchCourseByNameAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -53,10 +54,20 @@ class SearchCourseByNameAPIView(APIView):
 
 
 class CreateCourseAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+    user_service = UserService()
+
     def post(self, request, *args, **kwargs):
         serializer = CourseSerializer(data=request.data)
+        usuario = request.user
 
-        # Valida os dados
+        if not self.user_service.userAutorized(usuario):
+            return Response(
+                {"detail": "Usuário não autorizado"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         if serializer.is_valid():
             course_data = serializer.validated_data
 
