@@ -62,7 +62,7 @@ class CreateCourseAPIView(APIView):
         serializer = CourseSerializer(data=request.data)
         usuario = request.user
 
-        if not self.user_service.userAutorized(usuario):
+        if not self.user_service.userAutorizedEnsino(usuario):
             return Response(
                 {"detail": "Usuário não autorizado"},
                 status=status.HTTP_403_FORBIDDEN
@@ -207,7 +207,7 @@ class DeleteCourseAPIView(APIView):
     def delete(self, request, course_id, *args, **kwargs):
         usuario = request.user
 
-        if not self.user_service.userAutorized(usuario):
+        if not self.user_service.userAutorizedEnsino(usuario):
             return Response(
                 {"detail": "Usuário não autorizado"},
                 status=status.HTTP_403_FORBIDDEN
