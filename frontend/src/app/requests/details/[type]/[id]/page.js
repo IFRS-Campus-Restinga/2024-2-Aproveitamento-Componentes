@@ -72,6 +72,8 @@ const Details = () => {
   const type = segments.at(-2);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState("pending");
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
 
   const fetchDetails = async () => {
     try {
@@ -173,6 +175,10 @@ const Details = () => {
       setError(error.message);
     }
   };
+
+  const openCancelModal = () => setShowCancelModal(true);
+  const closeCancelModal = () => setShowCancelModal(false);
+
 
   const handleSelectedProfessor = async (prof) => {
     setSelectedProfessor(prof);
@@ -386,11 +392,33 @@ const Details = () => {
                   <Button
                     label="Cancelar solicitação"
                     icon="pi pi-times"
-                    onClick={() => createStep("CANCELED")}
+                    onClick={openCancelModal}
                     className={styles.pButtonDanger}
                   />
                 </div>
-              )}
+            )}
+            {showCancelModal && (
+              <div className={styles.modalBackdrop}>
+                <div className={styles.modalContent}>
+                  <h3>Confirmar Cancelamento</h3>
+                  <p>Você tem certeza que deseja cancelar sua solicitação?</p>
+                  <div className={styles.modalButtons}>
+                    <button
+                      className={styles.confirmButton}
+                      onClick={() => {
+                        createStep("CANCELED");
+                        closeCancelModal();
+                      }}
+                    >
+                      Sim
+                    </button>
+                    <button className={styles.cancelButton} onClick={closeCancelModal}>
+                      Não
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className={styles.analysis}>
               <h1 className={styles.center_title}>Análise do Ensino</h1>
               <div className={styles.columns}>
