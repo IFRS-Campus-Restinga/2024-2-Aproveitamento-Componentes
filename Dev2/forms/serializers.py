@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from courses.models import Course
+from notices.models import Notice
 from users.models import Servant, AbstractUser
 from users.models import Student
 from users.serializers import ServantSerializer
@@ -86,24 +87,22 @@ class StepSerializer(serializers.ModelSerializer):
             data['responsible_id'] = responsible.id if responsible else None
 
         # Sem condições especiais, quem fez a requisição ficará responsável pelo step
-        else:
-            data['responsible_id'] = user_id
+        elif status == RequestStatus.CANCELED:
+            data['responsible_id'] = None
 
         # Verifica se o usuário que fez a requisição é servidor ou aluno
         servant = Servant.objects.filter(id=user_id).first()
         student = Student.objects.filter(id=user_id).first()
-        user_role = servant.servant_type if servant else 'Aluno'
+        if servant:
+            user_role = servant.servant_type
+        else:
+            user_role = 'Aluno'
+
         print("Cargo do usuário: " + user_role)
 
         # Valida o tipo do usuário
         if not servant and not student:
             raise serializers.ValidationError("Erro ao identificar o tipo de usuário")
-
-        # TODO Mover validações para o patch de forms
-        # if user_role != 'Professor' and data.get('test_score'):
-        #     raise serializers.ValidationError("Apenas o professor pode alterar a nota")
-        # if user_role != 'Professor' and data.get('scheduling_date'):
-        #     raise serializers.ValidationError("Apenas o professor pode agendar a prova")
 
         # Valida se a solicitação foi finalizada, não podendo mais ser alterada
         if current_status in FAILED_STATUS or current_status == RequestStatus.APPROVED_BY_CRE:

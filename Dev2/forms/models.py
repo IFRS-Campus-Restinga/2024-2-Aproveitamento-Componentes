@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 
 from notices.models import Notice
-from users.models.servant import Servant
+from users.models import Servant
 
 
 # Enum para status da requisição
