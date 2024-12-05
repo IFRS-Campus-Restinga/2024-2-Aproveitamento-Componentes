@@ -30,6 +30,16 @@ async function GetRecognitionOfPriorLearningById(id) {
     return apiClient.get(`/forms/recognition-forms/?student=${id}`)
 }
 
+export async function checkIfNoticeIsOpen() {
+    try {
+        const response = await apiClient.get('/forms/check-notice-open/');
+        return response.data.isNoticeOpen;
+    } catch (error) {
+        console.error("Erro ao verificar o edital:", error);
+        return false;
+    }
+}
+
 export default {
     CreateKnowledgeCertification,
     CreateRecognitionForm,
@@ -37,5 +47,6 @@ export default {
     GetRecognitionOfPriorLearning,
     GetKnowledgeCertifications,
     GetKnowledgeCertificationsById,
-    GetRecognitionOfPriorLearningById
+    GetRecognitionOfPriorLearningById,
+    checkIfNoticeIsOpen
 }

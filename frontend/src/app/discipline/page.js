@@ -1,11 +1,12 @@
+"use client";
 import { useEffect, useState } from "react";
 import styles from "./modalDiscipline.module.css";
-import { Button } from "../../Button/button";
+import { Button } from "../../components/Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash, faEye, faArrowLeft, faSearch} from "@fortawesome/free-solid-svg-icons";
 import DisciplineService from "@/services/DisciplineService";
 
-const Discipline = ({ onClose, goBack }) => {
+const ModalDisciplineRegistration = ({ onClose, goBack }) => {
   const [disciplineList, setDisciplineList] = useState([]); 
   const [filteredDisciplineList, setFilteredDisciplineList] = useState([]);
   const [newDiscipline, setNewDiscipline] = useState({
@@ -127,6 +128,11 @@ const Discipline = ({ onClose, goBack }) => {
     setFilteredDisciplineList(filteredList);
   };
 
+  const handleGoBack = () => {
+    console.log("Botão Voltar clicado");
+    window.history.back(); // Função para voltar à página anterior
+  };
+
   return (
     <div className={styles.modalBackground}>
       <div className={styles.modalContainer}>
@@ -145,6 +151,9 @@ const Discipline = ({ onClose, goBack }) => {
           </div>
           <Button type="button" onClick={() => setIsFormVisible(true)} className={styles.registerButton}>
             Cadastrar
+          </Button>
+          <Button type="button" onClick={handleGoBack} className={styles.backButton}>
+            <FontAwesomeIcon icon={faArrowLeft} /> Sair
           </Button>
         </div>
 
@@ -258,4 +267,4 @@ const Discipline = ({ onClose, goBack }) => {
   );
 };
 
-export default Discipline;
+export default ModalDisciplineRegistration;

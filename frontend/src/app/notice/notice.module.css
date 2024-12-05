@@ -46,7 +46,7 @@
   font-size: 16px;
   color: grey;
   pointer-events: none; /* Torna o ícone "clicável" apenas no campo de texto */
-} 
+}
 
 .clearButton {
   background-color: #046708;
@@ -60,15 +60,15 @@
   background-color: #046708;
 }
 
-.scrollableTable {
-  height: 500px;
-  overflow-y: auto;
-  padding: 0;
-  width: 90%;
+.tableWrapper {
+  height: fit-content;
+  padding: 16px;
+  width: 100%;
 }
 
 .table {
   border: 3px solid #000;
+  border-radius: 15px;
   border-collapse: collapse;
   width: 100%;
 }
@@ -114,4 +114,93 @@
 
 .addButton:hover {
   color: white;
+}
+
+.paginationContainer {
+  margin-top: 32px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+
+  & button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    max-height: 50px;
+    max-width: 200px;
+    border: 0px solid;
+    border-radius: 15px;
+    color: white;
+    font-size: 15px;
+  }
+}
+
+
+.noticeInfoContainer {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 8px 8px 15px;
+  gap: 25px;
+  border: 1px solid rgb(122, 122, 122);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  height: fit-content;
+}
+
+.infoTitle {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  & span {
+    padding: 8px;
+    border: 1px solid rgb(131, 131, 131);
+    border-radius: 15px;
+    height: fit-content;
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  & div {
+    display: flex;
+    width: 100%;
+
+    & strong {
+      width: 20%;;
+    }
+
+    & span {
+      width: 80%;;
+    }
+  }
+}
+
+.otherNotices {
+  width: 100%;
+  display: flex;
+  flex-flow: wrap;
+  padding: 8px 8px 8px 15px;
+  gap: 25px;
+  border: 1px solid rgb(122, 122, 122);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  height: fit-content;
+}
+
+.otherNotice {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 8px 8px 15px;
+  gap: 25px;
+  border: 1px solid rgb(122, 122, 122);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  height: fit-content;
 }

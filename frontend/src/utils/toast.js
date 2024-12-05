@@ -1,6 +1,7 @@
 import styles from "./toast.module.css";
+import CloseIcon from '@mui/icons-material/Close';
 
-const Toast = ({ type = "info", children }) => {
+const Toast = ({ type = "info", children, close }) => {
   const backgroundColors = {
     success: "#4caf50", // Verde
     error: "#f44336",   // Vermelho
@@ -13,6 +14,7 @@ const Toast = ({ type = "info", children }) => {
       className={styles.toastContainer}
       style={{ backgroundColor: backgroundColors[type] || "#2196f3" }}
     >
+      <CloseIcon onClick={close} cursor="pointer"/>
       {children}
     </div>
   );

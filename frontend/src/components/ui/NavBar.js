@@ -82,8 +82,13 @@ const NavBar = ({ data = false }) => {
   //função para ambiente de dev
   const menuAuthDev = () => (
     <>
-      <div className="px-3">
-        Bem vindo, <b>{user?.name || "Usuário"}</b>
+      <div className="px-3" style={{ display: "flex", flexDirection: "column" }}>
+        <span>
+          Bem vindo, <b>{user?.name || "Usuário"}</b>
+        </span>
+        <strong style={{ textAlign: "center" }}>
+          {user?.type || "Tipo de Usuário"}
+        </strong>
       </div>
       <div className="px-2">
         <MenuIcon
@@ -120,45 +125,56 @@ const NavBar = ({ data = false }) => {
 
   const navOptions = () => (
     <>
-      <ul className={styles.navBarOptions} style={{ listStyle: "none" }}>
+      <ul className={styles.navBarOptions} style={{listStyle: "none"}}>
         <li
-          onClick={() => (window.location.href = `/home`)}
-          className={path === "/home" ? styles.active : ""}
+            onClick={() => (window.location.href = `/home`)}
+            className={path === "/home" ? styles.active : ""}
         >
           Home
         </li>
         <li
-          onClick={() => (window.location.href = `/requests`)}
-          className={path === "/requests" ? styles.active : ""}
+            onClick={() => (window.location.href = `/requests`)}
+            className={path === "/requests" ? styles.active : ""}
         >
           Solicitações
         </li>
         <li
-          onClick={() => (window.location.href = `/notice`)}
-          className={path === "/notice" ? styles.active : ""}
+            onClick={() => (window.location.href = `/notice`)}
+            className={path === "/notice" ? styles.active : ""}
         >
           Editais
         </li>
-        {user.type === "Estudante"  && (
-          <li
-            onClick={() => (window.location.href = `/requests/requestForm`)}
-            className={path === "/requests/requestForm" ? styles.active : ""}
-          >
-            Realizar Solicitação
-          </li>
+        <li
+            onClick={() => (window.location.href = `/courses`)}
+            className={path === "/courses" ? styles.active : ""}
+        >
+          Cursos
+        </li>
+        {user.type === "Estudante" && (
+            <li
+                onClick={() => (window.location.href = `/requests/requestForm`)}
+                className={path === "/requests/requestForm" ? styles.active : ""}
+            >
+              Realizar Solicitação
+            </li>
         )}
         {(user?.type === "Coordenador" || user?.type === "Ensino") &&
-          user?.is_verified && (
-            <>
-              <li
-                onClick={() => (window.location.href = `/usersList`)}
-                className={path === "/usersList" ? styles.active : ""}
-              >
-                Usuários
-              </li>
-              <li>Cadastrar Disciplina</li>
-            </>
-          )}
+            user?.is_verified && (
+                <>
+                  <li
+                      onClick={() => (window.location.href = `/usersList`)}
+                      className={path === "/usersList" ? styles.active : ""}
+                  >
+                    Usuários
+                  </li>
+                  <li
+                      onClick={() => (window.location.href = `/discipline`)}
+                      className={path === "/discipline" ? styles.active : ""}
+                  >
+                    Cadastrar Disciplina
+                  </li>
+                </>
+            )}
       </ul>
     </>
   );

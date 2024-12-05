@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 
 from notices.models import Notice
-from users.models.servant import Servant
+from users.models import Servant
 
 
 # Enum para status da requisição
@@ -110,6 +110,7 @@ class Attachment(models.Model):
     file_name = models.CharField(max_length=255)
     file_data = models.BinaryField()
     content_type = models.CharField(max_length=50)
+    is_test_attachment = models.BooleanField(default=False)
     recognition_form = models.ForeignKey(
         'RecognitionOfPriorLearning',
         related_name='attachments',

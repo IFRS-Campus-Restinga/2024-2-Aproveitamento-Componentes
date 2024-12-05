@@ -1,31 +1,31 @@
-.modalBackground {
-  position: static; /* Permite que o conteúdo flua normalmente */
-  background-color: transparent; /* Remove o fundo escuro */
-  display: block; /* Garante que o conteúdo seja exibido */
-  justify-content: unset; /* Remove a centralização */
-  align-items: unset; /* Remove a centralização */
+body .modalBackground {
+    position: static;
+    background-color: transparent;
+    display: block;
+    justify-content: unset;
+    align-items: unset;
 }
 
-.modalContainer {
-  background: #fff;
-  padding: 30px;
-  width: 100%; /* Faz com que ocupe a largura total */
-  max-width: 1400px;
-  min-width: 800px;
-  border-radius: 12px;
-  max-height: none; /* Permite que a altura seja definida pelo conteúdo */
-  height: auto;
-  overflow-y: visible; /* Remove a rolagem vertical */
-  margin: 20px auto; /* Centraliza horizontalmente com espaçamento superior */
+body .modalContainer {
+    background: #fff;
+    padding: 30px;
+    width: 100%;
+    max-width: 1400px;
+    min-width: 800px;
+    border-radius: 12px;
+    max-height: none;
+    height: auto;
+    overflow-y: visible;
+    margin: 20px auto;
 }
 
 .topSection {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 20px;
-  gap: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+    gap: 10px;
 }
 
 .searchContainer {

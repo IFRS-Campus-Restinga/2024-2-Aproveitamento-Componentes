@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (
     RecognitionOfPriorLearningListCreateView, RecognitionOfPriorLearningDetailView,
-    KnowledgeCertificationListCreateView, KnowledgeCertificationDetailView, AttachmentDownloadView, StepCreateView
+    KnowledgeCertificationListCreateView, KnowledgeCertificationDetailView, AttachmentDownloadView, StepCreateView, check_notice_open
 )
 
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
     path('knowledge-certifications/<uuid:id>/', KnowledgeCertificationDetailView.as_view(),
          name='knowledge-certification-detail'),
     path('attachments/<uuid:attachment_id>/', AttachmentDownloadView.as_view(), name='download_attachment'),
+    path('check-notice-open/', check_notice_open, name='check-notice-open'),  # URL específica de verificação
 ]

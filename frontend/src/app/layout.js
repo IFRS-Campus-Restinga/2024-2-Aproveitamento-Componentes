@@ -17,7 +17,7 @@ import "./layout.css";
 export default function RootLayout({ children }) {
   return (
     <html>
-      <body>
+      <body style={{ minHeight: "100vh" }}>
         <PrimeReactProvider>
           <AuthProvider>
             <NavBar />

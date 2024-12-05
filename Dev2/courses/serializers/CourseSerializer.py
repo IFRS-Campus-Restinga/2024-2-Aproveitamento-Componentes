@@ -6,7 +6,7 @@ from ..models import Course
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    coordinator_id = serializers.PrimaryKeyRelatedField(queryset=Servant.objects.all(), required=False)
+    coordinator_id = serializers.PrimaryKeyRelatedField(queryset=Servant.objects.all(), required=False, allow_null=True)
     coordinator = ServantSerializer(read_only=True, allow_null=True)
 
     class Meta:

@@ -5,12 +5,30 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import RecognitionOfPriorLearning, KnowledgeCertification, RequestStatus, Attachment, Step
 from .serializers import (
     RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer, StepSerializer
 )
+from django.http import HttpResponse, Http404
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import Notice
 
+def check_notice_open(request):
+    # Obtém a data atual do servidor
+    current_date = timezone.now()
+
+    # Filtra o edital baseado nas datas de início e fim de submissão
+    notice = Notice.objects.filter(
+        documentation_submission_start__lte=current_date,  # A data de início é menor ou igual à data atual
+        documentation_submission_end__gte=current_date   # A data de fim é maior ou igual à data atual
+    ).first()
+
+    # Se encontrar um edital aberto, retorna True, caso contrário, False
+    return JsonResponse({'isNoticeOpen': bool(notice)})
 
 class StepCreateView(generics.CreateAPIView):
     queryset = Step.objects.all()
@@ -114,11 +132,48 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateAPIView):
         data = request.data
         serializer = self.get_serializer(instance, data=data, partial=True)
 
+        allowed_fields = ['status', 'previous_knowledge', 'scheduling_date', 'coordinator_feedback',
+                          'professor_feedback', 'test_score']
+
+        for field in allowed_fields:
+            if field in data:
+                if field == 'status' and data[field] not in dict(RequestStatus.choices):
+                    return Response({"detail": "Status inválido"}, status=status.HTTP_400_BAD_REQUEST)
+
+                if field == 'scheduling_date':
+                    try:
+                        scheduling_date = datetime.strptime(data[field], "%Y-%m-%dT%H:%M")
+                        setattr(instance, field,
+                                scheduling_date)
+                    except ValueError:
+                        return Response({"detail": "Formato de data e hora inválido"},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    setattr(instance, field, data[field])
+        attachment_file = request.FILES.get('test_attachment')
+        if attachment_file:
+            existing_test_attachment = instance.attachments.filter(is_test_attachment=True).first()
+            if existing_test_attachment:
+                existing_test_attachment.file_name = attachment_file.name
+                existing_test_attachment.file_data = attachment_file.read()
+                existing_test_attachment.content_type = attachment_file.content_type
+                existing_test_attachment.save()
+            else:
+                Attachment.objects.create(
+                    file_name=attachment_file.name,
+                    file_data=attachment_file.read(),
+                    content_type=attachment_file.content_type,
+                    certification_form=instance,
+                    is_test_attachment=True
+                )
+        instance.save()
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class AttachmentDownloadView(APIView):

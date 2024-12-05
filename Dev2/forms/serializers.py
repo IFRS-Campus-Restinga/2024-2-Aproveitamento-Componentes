@@ -5,6 +5,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from courses.models import Course
+from notices.models import Notice
 from users.models import Servant, AbstractUser
 from users.models import Student
 from users.serializers import ServantSerializer
@@ -89,9 +90,15 @@ class StepSerializer(serializers.ModelSerializer):
             responsible = form.steps.filter(status=RequestStatus.ANALYZED_BY_CRE).last().responsible
             data['responsible_id'] = responsible.id if responsible else None
 
+        # Se cancelado pelo aluno não haverá servidor responsável
+        elif status == RequestStatus.CANCELED:
+            data['responsible_id'] = None
+
         # Sem condições especiais, quem fez a requisição ficará responsável pelo step
         else:
             data['responsible_id'] = abstract_user.id
+
+        print("Cargo do usuário: " + user_role)
 
         # Valida se a solicitação foi finalizada, não podendo mais ser alterada
         if current_status in FAILED_STATUS or current_status == RequestStatus.APPROVED_BY_CRE:
@@ -135,7 +142,7 @@ class StepSerializer(serializers.ModelSerializer):
 class AttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attachment
-        fields = ['id', 'file_name', 'content_type', 'certification_form', 'recognition_form']
+        fields = ['id', 'file_name', 'content_type', 'certification_form', 'recognition_form', 'is_test_attachment']
 
     def create(self, validated_data):
         file = validated_data.pop('file')
@@ -191,6 +198,22 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
         if latest_step:
             return latest_step.get_status_display()
         return "Status não disponível"
+
+
+    def validate(self, data):
+        # Verifica se existe um Notice (edital) aberto
+        current_date = timezone.now()
+        notice = Notice.objects.filter(documentation_submission_start__lte=current_date,
+        documentation_submission_end__gte=current_date).first()
+
+        if not notice:
+            raise serializers.ValidationError("Não há edital aberto no momento.")
+
+        # Se o Notice existe, verifica se a data está dentro do período permitido
+        if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
+            raise serializers.ValidationError(f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
+
+        return data
 
     def validate_course_workload(self, value):
         if not isinstance(value, int):
@@ -284,6 +307,21 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
         if latest_step:
             return latest_step.get_status_display()
         return "Status não disponível"
+
+    def validate(self, data):
+        # Verifica se existe um Notice (edital) aberto
+        current_date = timezone.now()
+        notice = Notice.objects.filter(documentation_submission_start__lte=current_date,
+        documentation_submission_end__gte=current_date).first()
+
+        if not notice:
+            raise serializers.ValidationError("Não há edital aberto no momento.")
+
+        # Se o Notice existe, verifica se a data está dentro do período permitido
+        if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
+            raise serializers.ValidationError(f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
+
+        return data
 
     def validate_status(self, value):
         if value not in dict(RequestStatus.choices):
