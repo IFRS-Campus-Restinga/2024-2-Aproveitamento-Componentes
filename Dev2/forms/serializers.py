@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 import pytz
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers
@@ -220,14 +219,14 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
     def validate_course_workload(self, value):
         if not isinstance(value, int):
             raise serializers.ValidationError("course_workload deve ser um número inteiro válido.")
-        if self.abstract_user.id != self.instance.student_id:
+        if self.instance and self.abstract_user.id != self.instance.student_id:
             raise serializers.ValidationError("Apenas o aluno que fez a requisição pode alterar esse campo")
         return value
 
     def validate_course_studied_workload(self, value):
         if not isinstance(value, int):
             raise serializers.ValidationError("course_studied_workload deve ser um número inteiro válido.")
-        if self.abstract_user.id != self.instance.student_id:
+        if self.instance and self.abstract_user.id != self.instance.student_id:
             raise serializers.ValidationError("Apenas o aluno que fez a requisição pode alterar esse campo")
         return value
 

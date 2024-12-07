@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./requestForm.module.css";
 import { Button } from "primereact/button";
-import { noticeList, noticeListAll } from "@/services/NoticeService";
+import { noticeListAll } from "@/services/NoticeService";
 import { FileUpload } from "primereact/fileupload";
 import RequestService from "@/services/RequestService";
 import { courseList } from "@/services/CourseService";
@@ -132,8 +132,9 @@ const CertificationRequestForm = () => {
         ? await RequestService.CreateKnowledgeCertification(formData)
         : await RequestService.CreateRecognitionForm(formData);
 
-    if (response.status === 200) {
+    if (response.status === 201) {
       console.log("Formulário enviado com sucesso!");
+      window.location.href = "/requests";
     } else {
       console.error("Erro ao enviar o formulário:", response);
     }
@@ -279,7 +280,9 @@ const CertificationRequestForm = () => {
         <Button
           type="button"
           disabled={!selectedNotice}
-          className={!selectedNotice ? styles.btnDisabled : styles.confirmButton}
+          className={
+            !selectedNotice ? styles.btnDisabled : styles.confirmButton
+          }
           onClick={handleSubmit}
         >
           Enviar
