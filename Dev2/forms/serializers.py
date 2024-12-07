@@ -1,5 +1,8 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 
+import pytz
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers
@@ -199,21 +202,20 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
             return latest_step.get_status_display()
         return "Status não disponível"
 
-
-    def validate(self, data):
-        # Verifica se existe um Notice (edital) aberto
-        current_date = timezone.now()
-        notice = Notice.objects.filter(documentation_submission_start__lte=current_date,
-        documentation_submission_end__gte=current_date).first()
-
-        if not notice:
-            raise serializers.ValidationError("Não há edital aberto no momento.")
-
-        # Se o Notice existe, verifica se a data está dentro do período permitido
-        if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
-            raise serializers.ValidationError(f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
-
-        return data
+    # def validate(self, data):
+    #     # Verifica se existe um Notice (edital) aberto
+    #     current_date = timezone.now()
+    #     notice = Notice.objects.filter(documentation_submission_start__lte=current_date,
+    #     documentation_submission_end__gte=current_date).first()
+    #
+    #     if not notice:
+    #         raise serializers.ValidationError("Não há edital aberto no momento.")
+    #
+    #     # Se o Notice existe, verifica se a data está dentro do período permitido
+    #     if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
+    #         raise serializers.ValidationError(f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
+    #
+    #     return data
 
     def validate_course_workload(self, value):
         if not isinstance(value, int):
@@ -235,6 +237,19 @@ class RecognitionOfPriorLearningSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
+        # Verifica se existe um Notice (edital) aberto
+        current_date = timezone.now()
+        notice = Notice.objects.filter(documentation_submission_start__lte=current_date,
+                                       documentation_submission_end__gte=current_date).first()
+
+        if not notice:
+            raise serializers.ValidationError("Não há edital aberto no momento.")
+
+        # Se o Notice existe, verifica se a data está dentro do período permitido
+        if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
+            raise serializers.ValidationError(
+                f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
+
         attachments_files = self.context['request'].FILES.getlist('attachment')
         student_id = validated_data.pop('student_id')
         student = get_object_or_404(Student, id=student_id)
@@ -280,13 +295,14 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
     student_course = serializers.CharField(source='student.course', read_only=True)
     attachments = AttachmentSerializer(many=True, read_only=True)
     steps = StepSerializer(many=True, read_only=True)
+    test_attachment = serializers.FileField(required=False, read_only=False, allow_null=True)
 
     class Meta:
         model = KnowledgeCertification
         fields = [
             'id', 'previous_knowledge', 'scheduling_date', 'test_score', 'notice', 'discipline',
             'discipline_name', 'create_date', 'status_display', 'attachments', 'student_id', 'student',
-            'student_name', 'student_email', 'student_matricula', 'student_course', 'steps'
+            'student_name', 'student_email', 'student_matricula', 'student_course', 'steps', 'test_attachment'
         ]
 
     def __init__(self, *args, **kwargs):
@@ -308,20 +324,20 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
             return latest_step.get_status_display()
         return "Status não disponível"
 
-    def validate(self, data):
-        # Verifica se existe um Notice (edital) aberto
-        current_date = timezone.now()
-        notice = Notice.objects.filter(documentation_submission_start__lte=current_date,
-        documentation_submission_end__gte=current_date).first()
-
-        if not notice:
-            raise serializers.ValidationError("Não há edital aberto no momento.")
-
-        # Se o Notice existe, verifica se a data está dentro do período permitido
-        if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
-            raise serializers.ValidationError(f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
-
-        return data
+    # def validate(self, data):
+    #     # Verifica se existe um Notice (edital) aberto
+    #     current_date = timezone.now()
+    #     notice = Notice.objects.filter(documentation_submission_start__lte=current_date,
+    #     documentation_submission_end__gte=current_date).first()
+    #
+    #     if not notice:
+    #         raise serializers.ValidationError("Não há edital aberto no momento.")
+    #
+    #     # Se o Notice existe, verifica se a data está dentro do período permitido
+    #     if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
+    #         raise serializers.ValidationError(f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
+    #
+    #     return data
 
     def validate_status(self, value):
         if value not in dict(RequestStatus.choices):
@@ -340,7 +356,9 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Apenas o professor pode agendar a prova")
             if isinstance(value, str):
                 value = datetime.strptime(value, "%Y-%m-%dT%H:%M")
-            now_plus_24_hours = datetime.now() + timedelta(hours=24)
+            sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
+            value = sao_paulo_tz.localize(value) if value.tzinfo is None else value.astimezone(sao_paulo_tz)
+            now_plus_24_hours = datetime.now(sao_paulo_tz) + timedelta(hours=24)
             if value < now_plus_24_hours:
                 raise serializers.ValidationError("A data e hora devem ser no mínimo 24 horas após o momento atual.")
         except ValueError:
@@ -351,13 +369,45 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
         user_role = self.abstract_user.type.value
         if user_role != 'Professor':
             raise serializers.ValidationError("Apenas o professor pode alterar a nota")
-        if not isinstance(value, (float, int)):
+        if not isinstance(value, Decimal):
             raise serializers.ValidationError("test_score deve ser um número válido.")
         if not (0 <= value <= 10):
             raise serializers.ValidationError("test_score deve estar entre 0 e 10.")
         return value
 
+    def validate_test_attachment(self, value):
+        instance = self.instance
+        existing_test_attachment = instance.attachments.filter(is_test_attachment=True).first()
+
+        if existing_test_attachment:
+            existing_test_attachment.file_name = value.name
+            existing_test_attachment.file_data = value.read()
+            existing_test_attachment.content_type = value.content_type
+            existing_test_attachment.save()
+        else:
+            Attachment.objects.create(
+                file_name=value.name,
+                file_data=value.read(),
+                content_type=value.content_type,
+                certification_form=instance,
+                is_test_attachment=True
+            )
+        return value
+
     def create(self, validated_data):
+        # Verifica se existe um Notice (edital) aberto
+        current_date = timezone.now()
+        notice = Notice.objects.filter(documentation_submission_start__lte=current_date,
+                                       documentation_submission_end__gte=current_date).first()
+
+        if not notice:
+            raise serializers.ValidationError("Não há edital aberto no momento.")
+
+        # Se o Notice existe, verifica se a data está dentro do período permitido
+        if not (notice.documentation_submission_start <= current_date <= notice.documentation_submission_end):
+            raise serializers.ValidationError(
+                f"A solicitação está fora do período do edital. O prazo é de {notice.documentation_submission_start} a {notice.documentation_submission_end}.")
+
         attachments_files = self.context['request'].FILES.getlist('attachment')
         student_id = validated_data.pop('student_id')
         student = get_object_or_404(Student, id=student_id)

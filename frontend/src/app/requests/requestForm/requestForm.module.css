@@ -28,21 +28,15 @@
     border-radius: 15px;
     background-color: rgba(185, 185, 185, 0.719);
   }
-  /* .formBtn {
-    background-color: #46b5ff;
-    border-radius: 15px;
-    padding: 15px;
-  } */
+
   .formBtnContainer {
     display: flex;
     justify-content: space-between;
     width: 50%;
   }
   .textForm {
-    /* Estilos para os labels */
     font-weight: bold;
     margin-bottom: 5px;
-    /* Outros estilos que desejar */
 }
 
 .selectForm {
@@ -51,4 +45,26 @@
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 10px;
+}
+
+.btnDisabled {
+    background-color: gray;
+}
+
+.confirmButton {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancelButton {
+  background-color: #d9534f;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }

@@ -75,7 +75,6 @@ const Details = () => {
   const [status, setStatus] = useState("pending");
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-
   const fetchDetails = async () => {
     try {
       const response = await apiClient.get(`${baseURL}/forms/${type}/${id}/`);
@@ -167,7 +166,10 @@ const Details = () => {
         body.responsible_id = Number(selectedProfessor);
       }
 
-      const response = await apiClient.post(`${baseURL}/forms/steps/`, JSON.stringify(body));
+      const response = await apiClient.post(
+        `${baseURL}/forms/steps/`,
+        JSON.stringify(body),
+      );
 
       if (response.status !== 201)
         throw new Error("Erro ao alterar solicitação");
@@ -180,7 +182,6 @@ const Details = () => {
 
   const openCancelModal = () => setShowCancelModal(true);
   const closeCancelModal = () => setShowCancelModal(false);
-
 
   const handleSelectedProfessor = async (prof) => {
     setSelectedProfessor(prof);
@@ -277,17 +278,16 @@ const Details = () => {
     try {
       let response;
       let updatedData;
-  
+
       if (field === "test_attachment") {
         const formData = new FormData();
-        formData.append('test_attachment', file);
-  
+        formData.append("test_attachment", file);
+
         response = await apiClient.patch(
           `${baseURL}/forms/${type}/${id}/`,
-          formData
+          formData,
         );
       } else {
-
         switch (field) {
           case "previous_knowledge":
             updatedData = { previous_knowledge: editedKnowledge };
@@ -301,7 +301,7 @@ const Details = () => {
             };
             break;
           case "test_score":
-            updatedData = { test_score: editedTestScore };
+            updatedData = { test_score: Number(editedTestScore) };
             break;
           case "scheduling_date":
             updatedData = { scheduling_date: editedSchedulingDate };
@@ -312,7 +312,6 @@ const Details = () => {
           updatedData,
         );
       }
-
 
       if (response.status !== 200) throw new Error("Erro ao salvar alterações");
 
@@ -412,7 +411,7 @@ const Details = () => {
                     className={styles.pButtonDanger}
                   />
                 </div>
-            )}
+              )}
             {showCancelModal && (
               <div className={styles.modalBackdrop}>
                 <div className={styles.modalContent}>
@@ -428,7 +427,10 @@ const Details = () => {
                     >
                       Sim
                     </button>
-                    <button className={styles.cancelButton} onClick={closeCancelModal}>
+                    <button
+                      className={styles.cancelButton}
+                      onClick={closeCancelModal}
+                    >
                       Não
                     </button>
                   </div>
@@ -464,15 +466,22 @@ const Details = () => {
                       <h3>Anexos</h3>
                       <ul className={styles.attachmentsList}>
                         {details.attachments
-                          .filter((attachment) => !attachment.is_test_attachment)
+                          .filter(
+                            (attachment) => !attachment.is_test_attachment,
+                          )
                           .map((attachment) => (
-                            <li key={attachment.id} className={styles.attachmentItem}>
+                            <li
+                              key={attachment.id}
+                              className={styles.attachmentItem}
+                            >
                               <div className={styles.attachmentItemContent}>
                                 <strong>{attachment.file_name}</strong>
                                 <Button
                                   icon="pi pi-download"
                                   className="p-button-sm p-button-outlined"
-                                  onClick={() => handleDownloadAttachment(attachment.id)}
+                                  onClick={() =>
+                                    handleDownloadAttachment(attachment.id)
+                                  }
                                   tooltip="Visualizar Anexo"
                                 />
                               </div>
@@ -778,8 +787,10 @@ const Details = () => {
                           {details.test_score || "Pendente"}
                         </span>
                         {role === "Professor" &&
-                            (details.status_display ===
-                            "Em análise do Professor" || details.status_display === "Retornado pelo Coordenador") && (
+                          (details.status_display ===
+                            "Em análise do Professor" ||
+                            details.status_display ===
+                              "Retornado pelo Coordenador") && (
                             <>
                               <FontAwesomeIcon
                                 icon={faEdit}
@@ -798,48 +809,59 @@ const Details = () => {
                       </p>
                     )}
 
-                      {type === "knowledge-certifications" && (
-                        <div className={styles.info}>
-                          <strong>Prova: </strong>
-                          {details.status_display === "Em análise do Professor" && role === "Professor" ? (
-                              <>
-                                <FileUpload
-                                  name="prova"
-                                  mode="basic"
-                                  auto={false}
-                                  accept="application/pdf,image/png,image/jpeg"
-                                  maxFileSize={5000000}
-                                  label="Upload da prova"
-                                  className="p-button-sm p-button-outlined"
-                                  style={{
-                                    marginBottom: "10px",
-                                    marginTop: "5px",
-                                    border: "1px solid #ccc",
-                                    padding: "10px",
-                                    borderRadius: "10px",
-                                  }}
-                                  onSelect={(e) => onFileSelect(e)}
-                                />
-                              </>
-                          ) : (
-                            details.attachments
-                              .filter((attachment) => attachment.is_test_attachment)
-                              .map((attachment) => (
-                                <div key={attachment.id} className={styles.attachmentItem}>
-                                  <div className={styles.attachmentItemContent}>
-                                    <span>{attachment.file_name}</span>
-                                    <Button
-                                      icon="pi pi-download"
-                                      className="p-button-sm p-button-outlined"
-                                      onClick={() => handleDownloadAttachment(attachment.id)}
-                                      tooltip="Visualizar Prova"
-                                    />
-                                  </div>
+                    {type === "knowledge-certifications" && (
+                      <div className={styles.info}>
+                        <strong>Prova: </strong>
+                        {(details.status_display ===
+                          "Em análise do Professor" ||
+                          details.status_display ===
+                            "Retornado pelo Coordenador") &&
+                        role === "Professor" ? (
+                          <>
+                            <FileUpload
+                              name="prova"
+                              mode="basic"
+                              auto={false}
+                              accept="application/pdf,image/png,image/jpeg"
+                              maxFileSize={5000000}
+                              label="Upload da prova"
+                              className="p-button-sm p-button-outlined"
+                              style={{
+                                marginBottom: "10px",
+                                marginTop: "5px",
+                                border: "1px solid #ccc",
+                                padding: "10px",
+                                borderRadius: "10px",
+                              }}
+                              onSelect={(e) => onFileSelect(e)}
+                            />
+                          </>
+                        ) : (
+                          details.attachments
+                            .filter(
+                              (attachment) => attachment.is_test_attachment,
+                            )
+                            .map((attachment) => (
+                              <div
+                                key={attachment.id}
+                                className={styles.attachmentItem}
+                              >
+                                <div className={styles.attachmentItemContent}>
+                                  <span>{attachment.file_name}</span>
+                                  <Button
+                                    icon="pi pi-download"
+                                    className="p-button-sm p-button-outlined"
+                                    onClick={() =>
+                                      handleDownloadAttachment(attachment.id)
+                                    }
+                                    tooltip="Visualizar Prova"
+                                  />
                                 </div>
-                              ))
-                          )}
-                        </div>
-                      )}
+                              </div>
+                            ))
+                        )}
+                      </div>
+                    )}
                     <p className={styles.info}>
                       <strong>Parecer: </strong>
                       {professorFeedback || "Pendente"}
