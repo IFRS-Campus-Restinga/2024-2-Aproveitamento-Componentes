@@ -244,6 +244,7 @@ const Details = () => {
       field === "test_score"
     ) {
       newValue = newValue.replace(/[^0-9]/g, "");
+      e.currentTarget.textContent = newValue;
     }
 
     if (newValue.length > 255) {
