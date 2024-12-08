@@ -8,6 +8,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ..emails.utils import send_custom_email
+from django.utils.timezone import now
+
 from .models import Notice
 from .models import RecognitionOfPriorLearning, KnowledgeCertification, RequestStatus, Attachment, Step
 from .serializers import (
@@ -39,7 +42,20 @@ class StepCreateView(generics.CreateAPIView):
         return context
 
     def perform_create(self, serializer):
-        serializer.save()
+        # serializer.save()
+        
+        step = serializer.save()
+        # Configura o conteúdo do e-mail
+        subject = "Novo Step Criado"
+        context = {
+            'subject': subject,
+            'message': f"Step '{step.name}' foi criado com sucesso!",
+            'date': now(),
+        }
+        recipient_list = ["destinatario@example.com"]  # Substitua pelos e-mails reais
+
+        # Dispara o e-mail
+        send_custom_email(subject, 'emails/example_email.html', context, recipient_list)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

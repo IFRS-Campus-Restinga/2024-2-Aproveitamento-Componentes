@@ -164,3 +164,8 @@ REST_FRAMEWORK = {
 
 if DEBUG:
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+
+#EMAIL
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' #prod
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' #dev
