@@ -33,11 +33,17 @@ const Home = () => {
       try {
         let kcResponse, rplResponse;
 
-        if (user.type === "Estudante" || user.type === "Professor") {
-          // Buscar requests filtradas por ID do usuário
+        if (user.type === "Estudante") {
+          // Buscar requests filtradas por ID do aluno
           [kcResponse, rplResponse] = await Promise.all([
             RequestService.GetKnowledgeCertificationsById(user.id),
             RequestService.GetRecognitionOfPriorLearningById(user.id),
+          ]);
+        } else if (user.type === "Professor" || user.type === "Coordenador") {
+          // Mostrar requests filtradas por ID do professor ou coordenador
+          [kcResponse, rplResponse] = await Promise.all([
+            RequestService.GetKnowledgeCertificationsByServantId(user.id),
+            RequestService.GetRecognitionOfPriorLearningByServantId(user.id),
           ]);
         } else {
           // Buscar todas as requests sem filtro
@@ -51,10 +57,12 @@ const Home = () => {
           ...item,
           type: "knowledge",
         }));
-        const recognitionOfPriorLearning = rplResponse.data.results.map((item) => ({
-          ...item,
-          type: "recognition",
-        }));
+        const recognitionOfPriorLearning = rplResponse.data.results.map(
+          (item) => ({
+            ...item,
+            type: "recognition",
+          }),
+        );
 
         const merged = [
           ...knowledgeCertifications,
@@ -62,7 +70,7 @@ const Home = () => {
         ];
 
         merged.sort(
-          (a, b) => new Date(b.create_date) - new Date(a.create_date)
+          (a, b) => new Date(b.create_date) - new Date(a.create_date),
         );
 
         setMergedRequests(merged);
