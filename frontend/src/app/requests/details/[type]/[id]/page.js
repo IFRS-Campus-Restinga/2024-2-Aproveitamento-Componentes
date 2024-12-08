@@ -1,5 +1,6 @@
 "use client";
 
+import moment from 'moment-timezone';
 import { apiClient, baseURL } from "@/libs/api";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -74,14 +75,15 @@ const Details = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState("pending");
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [testDate, setTestDate] = useState(null)
 
   const fetchDetails = async () => {
     try {
       const response = await apiClient.get(`${baseURL}/forms/${type}/${id}/`);
       if (response.status !== 200) throw new Error("Erro ao buscar detalhes");
       const data = await response.data;
-      console.log(data);
       setDetails(data);
+      setTestDate(data.scheduling_date ? moment(data.scheduling_date).tz('America/Sao_Paulo') : null)
       setStepsStatus([
         getStepStatus(data.steps, getStep1Status),
         getStepStatus(data.steps, getStep2Status),
@@ -360,8 +362,6 @@ const Details = () => {
     let status = stepsStatus[step];
 
     if (status) status = status.status_display;
-    console.log("step " + step + " - " + status);
-
     if (getFailed().includes(status)) {
       return { color: "red", icon: faTimes, label: "Rejeitado" };
     } else if (getSucceeded().includes(status)) {
@@ -775,7 +775,7 @@ const Details = () => {
                       </p>
                     )}
 
-                    {type === "knowledge-certifications" && details.scheduling_date && (
+                    {type === "knowledge-certifications" && testDate && new Date() > testDate && (
                       <p className={styles.info}>
                         <strong>Avaliação: </strong>
                         <span
@@ -809,8 +809,7 @@ const Details = () => {
                           )}
                       </p>
                     )}
-
-                    {type === "knowledge-certifications" && details.scheduling_date && new Date() > details.scheduling_date && (
+                    {type === "knowledge-certifications" && testDate && new Date() > testDate && (
                       <div className={styles.info}>
                         <strong>Prova: </strong>
                         {(details.status_display ===
