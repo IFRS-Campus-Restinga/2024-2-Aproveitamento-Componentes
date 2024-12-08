@@ -775,7 +775,7 @@ const Details = () => {
                       </p>
                     )}
 
-                    {type === "knowledge-certifications" && (
+                    {type === "knowledge-certifications" && details.scheduling_date && (
                       <p className={styles.info}>
                         <strong>Avaliação: </strong>
                         <span
@@ -810,7 +810,7 @@ const Details = () => {
                       </p>
                     )}
 
-                    {type === "knowledge-certifications" && (
+                    {type === "knowledge-certifications" && details.scheduling_date && new Date() > details.scheduling_date && (
                       <div className={styles.info}>
                         <strong>Prova: </strong>
                         {(details.status_display ===

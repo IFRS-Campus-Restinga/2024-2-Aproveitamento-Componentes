@@ -353,10 +353,9 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
             user_role = self.abstract_user.type.value
             if user_role != 'Professor':
                 raise serializers.ValidationError("Apenas o professor pode agendar a prova")
-            if isinstance(value, str):
-                value = datetime.strptime(value, "%Y-%m-%dT%H:%M")
             sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
-            value = sao_paulo_tz.localize(value) if value.tzinfo is None else value.astimezone(sao_paulo_tz)
+            value = value.replace(tzinfo=None)
+            value = sao_paulo_tz.localize(value)
             now_plus_24_hours = datetime.now(sao_paulo_tz) + timedelta(hours=24)
             if value < now_plus_24_hours:
                 raise serializers.ValidationError("A data e hora devem ser no mínimo 24 horas após o momento atual.")
