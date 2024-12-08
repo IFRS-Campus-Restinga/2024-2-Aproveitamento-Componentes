@@ -205,8 +205,8 @@ const filteredServantTypeOptions = shouldShowAllOptions
                 </>
             )}
             <div className="flex space-x-36">
-            <Button className={styles.submitButton} label="Salvar" type="submit" />
             <Button className={styles.submitButton} label="Voltar" type= "button" onClick={onCancel}/>
+            <Button className={styles.submitButton} label="Salvar" type="submit" />
             </div>
         </form>
     );

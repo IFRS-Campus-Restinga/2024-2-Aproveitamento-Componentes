@@ -3,13 +3,14 @@ import React, { useState, useEffect } from "react";
 import styles from "./usersList.module.css";
 import { Button as Btn } from "@/components/Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrash, faEye, faSearch, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faTrash, faEye, faSearch, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Filter from "@/components/FilterField/filterField";
 import FilterCheckbox from "@/components/FilterCheckbox/filterCheckbox";
 import { useUserFilters } from "@/hooks/useUserFilters";
 import AuthService from "@/services/AuthService";
 import FormProfile from "@/components/Forms/Profile/ProfileForm";
 import { handleApiResponse } from "@/libs/apiResponseHandler";
+import { InputText } from "primereact/inputtext";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -116,7 +117,7 @@ const UsersList = () => {
           {/* Barra de busca acima dos filtros */}
           <div className={styles.searchWrapper}>
             <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
-            <input
+            <InputText
               className={styles.nameFilter}
               type="text"
               value={search}

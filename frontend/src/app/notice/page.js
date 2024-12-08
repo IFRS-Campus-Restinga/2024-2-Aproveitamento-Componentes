@@ -12,6 +12,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useAuth } from "@/context/AuthContext";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { InputText } from "primereact/inputtext";
 
 const ITEMS_PER_PAGE = 10; // Quantidade de itens por página
 
@@ -176,7 +177,7 @@ const Notice = () => {
       <div className={styles.filters}>
         <div className={styles.filterInputWrapper}>
           <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
-          <input
+          <InputText
             type="text"
             placeholder="Filtrar..."
             value={filter}
