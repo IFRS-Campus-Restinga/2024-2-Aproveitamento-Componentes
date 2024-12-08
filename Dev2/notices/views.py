@@ -8,7 +8,7 @@ from users.services.user import UserService
 
 class NoticeListCreateView(generics.ListCreateAPIView):
 
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     user_service = UserService()
 
     queryset = Notice.objects.all()
@@ -27,7 +27,7 @@ class NoticeListCreateView(generics.ListCreateAPIView):
 
 class NoticeDetailView(generics.RetrieveUpdateDestroyAPIView):
 
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     user_service = UserService()
 
     queryset = Notice.objects.all()

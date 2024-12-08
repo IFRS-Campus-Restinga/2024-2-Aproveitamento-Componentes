@@ -19,4 +19,6 @@ py manage.py makemigrations users
 py manage.py migrate
 py manage.py shell < script.py
 py manage.py runserver
+
+pip install python-decouple
 ```

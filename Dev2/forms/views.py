@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..emails.utils import send_custom_email
+from emails.utils import send_custom_email
 from django.utils.timezone import now
 
 from .models import Notice
@@ -52,7 +52,7 @@ class StepCreateView(generics.CreateAPIView):
             'message': f"Step '{step.name}' foi criado com sucesso!",
             'date': now(),
         }
-        recipient_list = ["destinatario@example.com"]  # Substitua pelos e-mails reais
+        recipient_list = ["2019010480@restinga.ifrs.edu.br"]  # Substitua pelos e-mails reais
 
         # Dispara o e-mail
         send_custom_email(subject, 'emails/example_email.html', context, recipient_list)
@@ -84,6 +84,19 @@ class RecognitionOfPriorLearningListCreateView(generics.ListCreateAPIView):
         print("Método create chamado com dados:", request.data)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
+            subject = "Nova Solicitação Criada"
+            print("config email func R")
+            context = {
+                'subject': subject,
+                'message': "Uma nova solicitação foi registrada.",
+                'date': now(),
+            }
+            recipient_list = ["2019010480@restinga.ifrs.edu.br"]
+            print("chamando email func")
+            print(recipient_list)
+            print(context)
+            print(subject)
+            send_custom_email(subject, 'emails/example_email.html', context, recipient_list)
             print("Dados validados com sucesso.")
         else:
             print("Dados inválidos:", serializer.errors)
@@ -129,6 +142,19 @@ class KnowledgeCertificationListCreateView(generics.ListCreateAPIView):
         print("Método create chamado com dados:", request.data)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
+            subject = "Nova Solicitação Criada"
+            print("config email func K")
+            context = {
+                'subject': subject,
+                'message': "Uma nova solicitação foi registrada.",
+                'date': now(),
+            }
+            recipient_list = ["2019010480@restinga.ifrs.edu.br"]
+            print("chamando email func")
+            print(recipient_list)
+            print(context)
+            print(subject)
+            send_custom_email(subject, 'emails/example_email.html', context, recipient_list)
             print("Dados validados com sucesso.")
         else:
             print("Dados inválidos:", serializer.errors)
