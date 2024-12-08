@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.http import HttpResponse, Http404
 from django.http import JsonResponse
 from django.utils import timezone
@@ -8,8 +6,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Notice
-from .models import RecognitionOfPriorLearning, KnowledgeCertification, RequestStatus, Attachment, Step
+from .models import Notice, FAILED_STATUS
+from .models import RecognitionOfPriorLearning, KnowledgeCertification, Attachment, Step
 from .serializers import (
     RecognitionOfPriorLearningSerializer, KnowledgeCertificationSerializer, StepSerializer
 )
@@ -62,6 +60,20 @@ class RecognitionOfPriorLearningListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        servant_id = self.request.query_params.get('servant_id', None)
+        if servant_id:
+            try:
+                steps = Step.objects.filter(current=True, responsible_id=servant_id).exclude(status__in=FAILED_STATUS)
+
+                if not steps.exists():
+                    return queryset.none()
+
+                recognition_ids = steps.values_list('recognition_form_id', flat=True)
+                queryset = queryset.filter(id__in=recognition_ids)
+
+            except Step.DoesNotExist:
+                return queryset.none()
+
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -107,6 +119,20 @@ class KnowledgeCertificationListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        servant_id = self.request.query_params.get('servant_id', None)
+        if servant_id:
+            try:
+                steps = Step.objects.filter(current=True, responsible_id=servant_id).exclude(status__in=FAILED_STATUS)
+
+                if not steps.exists():
+                    return queryset.none()
+
+                certification_ids = steps.values_list('certification_form_id', flat=True)
+                queryset = queryset.filter(id__in=certification_ids)
+
+            except Step.DoesNotExist:
+                return queryset.none()
+
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -139,7 +165,6 @@ class KnowledgeCertificationDetailView(generics.RetrieveUpdateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class AttachmentDownloadView(APIView):

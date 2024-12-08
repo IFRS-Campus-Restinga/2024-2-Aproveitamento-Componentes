@@ -25,9 +25,16 @@ async function GetRecognitionOfPriorLearning() {
 async function GetKnowledgeCertificationsById(id) {
     return apiClient.get(`/forms/knowledge-certifications/?student=${id}`)
 }
-
 async function GetRecognitionOfPriorLearningById(id) {
     return apiClient.get(`/forms/recognition-forms/?student=${id}`)
+}
+
+async function GetKnowledgeCertificationsByServantId(id) {
+    return apiClient.get(`/forms/knowledge-certifications/?servant_id=${id}`)
+}
+
+async function GetRecognitionOfPriorLearningByServantId(id) {
+    return apiClient.get(`/forms/recognition-forms/?servant_id=${id}`)
 }
 
 export async function checkIfNoticeIsOpen() {
@@ -48,5 +55,7 @@ export default {
     GetKnowledgeCertifications,
     GetKnowledgeCertificationsById,
     GetRecognitionOfPriorLearningById,
+    GetKnowledgeCertificationsByServantId,
+    GetRecognitionOfPriorLearningByServantId,
     checkIfNoticeIsOpen
 }
