@@ -1,6 +1,6 @@
 "use client";
 
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 import { apiClient, baseURL } from "@/libs/api";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -75,7 +75,8 @@ const Details = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState("pending");
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const [testDate, setTestDate] = useState(null)
+  const [testDate, setTestDate] = useState(null);
+  const [testAttachment, setTestAttachment] = useState(null);
 
   const fetchDetails = async () => {
     try {
@@ -83,7 +84,16 @@ const Details = () => {
       if (response.status !== 200) throw new Error("Erro ao buscar detalhes");
       const data = await response.data;
       setDetails(data);
-      setTestDate(data.scheduling_date ? moment(data.scheduling_date).tz('America/Sao_Paulo') : null)
+      setTestDate(
+        data.scheduling_date
+          ? moment(data.scheduling_date).tz("America/Sao_Paulo")
+          : null,
+      );
+      setTestAttachment(
+        Array.from(data.attachments).findLast(
+          (attachment) => attachment.is_test_attachment,
+        ),
+      );
       setStepsStatus([
         getStepStatus(data.steps, getStep1Status),
         getStepStatus(data.steps, getStep2Status),
@@ -335,6 +345,16 @@ const Details = () => {
           setHasChangesTestScore(false);
           setIsEditingTestScore(false);
           break;
+        case "scheduling_date":
+          setTestDate(
+            moment(response.data.scheduling_date).tz("America/Sao_Paulo"),
+          );
+        case "test_attachment":
+          setTestAttachment(
+            Array.from(response.data.attachments).findLast(
+              (attachment) => attachment.is_test_attachment,
+            )
+          );
       }
 
       setDisableReactivity(false);
@@ -775,7 +795,7 @@ const Details = () => {
                       </p>
                     )}
 
-                    {type === "knowledge-certifications" && testDate && new Date() > testDate && (
+                    {type === "knowledge-certifications" && testDate && (
                       <p className={styles.info}>
                         <strong>Avaliação: </strong>
                         <span
@@ -809,7 +829,7 @@ const Details = () => {
                           )}
                       </p>
                     )}
-                    {type === "knowledge-certifications" && testDate && new Date() > testDate && (
+                    {type === "knowledge-certifications" && testDate && (
                       <div className={styles.info}>
                         <strong>Prova: </strong>
                         {(details.status_display ===
@@ -837,28 +857,22 @@ const Details = () => {
                             />
                           </>
                         ) : (
-                          details.attachments
-                            .filter(
-                              (attachment) => attachment.is_test_attachment,
-                            )
-                            .map((attachment) => (
-                              <div
-                                key={attachment.id}
-                                className={styles.attachmentItem}
-                              >
-                                <div className={styles.attachmentItemContent}>
-                                  <span>{attachment.file_name}</span>
-                                  <Button
-                                    icon="pi pi-download"
-                                    className="p-button-sm p-button-outlined"
-                                    onClick={() =>
-                                      handleDownloadAttachment(attachment.id)
-                                    }
-                                    tooltip="Visualizar Prova"
-                                  />
-                                </div>
-                              </div>
-                            ))
+                          <div
+                            key={testAttachment.id}
+                            className={styles.attachmentItem}
+                          >
+                            <div className={styles.attachmentItemContent}>
+                              <span>{testAttachment.file_name}</span>
+                              <Button
+                                icon="pi pi-download"
+                                className="p-button-sm p-button-outlined"
+                                onClick={() =>
+                                  handleDownloadAttachment(testAttachment.id)
+                                }
+                                tooltip="Visualizar Prova"
+                              />
+                            </div>
+                          </div>
                         )}
                       </div>
                     )}
@@ -885,6 +899,7 @@ const Details = () => {
                       role === "Professor" &&
                       (type !== "knowledge-certifications" ||
                         (type === "knowledge-certifications" &&
+                          testAttachment &&
                           details.test_score &&
                           details.scheduling_date)) && (
                         <div className={styles.actionButtons}>
