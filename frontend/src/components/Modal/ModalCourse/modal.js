@@ -7,8 +7,10 @@ import {courseCreate, courseEdit} from "@/services/CourseService";
 import {UserList} from "@/services/AuthService";
 import {DisciplineList, GetDiscipline} from "@/services/DisciplineService";
 import {apiClient} from "@/libs/api";
+import { useAuth } from '@/context/AuthContext';
 
 const ModalCourse = ({onClose, editData = null}) => {
+    const { user } = useAuth()
     const [courseName, setCourseName] = useState(editData ? editData.name : "");
     const [selectedProfessors, setSelectedProfessors] = useState(editData ? editData.professors : [],);
     const [selectedDisciplines, setSelectedDisciplines] = useState(editData ? editData.disciplines : [],);
@@ -177,6 +179,8 @@ const ModalCourse = ({onClose, editData = null}) => {
                 />
 
                 <div className={styles.section}>
+                    {user.servant_type === 'Ensino' && (
+                        <>
                     <label style={{fontWeight: "700"}}>Coordenador</label>
                     <div className={styles.selectedItems}>
                         <select onChange={(e) => handleSelectCoordinator(e.target.value)}>
@@ -209,6 +213,8 @@ const ModalCourse = ({onClose, editData = null}) => {
                             {/*    ))}*/}
                         </select>
                     </div>
+                    </>
+                    )}
                 </div>
                 <div className={styles.section}>
                     <label style={{fontWeight: "700"}}>Professores</label>
