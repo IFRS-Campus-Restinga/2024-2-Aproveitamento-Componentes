@@ -4,6 +4,7 @@ import styles from "./modalNotice.module.css";
 import { Button } from "../../Button/button";
 import { noticeCreate, noticeEdit } from "@/services/NoticeService";
 import Toast from "../../../utils/toast";
+import { use } from "react";
 
 const ModalNotice = ({ onClose, editData = null, response }) => {
   const formatDate = (date) => {
@@ -39,6 +40,9 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
     setFormData((prev) => {
       const updatedData = { ...prev, [name]: value };
 
+      const publicationDate = new Date(updatedData.publicationDate);
+
+      // Validação das datas
       const dateFields = [
         ["documentationDeadlineFrom", "documentationDeadlineTo"],
         ["proposalAnalysisFrom", "proposalAnalysisTo"],
@@ -61,52 +65,13 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
         }
       });
 
-      if (name === "documentationDeadlineTo") {
-        const analysisTo = new Date(updatedData.proposalAnalysisTo);
-        const docTo = new Date(value);
-
-        if (analysisTo && docTo > analysisTo) {
-          updatedData.documentationDeadlineTo = updatedData.proposalAnalysisTo;
-        }
-      }
-
-      if (name === "proposalAnalysisTo") {
-        const docTo = new Date(updatedData.documentationDeadlineTo);
-        const analysisTo = new Date(value);
-
-        if (docTo && docTo > analysisTo) {
-          updatedData.documentationDeadlineTo = value;
-        }
-      }
-
-      if (name === "proposalAnalysisFrom") {
-        const docFrom = new Date(updatedData.documentationDeadlineFrom);
-        const docTo = new Date(updatedData.documentationDeadlineTo);
-        const analysisFrom = new Date(value);
-
-        if (docFrom && analysisFrom < docFrom) {
-          updatedData.proposalAnalysisFrom =
-            updatedData.documentationDeadlineFrom;
-        }
-
-        if (docTo && analysisFrom > docTo) {
-          updatedData.proposalAnalysisFrom =
-            updatedData.documentationDeadlineTo;
-        }
-      }
-
-      if (name === "documentationDeadlineFrom") {
-        const analysisFrom = new Date(updatedData.proposalAnalysisFrom);
-        const docFrom = new Date(value);
-
-        if (analysisFrom && docFrom > analysisFrom) {
-          updatedData.proposalAnalysisFrom = value;
-        }
-      }
-
       return updatedData;
     });
   };
+
+  useEffect(() => {
+    console.log(fieldErrors);
+  }, [fieldErrors]);
 
   const handleRectificationChange = (index, value) => {
     setFormData((prev) => {
@@ -211,6 +176,60 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
         }
       });
 
+      // Validação do formato do número do edital
+      if (formData.number) {
+        const pattern = /^\d{3}-\d{4}$/;
+        if (!pattern.test(formData.number)) {
+          errors.number = "Formato inválido (exemplo: 001-2024)";
+        } else if (formData.publicationDate) {
+          // Validação com a data de publicação
+          const publicationDate = new Date(formData.publicationDate);
+          const [edital, year] = formData.number.split("-");
+          const pubYear = publicationDate.getFullYear();
+          const pubMonth = publicationDate.getMonth() + 1;
+          const expectedSemester = pubMonth <= 6 ? "001" : "002";
+
+          if (year !== String(pubYear) || edital !== expectedSemester) {
+            errors.number = `Número incorreto para o semestre e ano (${expectedSemester}-${pubYear}).`;
+          }
+        }
+      }
+
+      // Validação de datas em relação à publicação
+      const publicationDate = formData.publicationDate
+        ? new Date(formData.publicationDate)
+        : null;
+      if (publicationDate) {
+        [
+          "documentationDeadlineFrom",
+          "documentationDeadlineTo",
+          "proposalAnalysisFrom",
+          "proposalAnalysisTo",
+          "resultPublication",
+          "resultApproval",
+        ].forEach((field) => {
+          if (formData[field]) {
+            const selectedDate = new Date(formData[field]);
+            if (selectedDate < publicationDate) {
+              errors[field] =
+                "Data não pode ser anterior à publicação do edital.";
+            }
+          }
+        });
+      }
+
+      // Validação: "Prazo para Análise das Propostas" deve ser após "Prazo para Entrega da Documentação"
+      const docTo = formData.documentationDeadlineTo
+        ? new Date(formData.documentationDeadlineTo)
+        : null;
+      const analysisFrom = formData.proposalAnalysisFrom
+        ? new Date(formData.proposalAnalysisFrom)
+        : null;
+      if (docTo && analysisFrom && analysisFrom < docTo) {
+        errors.proposalAnalysisFrom =
+          "A data de início do prazo para análise deve ser após o prazo para entrega da documentação.";
+      }
+
       if (formData.number && !isValidNumber(formData.number)) {
         errors.number = "Formato inválido (exemplo: 002-2024)";
       }
@@ -297,6 +316,7 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
                 helperText={fieldErrors.documentationDeadlineFrom}
                 inputProps={{
                   max: formData.documentationDeadlineTo || undefined,
+                  min: formData.publicationDate || undefined,
                 }}
               />
               <label>Até</label>
@@ -310,7 +330,10 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
                 error={!!fieldErrors.documentationDeadlineTo}
                 helperText={fieldErrors.documentationDeadlineTo}
                 inputProps={{
-                  min: formData.documentationDeadlineFrom || undefined,
+                  min:
+                    formData.documentationDeadlineFrom ||
+                    formData.publicationDate ||
+                    undefined,
                   max: formData.proposalAnalysisTo || undefined,
                 }}
               />
@@ -331,7 +354,10 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
                 helperText={fieldErrors.proposalAnalysisFrom}
                 inputProps={{
                   max: formData.proposalAnalysisTo || undefined,
-                  min: formData.documentationDeadlineFrom || undefined
+                  min:
+                    formData.documentationDeadlineTo ||
+                    formData.publicationDate ||
+                    undefined,
                 }}
               />
               <label>Até</label>
@@ -344,7 +370,12 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
                 fullWidth
                 error={!!fieldErrors.proposalAnalysisTo}
                 helperText={fieldErrors.proposalAnalysisTo}
-                inputProps={{ min: formData.proposalAnalysisFrom || undefined }}
+                inputProps={{
+                  min:
+                    formData.proposalAnalysisFrom ||
+                    formData.publicationDate ||
+                    undefined,
+                }}
               />
             </div>
             <label style={{ fontWeight: "700", fontSize: "20px" }}>
@@ -360,6 +391,12 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
               fullWidth
               error={!!fieldErrors.resultApproval}
               helperText={fieldErrors.resultApproval}
+              inputProps={{
+                min:
+                  formData.proposalAnalysisTo ||
+                  formData.publicationDate ||
+                  undefined,
+              }}
             />
             <label style={{ fontWeight: "700", fontSize: "20px" }}>
               Publicação do Resultado *
@@ -374,6 +411,12 @@ const ModalNotice = ({ onClose, editData = null, response }) => {
               fullWidth
               error={!!fieldErrors.resultPublication}
               helperText={fieldErrors.resultPublication}
+              inputProps={{
+                min:
+                  formData.resultApproval ||
+                  formData.publicationDate ||
+                  undefined,
+              }}
             />
           </div>
           <div className={styles.modalSectionLinks}>

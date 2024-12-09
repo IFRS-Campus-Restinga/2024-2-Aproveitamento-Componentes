@@ -14,8 +14,11 @@ import {
   getSucceeded,
   steps,
 } from "@/app/requests/status";
+import Toast from "@/utils/toast";
 
 const Requests = () => {
+    const [toast, setToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState({});
   const [mergedRequests, setMergedRequests] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -25,6 +28,10 @@ const Requests = () => {
   const [error, setError] = useState(null);
   const { user } = useAuth();
   const router = useRouter();
+
+    const closeToast = () => {
+        setToast(false);
+    };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,17 +121,22 @@ const Requests = () => {
   if (loading) return <div>Carregando...</div>;
   if (error) return <div>Erro: {error}</div>;
 
-  const handleRequestFormRedirect = async () => {
-    const isNoticeOpen = await checkIfNoticeIsOpen(); // Verifica se o edital está aberto
-
-    if (isNoticeOpen) {
-      // Se o edital estiver aberto, redireciona para o formulário
-      window.location.href = "/requests/requestForm";
-    } else {
-      // Caso contrário, exibe uma mensagem informando que o edital está fechado
-      alert("Não há edital aberto no momento, aguarde.");
-    }
-  };
+    const handleRequestFormRedirect = async () => {
+        const isNoticeOpen = await checkIfNoticeIsOpen(); // Verifica se o edital está aberto
+    
+        if (isNoticeOpen) {
+            // Se o edital estiver aberto, redireciona para o formulário
+            window.location.href = "/requests/requestForm";
+        } else {
+            // Caso contrário, exibe uma mensagem informando que o edital está fechado
+            // alert("Não há edital aberto no momento, aguarde.");
+            setToast(true);
+            setToastMessage({
+              type: "info",
+              text: "Não há edital aberto no momento, aguarde.",
+            });
+        }
+    };
 
   return (
     <div className={styles.contentWrapper}>
@@ -169,67 +181,64 @@ const Requests = () => {
         </div>
       </div>
 
-      <div className={styles.tableSection}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Estudante</th>
-              <th>Tipo</th>
-              <th>Disciplina</th>
-              <th>Data de Criação</th>
-              <th>Responsável</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRequests.length === 0 ? (
-              <tr>
-                <td colSpan="6" style={{ textAlign: "center", color: "gray" }}>
-                  Sem resultados
-                </td>
-              </tr>
+            <div className={styles.tableSection}>
+                <table className={styles.table}>
+                    <thead>
+                    <tr>
+                        <th>Estudante</th>
+                        <th>Tipo</th>
+                        <th>Disciplina</th>
+                        <th>Data de Criação</th>
+                        <th>Responsável</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {filteredRequests.length === 0 ? (
+                        <tr>
+                            <td colSpan="6" style={{textAlign: "center", color: "gray"}}>
+                                Sem resultados
+                            </td>
+                        </tr>
+                    ) : (
+                        filteredRequests.map((item) => (
+                            <tr key={item.id}>
+                                <td>{item.student_name || "-"}</td>
+                                <td>
+                                    {item.type === "knowledge"
+                                        ? "Certificação de Conhecimento"
+                                        : "Aproveitamento de Estudos"}
+                                </td>
+                                <td>{item.discipline_name || "-"}</td>
+                                <td>{new Date(item.create_date).toLocaleDateString("pt-BR")}</td>
+                                <td>{Array.from(item.steps).pop()?.responsible?.name || "-"}</td>
+                                <td>{item.status_display || "-"}</td>
+                                <td>
+                                    <button className={styles.button} onClick={() => handleDetailsClick(item)}>
+                                        Detalhes
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <button onClick={handleRequestFormRedirect} className={styles.addButton}>
+                    <FontAwesomeIcon icon={faPlus} size="2x"/>
+                </button>
+            </div>
+            {toast ? (
+                <Toast type={toastMessage.type} close={closeToast}>
+                {toastMessage.text}
+                </Toast>
             ) : (
-              filteredRequests.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.student_name || "-"}</td>
-                  <td>
-                    {item.type === "knowledge"
-                      ? "Certificação de Conhecimento"
-                      : "Aproveitamento de Estudos"}
-                  </td>
-                  <td>{item.discipline_name || "-"}</td>
-                  <td>
-                    {new Date(item.create_date).toLocaleDateString("pt-BR")}
-                  </td>
-                  <td>
-                    {Array.from(item.steps).pop()?.responsible?.name || "-"}
-                  </td>
-                  <td>{item.status_display || "-"}</td>
-                  <td>
-                    <button
-                      className={styles.button}
-                      onClick={() => handleDetailsClick(item)}
-                    >
-                      Detalhes
-                    </button>
-                  </td>
-                </tr>
-              ))
+                ""
             )}
-          </tbody>
-        </table>
-      </div>
-      <div>
-        <button
-          onClick={handleRequestFormRedirect}
-          className={styles.addButton}
-        >
-          <FontAwesomeIcon icon={faPlus} size="2x" />
-        </button>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default Requests;
