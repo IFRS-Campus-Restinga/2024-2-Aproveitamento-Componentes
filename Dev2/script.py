@@ -83,11 +83,11 @@ Servant.objects.create(
     servant_type=ServantTypeEnum.ENSINO.value,
     is_verified=True
 )
-cre2 = User.objects.create_user(username='115057358381224992868', first_name='servidor', email='naoresponda_sistema@restinga.ifrs.edu.br', password=None)
+cre2 = User.objects.create_user(username='114283125304604622211', first_name='servidor', email='crerestinga@gmail.com', password=None)
 Servant.objects.create(
     user= cre2,
     name='ADMINISTRADOR',
-    email='naoresponda_sistema@restinga.ifrs.edu.br',
+    email='crerestinga@gmail.com',
     siape="0000000",
     servant_type=ServantTypeEnum.ENSINO.value,
     is_verified=True

@@ -8,8 +8,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from emails.utils import send_custom_email
-from django.utils.timezone import now
+from django.urls import reverse
+from django.test import Client  # Simula uma requisição interna para chamar o endpoint
+from django.core.mail import send_mail
 
 from .models import Notice
 from .models import RecognitionOfPriorLearning, KnowledgeCertification, RequestStatus, Attachment, Step
@@ -42,20 +43,7 @@ class StepCreateView(generics.CreateAPIView):
         return context
 
     def perform_create(self, serializer):
-        # serializer.save()
-        
-        step = serializer.save()
-        # Configura o conteúdo do e-mail
-        subject = "Novo Step Criado"
-        context = {
-            'subject': subject,
-            'message': f"Step '{step.name}' foi criado com sucesso!",
-            'date': now(),
-        }
-        recipient_list = ["2019010480@restinga.ifrs.edu.br"]  # Substitua pelos e-mails reais
-
-        # Dispara o e-mail
-        send_custom_email(subject, 'emails/example_email.html', context, recipient_list)
+        serializer.save()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -81,26 +69,23 @@ class RecognitionOfPriorLearningListCreateView(generics.ListCreateAPIView):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        print("Método create chamado com dados:", request.data)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            subject = "Nova Solicitação Criada"
-            print("config email func R")
-            context = {
-                'subject': subject,
-                'message': "Uma nova solicitação foi registrada.",
-                'date': now(),
-            }
-            recipient_list = ["2019010480@restinga.ifrs.edu.br"]
-            print("chamando email func")
-            print(recipient_list)
-            print(context)
-            print(subject)
-            send_custom_email(subject, 'emails/example_email.html', context, recipient_list)
-            print("Dados validados com sucesso.")
-        else:
-            print("Dados inválidos:", serializer.errors)
-        return super().create(request, *args, **kwargs)
+            # Salva o objeto no banco
+            serializer.save()
+
+            # Envia o e-mail diretamente
+            send_mail(
+                "Assunto",
+                "Email que estou mandando",
+                "teste@teste.com.br",
+                ["2019010480@restinga.ifrs.edu.br"]
+            )
+
+            print("Email enviado com sucesso!")
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RecognitionOfPriorLearningDetailView(generics.RetrieveUpdateAPIView):
@@ -139,26 +124,23 @@ class KnowledgeCertificationListCreateView(generics.ListCreateAPIView):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        print("Método create chamado com dados:", request.data)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            subject = "Nova Solicitação Criada"
-            print("config email func K")
-            context = {
-                'subject': subject,
-                'message': "Uma nova solicitação foi registrada.",
-                'date': now(),
-            }
-            recipient_list = ["2019010480@restinga.ifrs.edu.br"]
-            print("chamando email func")
-            print(recipient_list)
-            print(context)
-            print(subject)
-            send_custom_email(subject, 'emails/example_email.html', context, recipient_list)
-            print("Dados validados com sucesso.")
-        else:
-            print("Dados inválidos:", serializer.errors)
-        return super().create(request, *args, **kwargs)
+            # Salva o objeto no banco
+            serializer.save()
+
+            # Envia o e-mail diretamente
+            send_mail(
+                "Assunto",
+                "Email que estou mandando",
+                "teste@teste.com.br",
+                ["2019010480@restinga.ifrs.edu.br"]
+            )
+
+            print("Email enviado com sucesso!")
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class KnowledgeCertificationDetailView(generics.RetrieveUpdateAPIView):

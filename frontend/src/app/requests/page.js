@@ -8,8 +8,11 @@ import {useAuth} from "@/context/AuthContext";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {filterStatus, getFailed, getPending, getStatusStepIndex, getSucceeded, steps} from "@/app/requests/status"
+import Toast from "@/utils/toast";
 
 const Requests = () => {
+    const [toast, setToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState({});
     const [mergedRequests, setMergedRequests] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
@@ -19,6 +22,10 @@ const Requests = () => {
     const [error, setError] = useState(null);
     const user = useAuth();
     const router = useRouter();
+
+    const closeToast = () => {
+        setToast(false);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -89,7 +96,12 @@ const Requests = () => {
             window.location.href = "/requests/requestForm";
         } else {
             // Caso contrário, exibe uma mensagem informando que o edital está fechado
-            alert("Não há edital aberto no momento, aguarde.");
+            // alert("Não há edital aberto no momento, aguarde.");
+            setToast(true);
+            setToastMessage({
+              type: "info",
+              text: "Não há edital aberto no momento, aguarde.",
+            });
         }
     };
 
@@ -185,6 +197,13 @@ const Requests = () => {
                     <FontAwesomeIcon icon={faPlus} size="2x"/>
                 </button>
             </div>
+            {toast ? (
+                <Toast type={toastMessage.type} close={closeToast}>
+                {toastMessage.text}
+                </Toast>
+            ) : (
+                ""
+            )}
         </div>
     );
 };

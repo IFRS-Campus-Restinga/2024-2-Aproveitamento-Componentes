@@ -5,8 +5,11 @@ import { Button } from "../../components/Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash, faEye, faArrowLeft, faSearch} from "@fortawesome/free-solid-svg-icons";
 import DisciplineService from "@/services/DisciplineService";
+import Toast from "@/utils/toast";
 
 const ModalDisciplineRegistration = ({ onClose, goBack }) => {
+  const [toast, setToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState({});
   const [disciplineList, setDisciplineList] = useState([]); 
   const [filteredDisciplineList, setFilteredDisciplineList] = useState([]);
   const [newDiscipline, setNewDiscipline] = useState({
@@ -22,10 +25,19 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
   const [editingDiscipline, setEditingDiscipline] = useState(null);
   const [showDetails, setShowDetails] = useState(false); // Controle de exibição dos detalhes
 
+  const closeToast = () => {
+    setToast(false);
+  };
+
   const DeleteDiscipline = async (uuid) => {
     try {
       const response = await DisciplineService.DeleteDiscipline(uuid);
-      alert("Disciplina excluída com sucesso!");
+      // alert("Disciplina excluída com sucesso!");
+      setToast(true);
+      setToastMessage({
+        type: "success",
+        text: "Disciplina excluída com sucesso!",
+      });
   
       // Após a exclusão, recarregar a lista
       const updatedData = await DisciplineService.DisciplineList();
@@ -37,27 +49,47 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
       setShowDetails(false);  // Fechar detalhes após exclusão
     } catch (err) {
       console.error("Erro ao excluir disciplina:", err);
-      alert("Erro ao excluir disciplina.");
+      // alert("Erro ao excluir disciplina.");
+      setToast(true);
+      setToastMessage({
+        type: "error",
+        text: "Erro ao excluir disciplina.",
+      });
     }
   };
 
   const saveDiscipline = async () => {
     if (!newDiscipline.name || !newDiscipline.workload || !newDiscipline.syllabus || !newDiscipline.professors) {
-      alert("Por favor, preencha todos os campos obrigatórios.");
+      // alert("Por favor, preencha todos os campos obrigatórios.");
+      setToast(true);
+      setToastMessage({
+        type: "warning",
+        text: "Por favor, preencha todos os campos obrigatórios.",
+      });
       return;
     }
     try {
       if (editingDiscipline) {
         // Atualiza disciplina existente
         await DisciplineService.UpdateDiscipline(editingDiscipline.id, newDiscipline);
-        alert("Disciplina atualizada com sucesso!");
+        // alert("Disciplina atualizada com sucesso!");
+        setToast(true);
+        setToastMessage({
+          type: "success",
+          text: "Disciplina atualizada com sucesso!",
+        });
         setDisciplineList((prevList) =>
           prevList.map((d) => (d.id === editingDiscipline.id ? { ...d, ...newDiscipline } : d))
         );
       } else {
         // Cria nova disciplina
         const createdDiscipline = await DisciplineService.CreateDiscipline(newDiscipline);
-        alert("Disciplina cadastrada com sucesso!");
+        // alert("Disciplina cadastrada com sucesso!");
+        setToast(true);
+        setToastMessage({
+          type: "success",
+          text: "Por favor, preencha todos os campos obrigatórios.",
+        });
         setDisciplineList((prevList) => [...prevList, createdDiscipline]);
       }
   
@@ -263,6 +295,13 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
         <div className={styles.bottomSection}>
         </div>
       </div>
+      {toast ? (
+        <Toast type={toastMessage.type} close={closeToast}>
+          {toastMessage.text}
+        </Toast>
+      ) : (
+        ""
+      )}
     </div>
   );
 };
