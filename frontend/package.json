@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "moment-timezone": "^0.5.46",
     "@babel/preset-env": "^7.25.8",
     "@babel/preset-react": "^7.25.7",
     "@emotion/react": "^11.13.3",
