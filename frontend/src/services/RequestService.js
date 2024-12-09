@@ -14,6 +14,10 @@ function DownloadAttachment(attachmentId) {
     window.open(url, '_blank');
 }
 
+async function DeleteAttachment(attachmentId) {
+    return apiClient.delete(`/forms/attachments/${attachmentId}/`);
+}
+
 async function GetKnowledgeCertifications() {
     return apiClient.get('/forms/knowledge-certifications/');
 }
@@ -44,6 +48,7 @@ export default {
     CreateKnowledgeCertification,
     CreateRecognitionForm,
     DownloadAttachment,
+    DeleteAttachment,
     GetRecognitionOfPriorLearning,
     GetKnowledgeCertifications,
     GetKnowledgeCertificationsById,

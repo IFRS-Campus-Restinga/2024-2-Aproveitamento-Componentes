@@ -376,20 +376,30 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
 
     def validate_test_attachment(self, value):
         instance = self.instance
-        existing_test_attachment = instance.attachments.filter(is_test_attachment=True).first()
-
-        if existing_test_attachment:
-            existing_test_attachment.file_name = value.name
-            existing_test_attachment.file_data = value.read()
-            existing_test_attachment.content_type = value.content_type
-            existing_test_attachment.save()
+        user_role = self.abstract_user.type.value
+        
+        if user_role == 'Professor':
+            existing_test_attachment = instance.attachments.filter(is_test_attachment=True).first()
+            if existing_test_attachment:
+                existing_test_attachment.file_name = value.name
+                existing_test_attachment.file_data = value.read()
+                existing_test_attachment.content_type = value.content_type
+                existing_test_attachment.save()
+            else:
+                Attachment.objects.create(
+                    file_name=value.name,
+                    file_data=value.read(),
+                    content_type=value.content_type,
+                    certification_form=instance,
+                    is_test_attachment=True
+                )
         else:
             Attachment.objects.create(
                 file_name=value.name,
                 file_data=value.read(),
                 content_type=value.content_type,
                 certification_form=instance,
-                is_test_attachment=True
+                is_test_attachment=False
             )
         return value
 
