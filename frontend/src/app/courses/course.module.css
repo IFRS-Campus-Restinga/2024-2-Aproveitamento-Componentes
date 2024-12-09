@@ -7,17 +7,29 @@
   align-items: center;
 }
 
+.pageTitle {
+  font-weight: bold;
+  text-decoration: underline;
+  margin-bottom: 50px;
+  align-self: flex-start; /* Alinha o título à direita */
+  margin-left: 80px;
+}
+
 .scrollableTable {
   height: 500px;
   overflow-y: auto;
   padding: 0;
   width: 90%;
+  margin-top: 20px; /* Espaço acima da tabela para separá-la da barra de busca */
 }
 
 .table {
-  border: 2px solid #c7c7c7e1;
-  border-collapse: collapse;
+  border: 2px solid black; /* Bordas pretas */
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
+  border-radius: 20px; /* Bordas arredondadas */
+  overflow: hidden; /* Garante que as bordas arredondadas sejam visíveis */
 }
 
 .table thead {
@@ -28,13 +40,13 @@
 
 .table thead th {
   padding: 16px;
-  border-bottom: 1px solid #c7c7c7e1;
+  border-bottom: 1px solid black;
   text-align: left;
 }
 
 .table td,
 .table th {
-  border: 1px solid #ddd;
+  border: 1px solid black; /* Bordas pretas */
   padding: 8px;
 }
 
@@ -61,4 +73,71 @@
 
 .addButton:hover {
   color: white;
+}
+
+.linkButton {
+  background: none; /* Remove o fundo */
+  border: none; /* Remove a borda */
+  padding: 0; /* Remove o preenchimento */
+  cursor: pointer; /* Mantém o cursor como ponteiro para indicar que é clicável */
+  display: inline-flex; /* Faz o botão se ajustar ao tamanho do ícone */
+  align-items: center; /* Centraliza o ícone verticalmente */
+  justify-content: center; /* Centraliza o ícone horizontalmente */
+}
+
+.topSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  gap: 10px;
+  padding-right: 80px;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  position: relative; /* Necessário para o ícone se posicionar dentro do campo */
+  order: 2; /* Coloca a pesquisa à direita */
+  margin-left: auto; /* Garante que a pesquisa fique à direita */
+  width: 100%; /* A barra de pesquisa ocupará 100% da largura disponível */
+  max-width: 700px; /* Limita o tamanho máximo da barra de pesquisa */
+}
+
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.searchInputWrapper {
+  position: relative;
+  width: 50vw; /* Define a largura da barra de pesquisa como 50% da largura da tela */
+  margin-left: 50vw; /* Alinha a barra de pesquisa a partir da metade da tela */
+  margin-right: 100px;
+}
+
+.searchInput {
+  width: 100%; /* Aumenta o tamanho horizontal */
+  max-width: 700px; /* Limita o tamanho máximo */
+  padding: 12px 12px 12px 40px; /* Mais espaço interno para conforto */
+  border: 2px solid black; /* Borda azul primária */
+  border-radius: 10px; /* Bordas arredondadas */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+  transition: border-color 0.3s, box-shadow 0.3s; /* Suaviza animações */
+  outline: none; /* Remove o estilo padrão do navegador */
+}
+
+.searchInput:focus + .searchIcon {
+  color: black; /* Muda a cor da lupa quando o campo de pesquisa está em foco */
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa; /* Cor neutra do ícone */
 }

@@ -107,24 +107,24 @@ notice = Notice.objects.create(
 
 discipline = Disciplines.objects.create(
     id="fc40c88d-65ae-41ca-bd19-89075f9b4ea3",
-    name="test",
+    name="Redes de Computadores",
     workload=123,
-    syllabus= "Desenvolvimento do sistema de aproveitamento",
-    professors= "Eliana Ricardo"
+    syllabus= "Servidor-cliente",
+    professors= "Habilitar o aluno a compreender request-response"
 )
 
 Disciplines.objects.create(
-    name= "Dev3",
+    name= "Banco de Dados",
     workload= "66h",
-    syllabus= "Desenvolvimento do sistema de aproveitamento",
-    professors= "Eliana Ricardo",
+    syllabus= "Consultas de dados",
+    professors= "Habilitar o estudante a realizar consultas em bancado de dados",
 )
 
 Disciplines.objects.create(
-    name= "Dev4",
+    name= "Programacao",
     workload= "66h",
-    syllabus= "Desenvolvimento do sistema de aproveitamento",
-    professors= "Eliana Ricardo",
+    syllabus= "Conceitos fundamentais da progracao",
+    professors= "Incentivar o pensamento abstrato para programar e utilizar conceitos fundamentais",
 )
 
 

@@ -1,9 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import styles from "./modalDiscipline.module.css";
 import { Button } from "../../components/Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrash, faEye, faArrowLeft, faSearch} from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faTrash, faEye, faSearch, faPlus} from "@fortawesome/free-solid-svg-icons";
 import DisciplineService from "@/services/DisciplineService";
 import Toast from "@/utils/toast";
 
@@ -168,6 +171,7 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
   return (
     <div className={styles.modalBackground}>
       <div className={styles.modalContainer}>
+      <h1 className={styles.pageTitle}>Disciplinas</h1> {/* Título adicionado */}
         <div className={styles.topSection}>
           <div className={styles.searchContainer}>
             <div className={styles.searchWrapper}>
@@ -181,12 +185,6 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
               />
             </div>
           </div>
-          <Button type="button" onClick={() => setIsFormVisible(true)} className={styles.registerButton}>
-            Cadastrar
-          </Button>
-          <Button type="button" onClick={handleGoBack} className={styles.backButton}>
-            <FontAwesomeIcon icon={faArrowLeft} /> Sair
-          </Button>
         </div>
 
         {!isFormVisible ? (
@@ -195,7 +193,6 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
               <thead>
                 <tr>
                   <th>Disciplinas cadastradas</th>
-                  <th>Professor</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -203,7 +200,6 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
                 {filteredDisciplineList.map((discipline, index) => (
                   <tr key={index}>
                     <td>{discipline.name ?? "N/A"}</td>
-                    <td>{discipline.professors ?? "N/A"}</td>
                     <td>
                       <FontAwesomeIcon
                         icon={faEye}
@@ -259,12 +255,12 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
               />
             </div>
             <div className={styles.inputContainer}>
-              <label className={styles.inputLabel}>Professores</label>
+              <label className={styles.inputLabel}>Objetivo Geral</label>
               <input
                 type="text"
                 value={newDiscipline.professors}
                 onChange={(e) => setNewDiscipline({ ...newDiscipline, professors: e.target.value })}
-                placeholder="Professores responsáveis"
+                placeholder="Objetivo geral da disciplina"
                 className={styles.disciplineInput}
               />
             </div>
@@ -285,7 +281,7 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
             <p><strong>Nome:</strong> {selectedDiscipline.name}</p>
             <p><strong>Carga Horária:</strong> {selectedDiscipline.workload}</p>
             <p><strong>Ementa:</strong> {selectedDiscipline.syllabus}</p>
-            <p><strong>Professores:</strong> {selectedDiscipline.professors}</p>
+            <p><strong>Objetivo Geral:</strong> {selectedDiscipline.professors}</p>
             <Button type="button" onClick={() => setSelectedDiscipline(null)}>
               Fechar
             </Button>
@@ -293,6 +289,9 @@ const ModalDisciplineRegistration = ({ onClose, goBack }) => {
         )}
 
         <div className={styles.bottomSection}>
+          <button onClick={() => setIsFormVisible(true)} className={styles.registerButton}>
+            <FontAwesomeIcon icon={faPlus} size="2x" />
+          </button>
         </div>
       </div>
       {toast ? (
