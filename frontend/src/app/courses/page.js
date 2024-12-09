@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEye, faSearch } from "@fortawesome/free-solid-svg-icons";
 import styles from "./course.module.css";
 import ModalCourse from "@/components/Modal/ModalCourse/modal";
 import ModalDisciplineList from "@/components/Modal/ModalCourse/disciplineList/modal";
@@ -10,6 +10,8 @@ import { useAuth } from "@/context/AuthContext";
 
 const Course = () => {
   const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para armazenar o termo de busca
   const [modal, setModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const [disciplineModal, setDisciplineModal] = useState(false);
@@ -21,12 +23,24 @@ const Course = () => {
       try {
         const data = await courseList();
         setCourses(data.courses);
+        setFilteredCourses(data.courses); // Inicialmente, todos os cursos são exibidos
       } catch (err) {
         console.log(err);
       }
     };
     fetchCourses();
   }, []);
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    // Filtra os cursos com base no nome do curso (ou qualquer outro campo desejado)
+    const filtered = courses.filter((course) =>
+      course.name.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredCourses(filtered);
+  };
 
   const openModalForEdit = (course) => {
     setEditData(course);
@@ -50,17 +64,36 @@ const Course = () => {
 
   return (
     <div className={styles.contentWrapper}>
+      <h1 className={styles.pageTitle}>Cursos</h1> {/* Título adicionado */}
+      <div className={styles.topSection}>
+        <div className={styles.searchContainer}>
+          <div className={styles.searchWrapper}>
+            <FontAwesomeIcon
+              icon={faSearch}
+              size="lg"
+              className={styles.searchIcon} // Classe para a lupa
+            />
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={searchTerm}
+              onChange={handleSearch} // Evento de busca enquanto digita
+              className={styles.searchInput}
+            />
+          </div>
+        </div>
+      </div>
       <div className={styles.scrollableTable}>
         <table className={styles.table}>
           <thead>
             <tr>
               <th>Curso</th>
               <th>Coordenador</th>
-              <th>Disciplina</th>
+              <th>Ver disciplinas</th>
             </tr>
           </thead>
           <tbody>
-            {courses.map((course) => (
+            {filteredCourses.map((course) => (
               <tr key={course.id} onClick={() => {
                   if (user.user.type === "Ensino") {
                       openModalForEdit(course); // Ensino pode editar todos os cursos
@@ -86,7 +119,7 @@ const Course = () => {
                       openDisciplineModal(course);
                     }}
                   >
-                    Ver Disciplinas
+                    <FontAwesomeIcon icon={faEye} size="lg" />
                   </button>
                 </td>
               </tr>

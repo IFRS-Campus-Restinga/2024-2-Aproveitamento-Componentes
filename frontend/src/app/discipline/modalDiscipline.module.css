@@ -75,35 +75,36 @@ body .modalContainer {
 }
 
 .registerButton, .backButton  {
-  order:1;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  margin-right: 5px;
-  border-radius: 5px; /* Bordas arredondadas */
-  border: none; /* Remove borda padrão */
-  cursor: pointer; /* Cursor em forma de mão */
-  order: 1;
+  background: greenyellow;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #046708;
 }
 
 .tableSection {
   margin-top: 20px;
   border: 2px solid black;
-  border-radius: 8px; /* Cantos arredondados */
+  border-radius: 20px; /* Cantos arredondados */
 }
 
 .table {
+  border: 2px solid black; /* Bordas pretas */
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
-  border-collapse: collapse;
-  border: 2px solid black; /* Borda preta ao redor da tabela */
-  border-radius: 8px; /* Cantos arredondados */
-  overflow: hidden; /* Garante que o arredondamento seja aplicado */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destacar a tabela */
+  border-radius: 20px; /* Bordas arredondadas */
+  overflow: hidden; /* Garante que as bordas arredondadas sejam visíveis */
 }
 
 .table th {
   background-color: #28a745; /* Cor verde */
-  color: white; /* Cor do texto para garantir boa legibilidade */
+  color: black; /* Cor do texto para garantir boa legibilidade */
   padding: 10px;
   border: 1px solid black;
   text-align: left; /* Alinhamento do texto */
@@ -134,10 +135,20 @@ body .modalContainer {
 }
 
 .bottomSection {
-  margin-top: 20px;
+  display: flex;
+  justify-content: center;  /* Centraliza o conteúdo horizontalmente */
+  align-items: center;      /* Centraliza o conteúdo verticalmente */
+  width: 100%;              /* Garante que ocupe toda a largura disponível */
+  height: 100%;             /* Garante que ocupe toda a altura do seu contêiner pai */
 }
 
 .backButton {
   background-color: #ff6f61;
   color: white;
+}
+
+.pageTitle {
+  text-decoration: underline; /* Adiciona o sublinhado */
+  font-size: 2rem; /* Ajuste o tamanho da fonte conforme necessário */
+  color: #333; /* Defina a cor que deseja para o título */
 }
