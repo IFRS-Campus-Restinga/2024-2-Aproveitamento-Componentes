@@ -68,3 +68,22 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.addButtonContainer {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente o botão dentro desse contêiner */
+  width: 100%;
+}
+
+.addButton {
+  width: 35px;
+  height: 35px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 4px; /* Ajuste o raio se quiser cantos arredondados */
+  background-color: #28a745; /* Ajuste a cor de fundo se necessário */
+  cursor: pointer;
+  margin-top: 0px;   /* Caso queira um espaçamento vertical */
+}

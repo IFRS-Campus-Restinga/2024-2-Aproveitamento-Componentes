@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./requestForm.module.css";
 import { Button } from "primereact/button";
@@ -9,6 +9,8 @@ import { FileUpload } from "primereact/fileupload";
 import RequestService from "@/services/RequestService";
 import { courseList } from "@/services/CourseService";
 import { GetDiscipline } from "@/services/DisciplineService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const CertificationRequestForm = () => {
   const [requestType, setRequestType] = useState("");
@@ -18,13 +20,19 @@ const CertificationRequestForm = () => {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [disciplineId, setDisciplineId] = useState("");
   const [disciplines, setDisciplines] = useState([]);
-  const [attachment, setAttachment] = useState([]);
   const [notices, setNotices] = useState([]);
   const [selectedNotice, setSelectedNotice] = useState("");
   const [status] = useState("CR");
   const { user } = useAuth();
   const [courses, setCourses] = useState([]);
-  console.log("###" + JSON.stringify(user));
+
+  // Usaremos um contador para gerar IDs incrementais.
+  const idCounterRef = useRef(1);
+
+  // Estado para gerenciar as linhas de upload (cada linha com um FileUpload básico)
+  const [uploadLines, setUploadLines] = useState([
+    { id: idCounterRef.current, file: null },
+  ]);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -38,16 +46,6 @@ const CertificationRequestForm = () => {
     fetchCourses();
   }, []);
 
-  const onFileSelect = (e) => {
-    setAttachment(e.files);
-  };
-  const onFileRemove = (e) => {
-    attachment.splice(e.index, 1);
-  };
-  const handleFileUploadCancel = () => {
-    setAttachment([]);
-  };
-
   useEffect(() => {
     const fetchNotices = async () => {
       try {
@@ -58,12 +56,12 @@ const CertificationRequestForm = () => {
           .filter(
             (notice) =>
               new Date(notice.documentation_submission_start) <= new Date() &&
-              new Date(notice.documentation_submission_end) >= new Date(),
+              new Date(notice.documentation_submission_end) >= new Date()
           )
           .sort(
             (a, b) =>
               new Date(b.documentation_submission_start) -
-              new Date(a.documentation_submission_start),
+              new Date(a.documentation_submission_start)
           )
           .slice(0, 1)[0];
         setSelectedNotice(currentNotice || null);
@@ -84,7 +82,7 @@ const CertificationRequestForm = () => {
       try {
         const course = courses.find((course) => course.id === courseId);
         const disciplinePromises = course.disciplines.map((id) =>
-          GetDiscipline(id),
+          GetDiscipline(id)
         );
 
         const disciplineResults = await Promise.all(disciplinePromises);
@@ -96,6 +94,33 @@ const CertificationRequestForm = () => {
     } else {
       setDisciplines([]);
     }
+  };
+
+  // Função para atualizar o arquivo escolhido em uma linha específica
+  const handleFileSelect = (lineId, event) => {
+    const file = event.files && event.files.length > 0 ? event.files[0] : null;
+    setUploadLines((prevLines) =>
+      prevLines.map((line) =>
+        line.id === lineId ? { ...line, file: file } : line
+      )
+    );
+    console.log("Linhas de upload após seleção de arquivo:", uploadLines);
+  };
+
+  // Função para adicionar uma nova linha de upload
+  const addUploadLine = () => {
+    idCounterRef.current += 1;
+    setUploadLines((prevLines) => [
+      ...prevLines,
+      { id: idCounterRef.current, file: null },
+    ]);
+    console.log("Linhas de upload após adição:", uploadLines);
+  };
+
+  // Função para remover uma linha de upload
+  const removeUploadLine = (lineId) => {
+    setUploadLines((prevLines) => prevLines.filter((line) => line.id !== lineId));
+    console.log("Linhas de upload após remoção:", uploadLines);
   };
 
   const handleSubmit = async (e) => {
@@ -121,11 +146,13 @@ const CertificationRequestForm = () => {
       console.error("Tipo de requisição inválido.");
       return;
     }
-    if (attachment && attachment.length > 0) {
-      attachment.forEach((file) => {
-        formData.append("attachment", file);
-      });
-    }
+
+    // Anexar os arquivos de cada linha ao formData
+    uploadLines.forEach((line) => {
+      if (line.file) {
+        formData.append("attachment", line.file);
+      }
+    });
 
     const response =
       requestType === "certificacao"
@@ -141,8 +168,8 @@ const CertificationRequestForm = () => {
   };
 
   const handleCancel = () => {
-    console.log("teste cancelar");
-    console.log(attachment);
+    console.log("Ação de cancelar.");
+    console.log("Linhas atuais de upload:", uploadLines);
   };
 
   return (
@@ -155,11 +182,11 @@ const CertificationRequestForm = () => {
               {" "}
               {selectedNotice.number} -{" "}
               {new Date(
-                selectedNotice.documentation_submission_start,
+                selectedNotice.documentation_submission_start
               ).toLocaleDateString()}{" "}
               a{" "}
               {new Date(
-                selectedNotice.documentation_submission_end,
+                selectedNotice.documentation_submission_end
               ).toLocaleDateString()}{" "}
             </span>
           ) : (
@@ -203,7 +230,7 @@ const CertificationRequestForm = () => {
           value={disciplineId}
           onChange={(e) => setDisciplineId(e.target.value)}
           className={styles.selectForm}
-          disabled={!selectedCourse} // Desabilita se nenhum curso estiver selecionado
+          disabled={!selectedCourse}
           required
         >
           <option value="">Selecione uma disciplina</option>
@@ -250,25 +277,46 @@ const CertificationRequestForm = () => {
           />
         </div>
       )}
+
+      {/* Linhas de upload */}
       <div className={styles.typeContainer}>
         <label htmlFor="anexos" className={styles.textForm}>
           Anexar arquivos:
         </label>
-        <FileUpload
-          name="attachment"
-          multiple
-          customUpload={true}
-          accept="application/pdf,image/png,image/jpeg"
-          maxFileSize={5000000}
-          chooseLabel="Selecionar anexos"
-          cancelLabel="Cancelar"
-          uploadHandler={() => {}} // Função vazia
-          onSelect={(e) => onFileSelect(e)}
-          onClear={handleFileUploadCancel}
-          onRemove={(e) => onFileRemove(e)}
-          className={styles.selectForm}
-        />
+        {uploadLines.map((line) => (
+          <div
+            key={line.id}
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            <FileUpload
+              name="singleAttachment"
+              mode="basic"
+              accept="application/pdf,image/png,image/jpeg"
+              maxFileSize={5000000}
+              chooseLabel="Selecionar arquivo"
+              className={styles.selectForm}
+              onSelect={(e) => handleFileSelect(line.id, e)}
+              auto={false}
+              customUpload={true}
+            />
+            <Button
+              type="button"
+              className={styles.cancelButton}
+              style={{ marginLeft: "0.5rem" }}
+              onClick={() => removeUploadLine(line.id)}
+            >
+              X
+            </Button>
+          </div>
+        ))}
+        <div className={styles.addButtonContainer}>
+          <button type="button" onClick={addUploadLine} className={styles.addButton}>
+
+            <i className="pi pi-plus" style={{ fontSize: '1.5rem', color: '#ffff' }}></i>
+          </button>
+        </div>
       </div>
+
       <div className={styles.formBtnContainer}>
         <Button
           type="button"
