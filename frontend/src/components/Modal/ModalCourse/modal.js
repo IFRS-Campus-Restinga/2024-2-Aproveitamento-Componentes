@@ -12,7 +12,7 @@ const ModalCourse = ({onClose, editData = null}) => {
     const [courseName, setCourseName] = useState(editData ? editData.name : "");
     const [selectedProfessors, setSelectedProfessors] = useState(editData ? editData.professors : [],);
     const [selectedDisciplines, setSelectedDisciplines] = useState(editData ? editData.disciplines : [],);
-    const [selectedCoordinator, setSelectedCoordinator] = useState(editData ? editData.coordinator_id :null);
+    const [selectedCoordinator, setSelectedCoordinator] = useState(editData ? editData.coordinator_id : null);
     const [availableDisciplines, setAvailableDisciplines] = useState([]);
     const [availableProfessors, setAvailableProfessors] = useState([]);
     const [availableCoordinators, setAvailableCoordinators] = useState([]);
@@ -55,7 +55,8 @@ const ModalCourse = ({onClose, editData = null}) => {
             apiClient
                 .get("/users/list", {
                     params: {
-                        user_type: "Coordenador" || "Professor",
+                        user_type: "Professor",
+                        // user_type: "Coordenador" || "Professor",
                     },
                 })
                 .then((response) => {
@@ -190,17 +191,22 @@ const ModalCourse = ({onClose, editData = null}) => {
                                     {existingCoordinator.name}
                                 </option>
                             )}
-                            {availableCoordinators
-                                .filter(
-                                    (coordinator) =>
-                                        !existingCoordinator ||
-                                        coordinator.id !== existingCoordinator.id,
-                                )
-                                .map((coordinator) => (
-                                    <option key={coordinator.id} value={coordinator.id}>
-                                        {coordinator.name}
-                                    </option>
-                                ))}
+                            {availableCoordinators.map((professor) => (
+                            <option key={professor.id} value={professor.id}>
+                                {professor.name}
+                            </option>
+                            ))}
+                            {/*{availableCoordinators*/}
+                            {/*    .filter(*/}
+                            {/*        (coordinator) =>*/}
+                            {/*            !existingCoordinator ||*/}
+                            {/*            coordinator.id !== existingCoordinator.id,*/}
+                            {/*    )*/}
+                            {/*    .map((coordinator) => (*/}
+                            {/*        <option key={coordinator.id} value={coordinator.id}>*/}
+                            {/*            {coordinator.name}*/}
+                            {/*        </option>*/}
+                            {/*    ))}*/}
                         </select>
                     </div>
                 </div>
