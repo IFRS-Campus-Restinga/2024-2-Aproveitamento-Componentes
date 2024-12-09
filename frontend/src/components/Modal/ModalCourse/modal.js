@@ -4,15 +4,18 @@ import {Button} from "../../Button/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
 import {courseCreate, courseEdit} from "@/services/CourseService";
-import {UserList} from "@/services/AuthService";
+import AuthService, {UserList} from "@/services/AuthService";
 import {DisciplineList, GetDiscipline} from "@/services/DisciplineService";
 import {apiClient} from "@/libs/api";
+import {useAuth} from '@/context/AuthContext';
+import {handleApiResponse} from "@/libs/apiResponseHandler";
 
 const ModalCourse = ({onClose, editData = null}) => {
+    const {user} = useAuth()
     const [courseName, setCourseName] = useState(editData ? editData.name : "");
     const [selectedProfessors, setSelectedProfessors] = useState(editData ? editData.professors : [],);
     const [selectedDisciplines, setSelectedDisciplines] = useState(editData ? editData.disciplines : [],);
-    const [selectedCoordinator, setSelectedCoordinator] = useState(editData ? editData.coordinator_id :null);
+    const [selectedCoordinator, setSelectedCoordinator] = useState(editData ? editData.coordinator_id : null);
     const [availableDisciplines, setAvailableDisciplines] = useState([]);
     const [availableProfessors, setAvailableProfessors] = useState([]);
     const [availableCoordinators, setAvailableCoordinators] = useState([]);
@@ -55,7 +58,8 @@ const ModalCourse = ({onClose, editData = null}) => {
             apiClient
                 .get("/users/list", {
                     params: {
-                        user_type: "Coordenador" || "Professor",
+                        user_type: "Professor",
+                        // user_type: "Coordenador" || "Professor",
                     },
                 })
                 .then((response) => {
@@ -138,6 +142,57 @@ const ModalCourse = ({onClose, editData = null}) => {
 
     };
 
+    const handleChangeProfessorToCoord = async (idProf) => {
+        try {
+            const users = await UserList();
+            const prof = users.find((user) => user.id === idProf);
+
+            const updatedProf = {
+                ...prof,
+                type: "Coordenador",
+                servant_type: "Coordenador",
+            };
+            console.log("Tornando Prof para Coord")
+            console.log(updatedProf)
+
+            const formData = new FormData();
+            formData.append("name", updatedProf.name);
+            formData.append("email", updatedProf.email);
+            formData.append("siape", updatedProf.siape);
+            formData.append("servant_type", updatedProf.servant_type);
+
+            const response = await AuthService.UpdateUser(idProf, formData);
+
+            handleApiResponse(response);
+        } catch (error) {
+            console.error("Erro ao alterar o professor para coordenador:", error);
+        }
+    };
+
+
+    const handleChangeCoordToProfessor = async (coord) => {
+        try {
+            coord = {
+                ...coord,
+                type: 'Professor',
+                servant_type: 'Professor',
+            }
+            console.log("Tornando Coord para Prof")
+            console.log(coord)
+            const formData = new FormData();
+
+            formData.append('name', coord.name);
+            formData.append('email', coord.email);
+            formData.append('siape', coord.siape);
+            formData.append('servant_type', coord.servant_type)
+
+            const response = await AuthService.UpdateUser(coord.id, formData)
+            handleApiResponse(response);
+        } catch (error) {
+            console.error("Erro ao alterar o coord para professor:", error);
+        }
+    };
+
     const handleSubmit = async () => {
         console.log("Handle submit foi chamado");
         const courseData = {
@@ -146,6 +201,17 @@ const ModalCourse = ({onClose, editData = null}) => {
             disciplines: selectedDisciplines.map((disc) => disc.id), // Apenas UUIDs
             coordinator_id: selectedCoordinator ? selectedCoordinator : null,
         };
+
+        if ((editData?.coordinator?.id || null) !== (selectedCoordinator || null)) {
+            if (selectedCoordinator) {
+                await handleChangeProfessorToCoord(selectedCoordinator);
+            }
+
+            if (editData?.coordinator) {
+                await handleChangeCoordToProfessor(editData.coordinator);
+            }
+        }
+
 
         console.log(courseData);
         try {
@@ -176,33 +242,42 @@ const ModalCourse = ({onClose, editData = null}) => {
                 />
 
                 <div className={styles.section}>
-                    <label style={{fontWeight: "700"}}>Coordenador</label>
-                    <div className={styles.selectedItems}>
-                        <select onChange={(e) => handleSelectCoordinator(e.target.value)}>
-                            <option value="" disabled={!!existingCoordinator}>
-                                Selecione um Coordenador
-                            </option>
-                            {existingCoordinator && (
-                                <option
-                                    key={existingCoordinator.id}
-                                    value={existingCoordinator.id}
-                                >
-                                    {existingCoordinator.name}
-                                </option>
-                            )}
-                            {availableCoordinators
-                                .filter(
-                                    (coordinator) =>
-                                        !existingCoordinator ||
-                                        coordinator.id !== existingCoordinator.id,
-                                )
-                                .map((coordinator) => (
-                                    <option key={coordinator.id} value={coordinator.id}>
-                                        {coordinator.name}
+                    {user.servant_type === 'Ensino' && (
+                        <>
+                            <label style={{fontWeight: "700"}}>Coordenador</label>
+                            <div className={styles.selectedItems}>
+                                <select onChange={(e) => handleSelectCoordinator(e.target.value)}>
+                                    <option value="" disabled={!!existingCoordinator}>
+                                        Selecione um Coordenador
                                     </option>
-                                ))}
-                        </select>
-                    </div>
+                                    {existingCoordinator && (
+                                        <option
+                                            key={existingCoordinator.id}
+                                            value={existingCoordinator.id}
+                                        >
+                                            {existingCoordinator.name}
+                                        </option>
+                                    )}
+                                    {availableCoordinators.map((professor) => (
+                                        <option key={professor.id} value={professor.id}>
+                                            {professor.name}
+                                        </option>
+                                    ))}
+                                    {/*{availableCoordinators*/}
+                                    {/*    .filter(*/}
+                                    {/*        (coordinator) =>*/}
+                                    {/*            !existingCoordinator ||*/}
+                                    {/*            coordinator.id !== existingCoordinator.id,*/}
+                                    {/*    )*/}
+                                    {/*    .map((coordinator) => (*/}
+                                    {/*        <option key={coordinator.id} value={coordinator.id}>*/}
+                                    {/*            {coordinator.name}*/}
+                                    {/*        </option>*/}
+                                    {/*    ))}*/}
+                                </select>
+                            </div>
+                        </>
+                    )}
                 </div>
                 <div className={styles.section}>
                     <label style={{fontWeight: "700"}}>Professores</label>
