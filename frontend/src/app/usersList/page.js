@@ -10,8 +10,11 @@ import { useUserFilters } from "@/hooks/useUserFilters";
 import AuthService from "@/services/AuthService";
 import FormProfile from "@/components/Forms/Profile/ProfileForm";
 import { handleApiResponse } from "@/libs/apiResponseHandler";
+import { useAuth } from "@/context/AuthContext";
+
 
 const UsersList = () => {
+  const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
@@ -19,6 +22,7 @@ const UsersList = () => {
   const [error, setError] = useState(null);
   const [visibility, setVisibility] = useState({}); // Tracks visibility state for each user
 
+  console.log(user);
   // Move the useUserFilters hook above any conditional returns
   const {
     search,
@@ -174,17 +178,17 @@ const UsersList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.name ?? "N/A"}</td>
-                  <td>{user.type ?? "N/A"}</td>
-                  <td>{visibility[user.id] ? user.email : "-"}</td>
-                  <td>{visibility[user.id] ? user.course : "-"}</td>
-                  <td>{visibility[user.id] ? user.matricula : "-"}</td>
-                  <td>{visibility[user.id] ? user.siape : "-"}</td>
-                  <td>{user.is_active ? "Ativo" : "Inativo"}</td>
+              {filteredUsers.map((u) => (
+                <tr key={u.id}>
+                  <td>{u.name ?? "N/A"}</td>
+                  <td>{u.type ?? "N/A"}</td>
+                  <td>{visibility[u.id] ? u.email : "-"}</td>
+                  <td>{visibility[u.id] ? u.course : "-"}</td>
+                  <td>{visibility[u.id] ? u.matricula : "-"}</td>
+                  <td>{visibility[u.id] ? u.siape : "-"}</td>
+                  <td>{u.is_active ? "Ativo" : "Inativo"}</td>
                   <td className="ver-column">
-                    {user.is_verified ? (
+                    {u.is_verified ? (
                       <span className="p-icon pi pi-fw pi-check-circle ms-9 text-2xl" style={{ color: "#2f9e41" }}></span>
                     ) : (
                       <span className="p-icon pi pi-fw pi-exclamation-triangle ms-9 text-2xl" style={{ color: "#f1c40f" }}></span>
@@ -194,18 +198,22 @@ const UsersList = () => {
                     <FontAwesomeIcon
                       icon={faEye}
                       style={{ marginRight: "10px", cursor: "pointer" }}
-                      onClick={() => toggleVisibility(user.id)}
+                      onClick={() => toggleVisibility(u.id)}
                     />
-                    <FontAwesomeIcon
-                      icon={faPenToSquare}
-                      style={{ marginRight: "10px", cursor: "pointer" }}
-                      onClick={() => handleEdit(user)}
-                    />
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => updateActivity(user.id)}
-                    />
+                    {user?.type === 'Ensino' && (
+                        <>
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            style={{ marginRight: "10px", cursor: "pointer" }}
+                            onClick={() => handleEdit(u)}
+                          />
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => updateActivity(u.id)}
+                          />
+                      </>
+                      )}
                   </td>
                 </tr>
               ))}
