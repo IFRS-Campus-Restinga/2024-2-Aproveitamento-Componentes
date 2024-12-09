@@ -54,8 +54,7 @@ const Details = () => {
   const [availableProfessors, setAvailableProfessors] = useState([]);
   const [coordinatorFeedback, setCoordinatorFeedback] = useState("");
   const [professorFeedback, setProfessorFeedback] = useState("");
-  const [coordinatorSecondFeedback, setCoordinatorSecondFeedback] =
-    useState("");
+  const [coordinatorSecondFeedback, setCoordinatorSecondFeedback] = useState("");
   const [creFeedback, setCreFeedback] = useState("");
   const [editedTestScore, setEditedTestScore] = useState("");
   const [hasChangesKnowledge, setHasChangesKnowledge] = useState(false);
@@ -77,6 +76,30 @@ const Details = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [testDate, setTestDate] = useState(null);
   const [testAttachment, setTestAttachment] = useState(null);
+
+  const [uploadAttachmentLines, setUploadAttachmentLines] = useState([]);
+  const attachmentIdCounterRef = useRef(1);
+
+  const addAttachmentLine = () => {
+    attachmentIdCounterRef.current += 1;
+    setUploadAttachmentLines((prev) => [
+      ...prev,
+      { id: attachmentIdCounterRef.current, file: null },
+    ]);
+  };
+
+  const removeAttachmentLine = (lineId) => {
+    setUploadAttachmentLines((prev) => prev.filter((line) => line.id !== lineId));
+  };
+
+  const handleAttachmentFileSelect = async (lineId, event) => {
+    const file = event.files && event.files.length > 0 ? event.files[0] : null;
+    if (file) {
+      await handleSave("test_attachment", file);
+      setUploadAttachmentLines((prev) => prev.filter((line) => line.id !== lineId));
+      await fetchDetails();
+    }
+  };
 
   const fetchDetails = async () => {
     try {
@@ -226,8 +249,12 @@ const Details = () => {
     closeModal();
   };
 
-  const handleDownloadAttachment = async (attachmentId) => {
-    await RequestService.DownloadAttachment(attachmentId);
+  const handleDownloadAttachment = (attachmentId) => {
+    RequestService.DownloadAttachment(attachmentId);
+  };
+
+  const handleDeleteAttachment = async (attachmentId) => {
+    await RequestService.DeleteAttachment(attachmentId);
   };
 
   const handleEditToggleKnowledge = () => {
@@ -290,17 +317,22 @@ const Details = () => {
   const handleSave = async (field, file) => {
     try {
       let response;
-      let updatedData;
 
       if (field === "test_attachment") {
         const formData = new FormData();
-        formData.append("test_attachment", file);
+        formData.append(field, file);
 
         response = await apiClient.patch(
           `${baseURL}/forms/${type}/${id}/`,
           formData,
         );
+  
+        if (response.status !== 200) throw new Error("Erro ao salvar alterações");
+        setDetails((prevDetails) => ({
+          ...prevDetails,
+        }));
       } else {
+        let updatedData;
         switch (field) {
           case "previous_knowledge":
             updatedData = { previous_knowledge: editedKnowledge };
@@ -324,10 +356,14 @@ const Details = () => {
           `${baseURL}/forms/${type}/${id}/`,
           updatedData,
         );
+
+        if (response.status !== 200) throw new Error("Erro ao salvar alterações");
+  
+        setDetails((prevDetails) => ({
+          ...prevDetails,
+          ...updatedData,
+        }));
       }
-
-      if (response.status !== 200) throw new Error("Erro ao salvar alterações");
-
       switch (field) {
         case "previous_knowledge":
           setHasChangesKnowledge(false);
@@ -358,19 +394,13 @@ const Details = () => {
       }
 
       setDisableReactivity(false);
-
-      setDetails((prevDetails) => ({
-        ...prevDetails,
-        ...updatedData,
-      }));
-    } catch (error) {
-      setError("Erro ao salvar alterações");
-    } finally {
       setEditedKnowledge("");
       setEditedCourseWorkload("");
       setEditedSchedulingDate("");
       setEditedCourseStudiedWorkload("");
       setEditedTestScore("");
+    } catch (error) {
+      setError("Erro ao salvar alterações");
     }
   };
 
@@ -482,34 +512,97 @@ const Details = () => {
                     <strong>Componente curricular: </strong>
                     {details.discipline_name}
                   </p>
-                  {details.attachments && details.attachments.length > 0 && (
+                  {role === "Estudante" && details.status_display === "Em análise do Ensino" ? (
                     <div className={styles.attachmentsSection}>
                       <h3>Anexos</h3>
-                      <ul className={styles.attachmentsList}>
-                        {details.attachments
-                          .filter(
-                            (attachment) => !attachment.is_test_attachment,
-                          )
-                          .map((attachment) => (
-                            <li
-                              key={attachment.id}
-                              className={styles.attachmentItem}
-                            >
-                              <div className={styles.attachmentItemContent}>
-                                <strong>{attachment.file_name}</strong>
-                                <Button
-                                  icon="pi pi-download"
-                                  className="p-button-sm p-button-outlined"
-                                  onClick={() =>
-                                    handleDownloadAttachment(attachment.id)
-                                  }
-                                  tooltip="Visualizar Anexo"
-                                />
-                              </div>
-                            </li>
-                          ))}
-                      </ul>
+                      {details.attachments && details.attachments.length > 0 && (
+                        <ul className={styles.attachmentsList}>
+                          {details.attachments
+                            .filter((attachment) => !attachment.is_test_attachment)
+                            .map((attachment) => (
+                              <li
+                                key={attachment.id}
+                                className={styles.attachmentItem}
+                              >
+                                <div className={styles.attachmentItemContent}>
+                                  <strong>{attachment.file_name}</strong>
+                                  <div>
+                                    <Button
+                                      icon="pi pi-download"
+                                      className="p-button-sm p-button-outlined"
+                                      onClick={() => handleDownloadAttachment(attachment.id)}
+                                      tooltip="Visualizar Anexo"
+                                      style={{ marginRight: "8px" }}
+                                    />
+                                    <Button
+                                      icon="pi pi-trash"
+                                      className="p-button-sm p-button-danger p-button-outlined"
+                                      onClick={async () => {
+                                        await handleDeleteAttachment(attachment.id);
+                                        await fetchDetails();
+                                      }}
+                                      tooltip="Excluir Anexo"
+                                    />
+                                  </div>
+                                </div>
+                              </li>
+                            ))}
+                        </ul>
+                      )}
+
+                      {uploadAttachmentLines.map((line) => (
+                        <div key={line.id} style={{ display: "flex", alignItems: "center" }}>
+                          <FileUpload
+                            name="attachment"
+                            mode="basic"
+                            accept="application/pdf,image/png,image/jpeg"
+                            maxFileSize={5000000}
+                            chooseLabel="Selecionar arquivo"
+                            className={styles.selectForm}
+                            onSelect={(e) => handleAttachmentFileSelect(line.id, e)}
+                            auto={false}
+                            customUpload={true}
+                          />
+                          <Button
+                            type="button"
+                            className="p-button-danger p-button-text"
+                            style={{ marginLeft: "0.5rem" }}
+                            onClick={() => removeAttachmentLine(line.id)}
+                          >
+                            X
+                          </Button>
+                        </div>
+                      ))}
+                      <div className={styles.addButtonContainer}>
+                        <button type="button" onClick={addAttachmentLine} className={styles.addButton}>
+                          <i className="pi pi-plus" style={{ fontSize: '1.5rem', color: '#ffff' }}></i>
+                        </button>
+                      </div>
                     </div>
+                  ) : (
+                    details.attachments &&
+                    details.attachments.length > 0 && (
+                      <div className={styles.attachmentsSection}>
+                        <h3>Anexos</h3>
+                        <ul className={styles.attachmentsList}>
+                          {details.attachments
+                            .filter((attachment) => !attachment.is_test_attachment)
+                            .map((attachment) => (
+                              <li key={attachment.id} className={styles.attachmentItem}>
+                                <div className={styles.attachmentItemContent}>
+                                  <strong>{attachment.file_name}</strong>
+                                  <Button
+                                    icon="pi pi-download"
+                                    className="p-button-sm p-button-outlined"
+                                    onClick={() => handleDownloadAttachment(attachment.id)}
+                                    tooltip="Visualizar Anexo"
+                                  />
+                                </div>
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )
                   )}
 
                   {type === "knowledge-certifications" && (
@@ -662,8 +755,7 @@ const Details = () => {
                 <div className={styles.columns}>
                   <div className={styles.infoColumn}>
                     {role === "Coordenador" &&
-                      details.status_display ===
-                        "Em análise do Coordenador" && (
+                      details.status_display === "Em análise do Coordenador" && (
                         <div className={styles.selector_container}>
                           <select
                             className={styles.selector}
@@ -706,8 +798,7 @@ const Details = () => {
                       </div>
                     )}
                     {role === "Coordenador" &&
-                      details.status_display ===
-                        "Em análise do Coordenador" && (
+                      details.status_display === "Em análise do Coordenador" && (
                         <div className={styles.actionButtons}>
                           {selectedProfessor && (
                             <Button
@@ -894,8 +985,7 @@ const Details = () => {
                       </div>
                     )}
                     {(details.status_display === "Em análise do Professor" ||
-                      details.status_display ===
-                        "Retornado pelo Coordenador") &&
+                      details.status_display === "Retornado pelo Coordenador") &&
                       role === "Professor" &&
                       (type !== "knowledge-certifications" ||
                         (type === "knowledge-certifications" &&
@@ -906,17 +996,13 @@ const Details = () => {
                           <Button
                             label="Aprovar"
                             icon="pi pi-check"
-                            onClick={() =>
-                              openModal("Analisado pelo Professor")
-                            }
+                            onClick={() => openModal("Analisado pelo Professor")}
                             className={styles.pButtonSuccess}
                           />
                           <Button
                             label="Rejeitar"
                             icon="pi pi-times"
-                            onClick={() =>
-                              openModal("Rejeitado pelo Professor")
-                            }
+                            onClick={() => openModal("Rejeitado pelo Professor")}
                             className={styles.pButtonDanger}
                           />
                         </div>
@@ -961,17 +1047,13 @@ const Details = () => {
                           <Button
                             label="Aprovar"
                             icon="pi pi-check"
-                            onClick={() =>
-                              openModal("Aprovado pelo Coordenador")
-                            }
+                            onClick={() => openModal("Aprovado pelo Coordenador")}
                             className={styles.pButtonSuccess}
                           />
                           <Button
                             label="Retornar"
                             icon="pi pi-arrow-left"
-                            onClick={() =>
-                              openModal("Retornado pelo Coordenador")
-                            }
+                            onClick={() => openModal("Retornado pelo Coordenador")}
                             className={styles.pButtonReturn}
                           />
                           <Button

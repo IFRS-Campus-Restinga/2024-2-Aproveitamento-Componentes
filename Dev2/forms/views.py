@@ -208,3 +208,13 @@ class AttachmentDownloadView(APIView):
 
         response['Content-Disposition'] = f'inline; filename="{attachment.file_name}"'
         return response
+
+    def delete(self, request, attachment_id):
+        
+        try:
+            Attachment.objects.filter(id=attachment_id).delete()
+        except Attachment.DoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        response = Response(status=status.HTTP_200_OK)
+        return response

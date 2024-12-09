@@ -47,7 +47,7 @@
 
 .nameFilter {
   padding: 10px 10px 10px 40px; /* O padding-left (30px) cria o espaço para a lupa dentro do input */
-  border: 1px solid black;
+  border: 1px solid rgb(166, 165, 165);
   border-radius: 5px;
   font-size: 14px;
   width: 100%; /* Faz o input ocupar 100% da largura do seu contêiner pai (searchWrapper) */
@@ -148,13 +148,13 @@
   width: 100%;
   border-collapse: separate; /* Mudando para 'separate' para permitir bordas arredondadas */
   border-spacing: 0; /* Remove o espaçamento entre as células */
-  border: 3px solid #000; /* Borda externa mais grossa e escura */
+  border: 3px solid #b8b8b8; /* Borda externa mais grossa e escura */
   border-radius: 10px; /* Arredonda as pontas da tabela */
   overflow: hidden; /* Garante que o conteúdo da tabela não ultrapasse os cantos arredondados */
 }
 
 .table th, .table td {
-  border: 1px solid black; /* Adiciona bordas pretas a cada célula */
+  border: 1px solid #b8b8b8; /* Borda externa mais grossa e escura */
   padding: 8px;
   text-align: left;
   min-width: 150px;  /* Ajuste a largura mínima das colunas conforme necessário */
