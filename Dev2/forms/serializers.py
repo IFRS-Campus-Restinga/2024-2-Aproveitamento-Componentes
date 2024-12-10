@@ -343,10 +343,10 @@ class KnowledgeCertificationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Status inválido")
         return value
 
-    def validate_previous_knowledge(self, value):
-        if self.abstract_user.id != self.instance.student_id:
-            raise serializers.ValidationError("Apenas o aluno que fez a requisição pode alterar esse campo")
-        return value
+    #def validate_previous_knowledge(self, value):
+    #    if self.abstract_user.id != self.instance.student_id:
+    #        raise serializers.ValidationError("Apenas o aluno que fez a requisição pode alterar esse campo")
+    #    return value
 
     def validate_scheduling_date(self, value):
         try:
