@@ -91,12 +91,12 @@ class RecognitionOfPriorLearningListCreateView(generics.ListCreateAPIView):
             serializer.save()
 
             # Envia o e-mail diretamente
-            send_mail(
-                "Assunto",
-                "Email que estou mandando",
-                "teste@teste.com.br",
-                ["2019010480@restinga.ifrs.edu.br"]
-            )
+            # send_mail(
+            #     "Assunto",
+            #     "Email que estou mandando",
+            #     "teste@teste.com.br",
+            #     ["2019010480@restinga.ifrs.edu.br"]
+            # )
 
             print("Email enviado com sucesso!")
 

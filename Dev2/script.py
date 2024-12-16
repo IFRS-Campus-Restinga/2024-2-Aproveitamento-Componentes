@@ -95,13 +95,13 @@ Servant.objects.create(
 notice = Notice.objects.create(
     id="1f7755ade0b341299ee00c46a12dc467",
     number="001-2023",
-    publication_date="2023-10-01T09:00:00Z",
-    documentation_submission_start="2023-10-05T09:00:00Z",
-    documentation_submission_end="2023-10-10T17:00:00Z",
-    proposal_analysis_start="2023-10-11T09:00:00Z",
-    proposal_analysis_end="2023-10-20T17:00:00Z",
-    result_publication="2023-10-21T09:00:00Z",
-    result_homologation="2023-10-23T09:00:00Z",
+    publication_date="2024-12-16T09:00:00Z",
+    documentation_submission_start="2024-12-17T09:00:00Z",
+    documentation_submission_end="2024-12-18T17:00:00Z",
+    proposal_analysis_start="2024-12-19T09:00:00Z",
+    proposal_analysis_end="2024-12-20T17:00:00Z",
+    result_publication="2024-12-21T09:00:00Z",
+    result_homologation="2024-12-22T09:00:00Z",
     link="https://dev2.com"
 )
 
@@ -130,14 +130,14 @@ Disciplines.objects.create(
 
 course1 = Course.objects.create(name="Ciencia da Computacao")
 course1.professors.add(Servant.objects.get(name='ricardo'))
-course1.disciplines.add(Disciplines.objects.filter(name="test").first())  # Usa o primeiro registro encontrado
+course1.disciplines.add(Disciplines.objects.filter(name="Redes de Computadores").first())  # Usa o primeiro registro encontrado
 
 course2 = Course.objects.create(name="Engenharia de Software")
 course2.professors.add(Servant.objects.get(user__username='ricardo@hotmail.com'))
-course2.disciplines.add(Disciplines.objects.filter(name="Dev3").first())  # Usa o primeiro registro encontrado
+course2.disciplines.add(Disciplines.objects.filter(name="Banco de Dados").first())  # Usa o primeiro registro encontrado
 
 course3 = Course.objects.create(name="Sistemas de Informacao")
 course3.professors.add(Servant.objects.get(user__email='roben@hotmail.com'))
-course3.disciplines.add(Disciplines.objects.filter(name="Dev4").first())  # Usa o primeiro registro encontrado
+course3.disciplines.add(Disciplines.objects.filter(name="Programacao").first())  # Usa o primeiro registro encontrado
 
 print("Cursos criados com sucesso!")
