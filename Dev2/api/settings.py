@@ -1,4 +1,5 @@
 from pathlib import Path
+from decouple import config
 import os
 from .env_settings import *
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
     'forms',
     'disciplines',
     'notices',
+    'emails',
     'polymorphic'
 ]
 
@@ -158,7 +160,36 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'EXCEPTION_HANDLER': 'api.utils.custom_exception_handler.custom_exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
 }
 
 if DEBUG:
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+
+#EMAIL
+# DEFAULT_FROM_EMAIL = "murilo.lacerda74@gmail.com"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' #prod
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' #dev
+# EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+# EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+# EMAIL_USE_TLS= config("EMAIL_USE_TLS")
+# EMAIL_PORT= config("EMAIL_PORT")
+# EMAIL_HOST= config("EMAIL_HOST")
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],  # Substitua pelo caminho correto
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]

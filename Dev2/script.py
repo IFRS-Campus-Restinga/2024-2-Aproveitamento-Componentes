@@ -53,6 +53,15 @@ servant = Servant.objects.create(
     siape="123123",
     servant_type=ServantTypeEnum.TEACHER.value,
 )
+teacher2 = User.objects.create_user(username='eliana@hotmail.com', first_name='eliana', email='eliana@hotmail.com',
+                                   password=None)
+servant = Servant.objects.create(
+    user=teacher2,
+    name='eliana',
+    email='elinana@hotmail.com',
+    siape="32323",
+    servant_type=ServantTypeEnum.TEACHER.value,
+)
 coordenador = User.objects.create_user(username='roben@hotmail.com', first_name='roben', email='roben@hotmail.com',
                                        password=None)
 Servant.objects.create(
@@ -74,12 +83,12 @@ Servant.objects.create(
     servant_type=ServantTypeEnum.ENSINO.value,
     is_verified=True
 )
-cre2 = User.objects.create_user(username='103891655523380520625', first_name='servidor', email='aluno.ifrs.restinga@gmail.com', password=None)
+cre2 = User.objects.create_user(username='114283125304604622211', first_name='servidor', email='crerestinga@gmail.com', password=None)
 Servant.objects.create(
     user= cre2,
-    name='servidor teste',
-    email='aluno.ifrs.restinga@gmail.com',
-    siape="3231213",
+    name='ADMINISTRADOR',
+    email='crerestinga@gmail.com',
+    siape="0000000",
     servant_type=ServantTypeEnum.ENSINO.value,
     is_verified=True
 )
@@ -91,35 +100,31 @@ notice = Notice.objects.create(
     documentation_submission_end="2023-10-10T17:00:00Z",
     proposal_analysis_start="2023-10-11T09:00:00Z",
     proposal_analysis_end="2023-10-20T17:00:00Z",
-    result_publication_start="2023-10-21T09:00:00Z",
-    result_publication_end="2023-10-22T17:00:00Z",
-    result_homologation_start="2023-10-23T09:00:00Z",
-    result_homologation_end="2023-10-25T17:00:00Z"
+    result_publication="2023-10-21T09:00:00Z",
+    result_homologation="2023-10-23T09:00:00Z",
+    link="https://dev2.com"
 )
 
 discipline = Disciplines.objects.create(
     id="fc40c88d-65ae-41ca-bd19-89075f9b4ea3",
-    name="test",
+    name="Redes de Computadores",
     workload=123,
-    syllabus= "Desenvolvimento do sistema de aproveitamento",
-    professors= "Eliana Ricardo"
-)
-
-#discipline.professors.add(servant)
-
-
-Disciplines.objects.create(
-    name= "Dev3",
-    workload= "66h",
-    syllabus= "Desenvolvimento do sistema de aproveitamento",
-    professors= "Eliana Ricardo",
+    syllabus= "Servidor-cliente",
+    professors= "Habilitar o aluno a compreender request-response"
 )
 
 Disciplines.objects.create(
-    name= "Dev4",
+    name= "Banco de Dados",
     workload= "66h",
-    syllabus= "Desenvolvimento do sistema de aproveitamento",
-    professors= "Eliana Ricardo",
+    syllabus= "Consultas de dados",
+    professors= "Habilitar o estudante a realizar consultas em bancado de dados",
+)
+
+Disciplines.objects.create(
+    name= "Programacao",
+    workload= "66h",
+    syllabus= "Conceitos fundamentais da progracao",
+    professors= "Incentivar o pensamento abstrato para programar e utilizar conceitos fundamentais",
 )
 
 

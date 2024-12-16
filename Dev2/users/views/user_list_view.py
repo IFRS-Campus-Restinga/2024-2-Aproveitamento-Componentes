@@ -6,10 +6,12 @@ from api.views.custom_api_view import CustomAPIView
 from users.models.user import AbstractUser
 from ..serializers.user import UserPolymorphicSerializer
 from django.db.models import Q
-
+from rest_framework.permissions import IsAuthenticated
 
 
 class ListUsersAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
         """

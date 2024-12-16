@@ -6,8 +6,14 @@ import { useState, useEffect } from 'react';
 import styles from './ProfileForm.module.css';
 import AuthService from '@/services/AuthService';
 import { handleApiResponse } from '@/libs/apiResponseHandler';
+import { courseList } from '@/services/CourseService';
+import Toast from '@/utils/toast';
 
 const FormProfile = ({ user = false, onCancel, admEditing = false }) => {
+    const [toast, setToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState({});
+    const [courses, setCourses] = useState([]);
+    const [errors, setErrors] = useState({});
     const [userData, setUserData] = useState({
         id: '',
         name: '',
@@ -18,6 +24,10 @@ const FormProfile = ({ user = false, onCancel, admEditing = false }) => {
         servant_type: '',
         isStudent: false,
     });
+
+    const closeToast = () => {
+        setToast(false);
+    };
 
     useEffect(() => {
         if (user) {
@@ -36,6 +46,15 @@ const FormProfile = ({ user = false, onCancel, admEditing = false }) => {
     }, []);
 
     const submitForm = async () => {
+        if (errors.matricula) {
+            // alert('Por favor, corrija os erros antes de enviar o formulário.');
+            setToast(true);
+            setToastMessage({
+              type: "warning",
+              text: "Por favor, corrija os erros antes de enviar o formulário.",
+            });
+            return;
+        }
         let response;
         console.log('Dados enviados:', userData);
 
@@ -56,19 +75,41 @@ const FormProfile = ({ user = false, onCancel, admEditing = false }) => {
     }
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        // Validação para o campo matricula
+        if (name === 'matricula') {
+            // Verificar se contém exatamente 10 dígitos numéricos
+            const isValidMatricula = /^\d{10}$/.test(value);
+            setErrors({
+                ...errors,
+                matricula: isValidMatricula ? '' : 'A matrícula deve conter exatamente 10 números.',
+            });
+        }
+
         setUserData({
             ...userData,
             [name]: value,
         });
     };
 
-    // Options for the Dropdown components
-    const courseOptions = [
-        { label: 'ADS', value: 'ADS' },
-        { label: 'Lazer', value: 'Lazer' },
-        { label: 'Agricultura', value: 'Agricultura' },
-    ];
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+            const data = await courseList();
+            setCourses(data.courses);
+            } catch (err) {
+            console.log(err);
+            }
+        };
+        fetchCourses();
+        }, [userData.isStudent]);
+    
 
+        const courseOptions = courses.map(course => ({
+            label: course.name,
+            value: course.name,
+        }));
+    
     const servantTypeOptions = [
         { label: 'Professor', value: 'Professor' },
         { label: 'Coordenador', value: 'Coordenador' },
@@ -122,6 +163,7 @@ const filteredServantTypeOptions = shouldShowAllOptions
                             value={userData.matricula || ''}
                             onChange={handleInputChange}
                         />
+                        {errors.matricula && <small className="p-error">{errors.matricula}</small>}
                     </div>
 
                     <div className={styles.formField}>
@@ -175,9 +217,16 @@ const filteredServantTypeOptions = shouldShowAllOptions
                 </>
             )}
             <div className="flex space-x-36">
-            <Button className={styles.submitButton} label="Salvar" type="submit" />
             <Button className={styles.submitButton} label="Voltar" type= "button" onClick={onCancel}/>
+            <Button className={styles.submitButton} label="Salvar" type="submit" />
             </div>
+            {toast ? (
+                <Toast type={toastMessage.type} close={closeToast}>
+                {toastMessage.text}
+                </Toast>
+            ) : (
+                ""
+            )}
         </form>
     );
 }

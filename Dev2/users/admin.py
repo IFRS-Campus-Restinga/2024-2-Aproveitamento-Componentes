@@ -6,6 +6,7 @@ from forms.models import RecognitionOfPriorLearning, KnowledgeCertification, Att
 
 # Register your models here.
 admin.site.register((
+   AbstractUser,
    Student,
    Servant,
    Notice,

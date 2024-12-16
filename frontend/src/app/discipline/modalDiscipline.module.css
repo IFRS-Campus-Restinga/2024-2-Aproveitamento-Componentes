@@ -1,0 +1,154 @@
+body .modalBackground {
+    position: static;
+    background-color: transparent;
+    display: block;
+    justify-content: unset;
+    align-items: unset;
+}
+
+body .modalContainer {
+    background: #fff;
+    padding: 30px;
+    width: 100%;
+    max-width: 1400px;
+    min-width: 800px;
+    border-radius: 12px;
+    max-height: none;
+    height: auto;
+    overflow-y: visible;
+    margin: 20px auto;
+}
+
+.topSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  position: relative; /* Necessário para o ícone se posicionar dentro do campo */
+  order: 2; /* Coloca a pesquisa à direita */
+  margin-left: auto; /* Garante que a pesquisa fique à direita */
+  width: 100%; /* A barra de pesquisa ocupará 100% da largura disponível */
+  max-width: 700px; /* Limita o tamanho máximo da barra de pesquisa */
+}
+
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.searchInput {
+  width: 100%; /* Aumenta o tamanho horizontal */
+  max-width: 700px; /* Limita o tamanho máximo */
+  padding: 12px 12px 12px 40px; /* Mais espaço interno para conforto */
+  border: 2px solid black; /* Borda azul primária */
+  border-radius: 10px; /* Bordas arredondadas */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+  transition: border-color 0.3s, box-shadow 0.3s; /* Suaviza animações */
+  outline: none; /* Remove o estilo padrão do navegador */
+}
+
+.searchInput:focus {
+  border-color: black; /* Cor da borda ao focar */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra mais intensa ao focar */
+  padding-left: 30px; /* Espaço adicional à esquerda para o ícone */
+}
+
+.searchInput:focus + .searchIcon {
+  color: black; /* Muda a cor da lupa quando o campo de pesquisa está em foco */
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa; /* Cor neutra do ícone */
+}
+
+.registerButton, .backButton  {
+  background: greenyellow;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #046708;
+}
+
+.tableSection {
+  margin-top: 20px;
+  border: 2px solid black;
+  border-radius: 20px; /* Cantos arredondados */
+}
+
+.table {
+  border: 2px solid black; /* Bordas pretas */
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border-radius: 20px; /* Bordas arredondadas */
+  overflow: hidden; /* Garante que as bordas arredondadas sejam visíveis */
+}
+
+.table th {
+  background-color: #28a745; /* Cor verde */
+  color: black; /* Cor do texto para garantir boa legibilidade */
+  padding: 10px;
+  border: 1px solid black;
+  text-align: left; /* Alinhamento do texto */
+}
+
+.table td {
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.formSection {
+  margin-top: 20px;
+}
+
+.inputContainer {
+  margin-bottom: 10px;
+}
+
+.inputLabel {
+  font-weight: bold;
+}
+
+.disciplineInput {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.bottomSection {
+  display: flex;
+  justify-content: center;  /* Centraliza o conteúdo horizontalmente */
+  align-items: center;      /* Centraliza o conteúdo verticalmente */
+  width: 100%;              /* Garante que ocupe toda a largura disponível */
+  height: 100%;             /* Garante que ocupe toda a altura do seu contêiner pai */
+}
+
+.backButton {
+  background-color: #ff6f61;
+  color: white;
+}
+
+.pageTitle {
+  text-decoration: underline; /* Adiciona o sublinhado */
+  font-size: 2rem; /* Ajuste o tamanho da fonte conforme necessário */
+  color: #333; /* Defina a cor que deseja para o título */
+}

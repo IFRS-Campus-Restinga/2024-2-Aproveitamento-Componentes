@@ -50,16 +50,9 @@ class UserService:
         emailsStudent = ["@restinga.ifrs.edu.br", "@aluno.restinga.ifrs.edu.br"]
         return any(email.endswith(emails) for emails in emailsStudent)
 
-    def updateUserById(self, id, serializer, user):
+    def updateUserById(self, id, serializer, user, user_autorized):
 
             is_student = serializer.validated_data["is_student"]
-            user_autorized = False
-            try:
-                staff = Servant.objects.get(user=user)
-                if ((staff.servant_type == "Coordenador") or (staff.servant_type == "Ensino")) and (staff.is_verified):
-                    user_autorized = True
-            except Servant.DoesNotExist:
-                pass
 
             try:
                 usuario = AbstractUser.objects.get(id=id)
@@ -78,3 +71,25 @@ class UserService:
                 usuario.save()
                 return usuario
             return print("User not autorized")
+
+    def userAutorized(self, user):
+
+        user_autorized = False
+        try:
+            staff = Servant.objects.get(user=user)
+            if ((staff.servant_type == "Coordenador") or (staff.servant_type == "Ensino")) and (staff.is_verified):
+                user_autorized = True
+        except Servant.DoesNotExist:
+            pass
+        return user_autorized
+
+    def userAutorizedEnsino(self, user):
+
+        user_autorized = False
+        try:
+            staff = Servant.objects.get(user=user)
+            if staff.servant_type == "Ensino" and (staff.is_verified):
+                user_autorized = True
+        except Servant.DoesNotExist:
+            pass
+        return user_autorized

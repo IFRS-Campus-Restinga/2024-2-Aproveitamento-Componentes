@@ -1,3 +1,23 @@
+.selector {
+    font-size: 12pt;
+    border-radius: 10px;
+    border-color: #28a745;
+    max-width: 80%;
+    padding: 5px;
+}
+
+.selector_container {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: center;
+}
+
+.asterisk {
+    color: red;
+    margin-left: 4px;
+    font-size: 10px;
+}
+
 .date_time_container {
     justify-content: center;
     align-items: center;
@@ -87,8 +107,8 @@
     content: "";
     position: absolute;
     top: 50%;
-    width: 30%;
-    height: 1px;
+    width: 20%;
+    height: 2px;
     background-color: #ccc;
 }
 
@@ -106,6 +126,7 @@
     text-align: left;
     font-size: 14pt;
     margin-bottom: 2px;
+    gap: 5px;
 }
 
 .stepper {
@@ -129,6 +150,7 @@
     min-height: 100vh;
     width: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -242,16 +264,80 @@
     gap: 10px;
 }
 
-.p-button-success {
+.pButtonSuccess {
     background-color: #28a745;
     border-color: #28a745;
 }
 
-.p-button-danger {
+.pButtonReturn {
+    background-color: #ffcc00;
+    border-color: #ffcc00;
+}
+
+.pButtonDanger {
     background-color: #dc3545;
     border-color: #dc3545;
 }
 
 .backButton {
-    margin-top: 20px;
+    background-color: #28a745;
+    border-color: #28a745;
+    position: fixed;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    top: 40%;
+    left: 5%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+}
+/* style para o modal de confirmação de cancelamento da Solicitação */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modalContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.modalButtons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.confirmButton {
+  background-color: #d9534f;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancelButton {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+>>>>>>> origin/sprint6/modal_confirma_cancelar
+.attachmentItemContent {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }

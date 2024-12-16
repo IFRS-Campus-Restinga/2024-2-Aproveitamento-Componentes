@@ -20,17 +20,70 @@
 }
 
 .filters {
+  margin-top: 20px;
   display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 1rem;
-  padding: 2rem 2rem 2rem 0;
+  flex-direction: column;  /* Filtros e botão alinhados na horizontal */
+  gap: 15px; /* Espaço entre os filtros */
+  align-items: flex-end;
+  margin-bottom: 20px; /* Adiciona espaçamento abaixo dos filtros antes da tabela */
+}
+
+.searchWrapper {
+  display: flex;
+  position: relative;
+  width: 50%; /* Garante que o wrapper tenha a mesma largura do input */
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px; /* Distância da borda esquerda do input */
+  top: 50%;
+  transform: translateY(-50%); /* Alinha verticalmente */
+  color: #888;
+  font-size: 18px;
+  pointer-events: none; /* Impede interação com a lupa */
+  z-index: 2; /* Coloca a lupa acima da caixa de texto */
 }
 
 .nameFilter {
-  border: 1px solid #c7c7c7;
+  padding: 10px 10px 10px 40px; /* O padding-left (30px) cria o espaço para a lupa dentro do input */
+  border: 1px solid rgb(166, 165, 165);
   border-radius: 5px;
-  padding: 18px;
+  font-size: 14px;
+  width: 100%; /* Faz o input ocupar 100% da largura do seu contêiner pai (searchWrapper) */
+  height: 50px;
+  box-sizing: border-box;
+  position: relative; /* Garantir que o ícone fique dentro do input */
+  z-index: 1; /* Garante que o texto fique abaixo da lupa */
+}
+
+.searchContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column; /* Barra de busca em uma coluna separada */
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%; /* Barra de busca ocupa toda a largura disponível */
+  margin-bottom: 20px; /* Espaço entre a barra de busca e os filtros */
+}
+
+.filtersContainer {
+  display: flex;
+  flex-direction: row;  /* Filtros alinhados na horizontal */
+  gap: 10px; /* Espaço entre os filtros */
+  width: 100%; /* Para garantir que os filtros ocupem a largura disponível */
+  align-items: center;
+  justify-content: flex-end; /* Alinha os filtros e o botão à direita */
+}
+
+.filter {
+  height: 30px; /* Altura reduzida */
+  width: 100px; /* Largura reduzida */
+  font-size: 12px; /* Tamanho de fonte menor */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem;
+  box-sizing: border-box;
 }
 
 .scrollableTable {
@@ -90,3 +143,106 @@
   display: flex;
   gap: 1rem;
 }
+
+.table {
+  width: 100%;
+  border-collapse: separate; /* Mudando para 'separate' para permitir bordas arredondadas */
+  border-spacing: 0; /* Remove o espaçamento entre as células */
+  border: 3px solid #b8b8b8; /* Borda externa mais grossa e escura */
+  border-radius: 10px; /* Arredonda as pontas da tabela */
+  overflow: hidden; /* Garante que o conteúdo da tabela não ultrapasse os cantos arredondados */
+}
+
+.table th, .table td {
+  border: 1px solid #b8b8b8; /* Borda externa mais grossa e escura */
+  padding: 8px;
+  text-align: left;
+  min-width: 150px;  /* Ajuste a largura mínima das colunas conforme necessário */
+  width: 150px;  /* Define uma largura padrão para a tabela */
+}
+
+/* Centraliza o conteúdo da célula onde a palavra "ver" ou ícones estão */
+.table td.ver-column {
+  text-align: center;  /* Centraliza horizontalmente */
+  vertical-align: middle;  /* Centraliza verticalmente */
+}
+
+/* Coluna 1: Nome */
+.table td:nth-child(1), .table th:nth-child(1) {
+  width: 300px;
+  text-align: left;
+  min-width: 200px;
+}
+
+/* Coluna 2: Tipo */
+.table td:nth-child(2), .table th:nth-child(2) {
+  width: 100px;
+  text-align: left;
+  min-width: 100px;
+}
+
+/* Coluna 3: Email */
+.table td:nth-child(3), .table th:nth-child(3) {
+  width: 350px;
+  text-align: left;
+  min-width: 250px;
+}
+
+/* Coluna 4: Curso */
+.table td:nth-child(4), .table th:nth-child(4) {
+  width: 50px;
+  text-align: left;
+  min-width: 50px;
+}
+
+/* Coluna 5: Matrícula */
+.table td:nth-child(5), .table th:nth-child(5) {
+  width: 180px;
+  text-align: left;
+  min-width: 180px;
+}
+
+/* Coluna 6: SIAPE */
+.table td:nth-child(6), .table th:nth-child(6) {
+  width: 180px;
+  text-align: left;
+  min-width: 180px;
+}
+
+/* Coluna 7: Estado */
+.table td:nth-child(7), .table th:nth-child(7) {
+  width: 120px;
+  text-align: left;
+  min-width: 120px;
+}
+
+/* Coluna 8: Ver */
+.table td:nth-child(8), .table th:nth-child(8) {
+  width: 100px;
+  text-align: left;  /* Centraliza o conteúdo da coluna "Ver" */
+  min-width: 100px;
+}
+
+.btnFiltrar {
+  border: 2px solid green; /* Borda verde */
+  padding: 10px 20px; /* Ajuste do padding */
+  border-radius: 5px; /* Bordas arredondadas */
+  color: white; /* Cor do texto */
+  background-color: #46b5ff; /* Cor de fundo */
+  cursor: pointer; /* Mostra que o botão é clicável */
+}
+
+.btnFiltrar:hover {
+  background-color: #3a9bbd; /* Cor de fundo quando passar o mouse */
+}
+
+.btnFiltrar {
+  padding: 10px 20px;
+  border: 1px solid #46b5ff;
+  background-color: #46b5ff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+

@@ -2,9 +2,12 @@ from rest_framework.response import Response
 from users.serializers.user import UserPolymorphicSerializer
 from users.models import AbstractUser
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 
 class UserDetails(APIView):
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
 

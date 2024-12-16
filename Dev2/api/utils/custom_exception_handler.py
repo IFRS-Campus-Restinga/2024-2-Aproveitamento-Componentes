@@ -10,7 +10,7 @@ def custom_exception_handler(exc, context):
         elif isinstance(exc, exceptions.PermissionDenied):
             response.data = {'status': 'error', 'message': 'Você não tem permissão para realizar esta ação.'}
         elif isinstance(exc, exceptions.ValidationError):
-            response.data = {'status': 'error', 'message': 'Os dados enviados são inválidos.'}
+            response.data = {'status': 'error', 'message': 'Os dados enviados são inválidos.', 'details': exc.detail}
         elif isinstance(exc, exceptions.AuthenticationFailed):
             response.data = {'status': 'error', 'message': 'Falha na autenticação.'}
         elif isinstance(exc, exceptions.NotAuthenticated):
