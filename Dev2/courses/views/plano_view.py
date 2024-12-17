@@ -34,7 +34,7 @@ def plano_list_create(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def plano_detail(request, pk):
     user_service = UserService()
 

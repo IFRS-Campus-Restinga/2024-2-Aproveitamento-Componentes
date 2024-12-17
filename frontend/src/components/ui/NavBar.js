@@ -190,21 +190,27 @@ const NavBar = ({ data = false }) => {
         )}
         {(user?.type === "Coordenador" || user?.type === "Ensino") &&
           user?.is_verified && (
-            <>
-              <li
-                onClick={() => (window.location.href = `/usersList`)}
-                className={path === "/usersList" ? styles.active : ""}
-              >
-                Usuários
-              </li>
-              <li
-                onClick={() => (window.location.href = `/discipline`)}
-                className={path === "/discipline" ? styles.active : ""}
-              >
-                Cadastrar Disciplina
-              </li>
-            </>
-          )}
+                <>
+                  <li
+                      onClick={() => (window.location.href = `/usersList`)}
+                      className={path === "/usersList" ? styles.active : ""}
+                  >
+                    Usuários
+                  </li>
+                  <li
+                      onClick={() => (window.location.href = `/discipline`)}
+                      className={path === "/discipline" ? styles.active : ""}
+                  >
+                    Cadastrar Disciplina
+                  </li>
+                  <li
+                      onClick={() => (window.location.href = `/planoPedagogico`)}
+                      className={path === "/planoPedagogico" ? styles.active : ""}
+                  >
+                    Plano Pedagógico
+                  </li>
+                </>
+            )}
       </ul>
     </>
   );

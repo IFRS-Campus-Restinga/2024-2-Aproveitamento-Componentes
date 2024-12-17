@@ -14,5 +14,5 @@ urlpatterns = [
     path('search/', SearchCourseByNameAPIView.as_view(), name='search_course_by_name'),
     path('professors/<int:coordinator_id>', CourseProfessorsView.as_view(), name='professors'),
     path('plano', plano_list_create, name='plano_list_create'),
-    path('plano/<int:id>/', plano_detail, name='plano_detail'),
+    path('plano/<int:pk>/', plano_detail, name='plano_detail'),
 ]
