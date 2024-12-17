@@ -1,5 +1,5 @@
 import uuid
-
+from django.utils import timezone
 from django.db import models
 
 from disciplines.models import Disciplines
@@ -15,3 +15,4 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
+    
