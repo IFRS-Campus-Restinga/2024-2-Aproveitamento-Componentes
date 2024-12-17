@@ -2,15 +2,17 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from ..models.planoPedagogicoCurso import PlanoPedagogicoCurso
-from ..serializers import PlanoSerializer
 from rest_framework.permissions import IsAuthenticated
-# from users.services.user import UserService
+from ..serializers.PlanoSerializer import PlanoSerializer
+
+
+from users.services.user import UserService
 
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def plano_list_create(request):
-    # user_service = UserService()
+    user_service = UserService()
 
     if request.method == 'GET':
         planos = PlanoPedagogicoCurso.objects.all()
@@ -18,10 +20,11 @@ def plano_list_create(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        # usuario = request.user
-        # if not user_service.userAutorized(usuario):
-        #     return Response({"detail": "Usuário não autorizado para criar disciplinas."},
-        #                     status=status.HTTP_403_FORBIDDEN)
+        #  validação
+        usuario = request.user
+        if not user_service.userAutorized(usuario):
+            return Response({"detail": "Usuário não autorizado para criar disciplinas."},
+                            status=status.HTTP_403_FORBIDDEN)
 
         serializer = PlanoSerializer(data=request.data)
         if serializer.is_valid():
@@ -33,7 +36,7 @@ def plano_list_create(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def plano_detail(request, pk):
-    # user_service = UserService()
+    user_service = UserService()
 
     try:
         plano = PlanoPedagogicoCurso.objects.get(pk=pk)
@@ -47,10 +50,10 @@ def plano_detail(request, pk):
         return Response(serializer.data)
 
     # validação
-    # usuario = request.user
-    # if not user_service.userAutorized(usuario):
-    #     return Response({"detail": "Usuário não autorizado."},
-    #                     status=status.HTTP_403_FORBIDDEN)
+    usuario = request.user
+    if not user_service.userAutorized(usuario):
+        return Response({"detail": "Usuário não autorizado."},
+                        status=status.HTTP_403_FORBIDDEN)
 
     elif request.method == 'PUT':
         serializer = PlanoSerializer(plano, data=request.data)
