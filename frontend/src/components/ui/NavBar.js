@@ -192,6 +192,12 @@ const NavBar = ({ data = false }) => {
           user?.is_verified && (
             <>
               <li
+                onClick={() => (window.location.href = `/pedagogicPlan`)}
+                className={path === "/pedagogicPlan" ? styles.active : ""}
+              >
+                Planos Pedagogicos
+              </li>
+              <li
                 onClick={() => (window.location.href = `/usersList`)}
                 className={path === "/usersList" ? styles.active : ""}
               >
