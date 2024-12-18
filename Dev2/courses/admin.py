@@ -1,7 +1,6 @@
 from django.contrib import admin
-
-from .models import Course
-from .models import pedagogical_plan
+from .models import Course, PedagogicalPlanCourse
 
 # Register your models here.
 admin.site.register(Course)
+admin.site.register(PedagogicalPlanCourse)

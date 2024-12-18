@@ -1,2 +1,2 @@
 from .CourseSerializer import *
-from .PedagogicalPlanSerializer import *
+from .PedagogicalPlanCourseSerializer import *
