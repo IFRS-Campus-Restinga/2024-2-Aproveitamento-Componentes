@@ -9,16 +9,47 @@ from rest_framework.permissions import BasePermission
 from ..models import PedagogicalPlanCourse
 from ..serializers import PedagogicalPlanCourseSerializer
 
-class IsAdminOrReadOnly(BasePermission):
-    def has_permission(self, request, view):
-        if request.method in ["GET", "HEAD", "OPTIONS"]:
-            return True
-        return request.user.is_staff
+from rest_framework.permissions import BasePermission
+from users.enum.servant_type_enum import ServantTypeEnum
+from users.enum.user_type_enum import UserTypeEnum
+
+# class IsSpecificUserType(BasePermission):
+#     """
+#     Permissão baseada no tipo de usuário.
+#     Apenas usuários do tipo específico (ex.: Servidor - Coordenador, Ensino, Professor) podem editar.
+#     """
+#     def has_permission(self, request, view):
+#         # Permitir acesso de leitura para todos
+#         if request.method in ["GET", "HEAD", "OPTIONS"]:
+#             return True
+
+#         # Garantir que o usuário está autenticado
+#         if not request.user.is_authenticated:
+#             return False
+
+#         # Acessar o perfil do usuário e verificar o tipo
+#         user_profile = getattr(request.user, 'perfil', None)
+
+#         if not user_profile:
+#             return False  # Usuário sem perfil vinculado
+
+#         # Verificar se é um Servidor e possui um tipo válido
+#         if user_profile.type == UserTypeEnum.SERVANT:
+#             # Tipos permitidos
+#             allowed_types = [
+#                 ServantTypeEnum.COORDINATOR.value,
+#                 ServantTypeEnum.ENSINO.value,
+#                 ServantTypeEnum.TEACHER.value,
+#             ]
+#             return user_profile.servant_type in allowed_types
+
+#         return False  # Outros tipos de usuário não têm permissão
+
 
 class PedagogicalPlanCourseListCreateView(ListCreateAPIView):
     queryset = PedagogicalPlanCourse.objects.all()
     serializer_class = PedagogicalPlanCourseSerializer
-    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter]
     search_fields = ["name", "course__name", "disciplines__name"]
 
@@ -31,6 +62,7 @@ class PedagogicalPlanCourseListCreateView(ListCreateAPIView):
         return queryset
 
 class PedagogicalPlanCourseRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    print("CHEGOU EM PedagogicalPlanCourseRetrieveUpdateDestroyView")
     queryset = PedagogicalPlanCourse.objects.all()
     serializer_class = PedagogicalPlanCourseSerializer
-    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    permission_classes = [IsAuthenticated]

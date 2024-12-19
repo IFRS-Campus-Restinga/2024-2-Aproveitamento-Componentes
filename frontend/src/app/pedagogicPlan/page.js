@@ -1,14 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
-import {
-  pedagogicalPlanCourseListAll,
-  pedagogicalPlanCourseCreate,
-  pedagogicalPlanCourseEdit,
-  pedagogicalPlanCourseDelete,
-} from "@/services/PedagogicalPlanCourseService";
+import React, { useState, useEffect } from 'react';
+import ModalPedagogicalPlan from './ModalPedagogicalPlan'; // Componente modal
+import { pedagogicalPlanCourseListAll, pedagogicalPlanCourseDelete } from '@/services/PedagogicPlanService'; // Ajuste o caminho do serviço conforme necessário
+import styles from "./pedagogicPlan.module.css"
 
-const PedagogicalPlanCoursePage = () => {
+const PedagogicalPlan = () => {
   const [plans, setPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -24,60 +23,63 @@ const PedagogicalPlanCoursePage = () => {
     fetchPlans();
   }, []);
 
-  const handleCreate = async (newPlanData) => {
-    try {
-      const newPlan = await pedagogicalPlanCourseCreate(newPlanData);
-      console.log("Novo plano criado:", newPlan);
-      // Atualizar a lista após criação
-      setPlans((prevPlans) => [...prevPlans, newPlan]);
-    } catch (err) {
-      console.error("Erro ao criar plano pedagógico:", err);
-    }
-  };
-
-  const handleEdit = async (id, updatedData) => {
-    try {
-      const updatedPlan = await pedagogicalPlanCourseEdit(id, updatedData);
-      console.log("Plano atualizado:", updatedPlan);
-      // Atualizar a lista após edição
-      setPlans((prevPlans) =>
-        prevPlans.map((plan) => (plan.id === id ? updatedPlan : plan))
-      );
-    } catch (err) {
-      console.error("Erro ao editar plano pedagógico:", err);
-    }
+  const handleEdit = (plan) => {
+    setSelectedPlan(plan);
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (id) => {
     try {
-      const success = await pedagogicalPlanCourseDelete(id);
-      if (success) {
-        console.log("Plano deletado com sucesso");
-        // Atualizar a lista após exclusão
-        setPlans((prevPlans) => prevPlans.filter((plan) => plan.id !== id));
-      }
-    } catch (err) {
-      console.error("Erro ao deletar plano pedagógico:", err);
+      await pedagogicalPlanCourseDelete(id); // Chama o serviço para excluir o plano pedagógico
+      const updatedPlans = plans.filter(plan => plan.id !== id);
+      setPlans(updatedPlans); // Atualiza a lista de planos após exclusão
+    } catch (error) {
+      console.error('Erro ao excluir o plano pedagógico:', error);
     }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedPlan(null);
   };
 
   return (
     <div>
       <h1>Planos Pedagógicos</h1>
-      <div>
-        {/* Renderizar lista de planos */}
-        {plans.map((plan) => (
-          <div key={plan.id}>
-            <span>{plan.name}</span>
-            <button onClick={() => handleEdit(plan.id, { name: "Novo Nome" })}>
-              Editar
-            </button>
-            <button onClick={() => handleDelete(plan.id)}>Excluir</button>
-          </div>
-        ))}
-      </div>
+      <button onClick={() => setIsModalOpen(true)}>Criar Novo Plano</button>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Ano</th>
+            <th>Duração</th>
+            <th>Carga Horária</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {plans.map((plan) => (
+            <tr key={plan.id}>
+              <td>{plan.name}</td>
+              <td>{plan.year}</td>
+              <td>{plan.duration}</td>
+              <td>{plan.totalWorkload}</td>
+              <td>
+                <button onClick={() => handleEdit(plan)}>Editar</button>
+                <button onClick={() => handleDelete(plan.id)}>Excluir</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {isModalOpen && (
+        <ModalPedagogicalPlan
+          plan={selectedPlan}
+          onClose={handleModalClose}
+        />
+      )}
     </div>
   );
 };
 
-export default PedagogicalPlanCoursePage;
+export default PedagogicalPlan;

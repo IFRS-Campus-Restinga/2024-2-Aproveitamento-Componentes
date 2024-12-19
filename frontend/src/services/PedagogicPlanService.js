@@ -19,21 +19,21 @@ const pedagogicalPlanCourseListAll = async () => {
 // Cria um novo plano pedagógico
 const pedagogicalPlanCourseCreate = async (data) => {
   return await apiClient
-    .post("pedagogical-plan-courses/", data)
+    .post("pedagogical-plans/pedagogical-plans/", data)
     .then((response) => response.data);
 };
 
 // Edita um plano pedagógico existente
 const pedagogicalPlanCourseEdit = async (id, data) => {
   return await apiClient
-    .put(`pedagogical-plan-courses/${id}/`, data)
+    .put(`pedagogical-plans/pedagogical-plans/${id}/`, data)
     .then((response) => response.data);
 };
 
 // Deleta um plano pedagógico existente
 const pedagogicalPlanCourseDelete = async (id) => {
   return await apiClient
-    .delete(`pedagogical-plan-courses/${id}/`)
+    .delete(`pedagogical-plans/pedagogical-plans/${id}/`)
     .then((response) => response.status === 204);
 };
 
