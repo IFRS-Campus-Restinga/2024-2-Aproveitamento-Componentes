@@ -13,6 +13,9 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useAuth } from "@/context/AuthContext";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { InputText } from "primereact/inputtext";
+import exportToPdf from "../pdf/page";
+import RequestDetails from "../pdf/page";
+import { Description } from "@mui/icons-material";
 
 const ITEMS_PER_PAGE = 10; // Quantidade de itens por página
 
@@ -69,7 +72,9 @@ const Notice = () => {
     const fetchNotices = async () => {
       try {
         const data = await noticeListAll();
-        setAllNotices(data.results);
+        setAllNotices(data.results[0]);
+        console.log(data)
+        console.log(data.results)
         console.log(allNotices);
       } catch (err) {
         setToast(true);
@@ -169,6 +174,13 @@ const Notice = () => {
     });
   };
 
+  const mockTest = {
+    title:"teste",
+    number: "001-2023",
+    description: "teste par pdf",
+    date: "24-12-09",
+  }
+
   return user.type !== "Estudante" ? (
     <div className={styles.contentWrapper}>
       <div className={styles.titleWrapper}>
@@ -266,6 +278,7 @@ const Notice = () => {
     </div>
   ) : (
     <div style={{ padding: "16px" }}>
+      <RequestDetails request={mockTest}/>
       <div className={styles.noticeInfoContainer}>
         {lastNotice ? (
           <>

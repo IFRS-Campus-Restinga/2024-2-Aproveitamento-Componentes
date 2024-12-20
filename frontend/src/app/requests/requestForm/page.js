@@ -8,7 +8,7 @@ import { noticeListAll } from "@/services/NoticeService";
 import { FileUpload } from "primereact/fileupload";
 import RequestService from "@/services/RequestService";
 import { courseList } from "@/services/CourseService";
-import { GetDiscipline } from "@/services/DisciplineService";
+import { DisciplineList, GetDiscipline } from "@/services/DisciplineService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -25,6 +25,7 @@ const CertificationRequestForm = () => {
   const [status] = useState("CR");
   const { user } = useAuth();
   const [courses, setCourses] = useState([]);
+  const [temDisciplines, setTempDisciplines] = useState([]);
 
   // Usaremos um contador para gerar IDs incrementais.
   const idCounterRef = useRef(1);
@@ -86,6 +87,7 @@ const CertificationRequestForm = () => {
         );
 
         const disciplineResults = await Promise.all(disciplinePromises);
+        console.log(disciplineResults);
         setDisciplines(disciplineResults);
       } catch (error) {
         console.error("Erro ao carregar as disciplinas:", error);
@@ -172,6 +174,16 @@ const CertificationRequestForm = () => {
     console.log("Linhas atuais de upload:", uploadLines);
   };
 
+  const fetchDsiciplines = async () => {
+    const data = await DisciplineList();
+    console.log(data);
+    setTempDisciplines(data)
+  }
+
+  useEffect(() => {
+    fetchDsiciplines();
+  }, [])
+
   return (
     <form className={styles.formContainer} onSubmit={handleSubmit}>
       <div className={styles.typeContainer}>
@@ -234,7 +246,7 @@ const CertificationRequestForm = () => {
           required
         >
           <option value="">Selecione uma disciplina</option>
-          {disciplines
+          {temDisciplines
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((discipline) => (
               <option key={discipline.id} value={discipline.id}>
